@@ -28,18 +28,22 @@ public class WidgetUpdater {
     }
 
     public void scheduleNextUpdate() {
-        PendingIntent pendingIntent = newPendingIntent();
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, newUpdateIntent(), PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pendingIntent);
         long nextUpdateTime = SystemClock.elapsedRealtime() + UPDATE_INTERVAL_MS;
         alarmManager.set(AlarmManager.ELAPSED_REALTIME, nextUpdateTime, pendingIntent);
     }
 
-    private PendingIntent newPendingIntent() {
+    public void updateImmediately(int widgetId) {
+        Intent intent = newUpdateIntent();
+        context.sendBroadcast(intent);
+    }
+
+    private Intent newUpdateIntent() {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         int widgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
-        Intent intent = new Intent(context, WidgetProvider.class)
+        return new Intent(context, WidgetProvider.class)
                 .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
                 .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds);
-        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 }

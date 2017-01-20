@@ -11,6 +11,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="01:23"
+        android:clickable="true"
         android:textColor="#FFF"
         android:textSize="24sp"
         android:textStyle="bold" />
