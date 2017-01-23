@@ -9,11 +9,7 @@ import android.widget.RemoteViews;
 
 import com.voqse.nixieclock.App;
 import com.voqse.nixieclock.R;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.voqse.nixieclock.Utils;
 
 /**
  * Defines the basic methods that allow you to programmatically interface with the App Widget, based on broadcast events.
@@ -23,12 +19,11 @@ import java.util.Locale;
  */
 public class WidgetProvider extends AppWidgetProvider {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("mm:ss", Locale.getDefault());
-
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        Settings settings = new Settings(context);
         for (int appWidgetId : appWidgetIds) {
-            updateWidget(context, appWidgetManager, appWidgetId);
+            updateWidget(context, settings, appWidgetManager, appWidgetId);
         }
 
         if (appWidgetIds.length > 0) {
@@ -36,11 +31,19 @@ public class WidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        Settings settings = new Settings(context);
+        settings.remove(appWidgetIds);
+    }
+
+    private void updateWidget(Context context, Settings settings, AppWidgetManager appWidgetManager, int widgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        views.setTextViewText(R.id.timeTextView, DATE_FORMAT.format(new Date()));
-        views.setOnClickPendingIntent(R.id.timeTextView, newClickIntent(context, appWidgetId));
-        appWidgetManager.updateAppWidget(appWidgetId, views);
+        boolean format24 = settings.is24TimeFormat(widgetId);
+        String timeZone = settings.getTimeZone(widgetId);
+        views.setTextViewText(R.id.timeTextView, Utils.getCurrentTime(format24, timeZone));
+        views.setOnClickPendingIntent(R.id.timeTextView, newClickIntent(context, widgetId));
+        appWidgetManager.updateAppWidget(widgetId, views);
     }
 
     private PendingIntent newClickIntent(Context context, int widgetId) {

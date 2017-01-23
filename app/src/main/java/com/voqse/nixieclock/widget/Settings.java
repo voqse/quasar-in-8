@@ -1,0 +1,68 @@
+package com.voqse.nixieclock.widget;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import java.util.TimeZone;
+
+/**
+ * @author Alexey Danilov (danikula@gmail.com).
+ */
+
+public class Settings {
+
+    private static final String KEY_24_TIME_FORMAT = "24_time_format";
+    private static final String KEY_TIMEZONE = "timezone";
+
+    private final SharedPreferences preferences;
+
+    public Settings(Context context) {
+        this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    public boolean is24TimeFormat(int widgetId) {
+        String widgetKey = getWidgetKey(KEY_24_TIME_FORMAT, widgetId);
+        return preferences.getBoolean(widgetKey, true);
+    }
+
+    public void setTimeFormat(int widgetId, boolean format24) {
+        String widgetKey = getWidgetKey(KEY_24_TIME_FORMAT, widgetId);
+        put(widgetKey, format24);
+    }
+
+    public String getTimeZone(int widgetId) {
+        String widgetKey = getWidgetKey(KEY_TIMEZONE, widgetId);
+        return preferences.getString(widgetKey, TimeZone.getDefault().getID());
+    }
+
+    public void setTimezone(int widgetId, String timezoneId) {
+        String widgetKey = getWidgetKey(KEY_TIMEZONE, widgetId);
+        put(widgetKey, timezoneId);
+    }
+
+    public void remove(int... widgetIds) {
+        SharedPreferences.Editor editor = preferences.edit();
+        for (int widgetId : widgetIds) {
+            String widgetKey = getWidgetKey(KEY_24_TIME_FORMAT, widgetId);
+            editor.remove(widgetKey);
+        }
+        editor.apply();
+    }
+
+    private String getWidgetKey(String key, int widgetId) {
+        return key + "_" + widgetId;
+    }
+
+    private void put(String key, boolean value) {
+        preferences.edit()
+                .putBoolean(key, value)
+                .apply();
+    }
+
+    private void put(String key, String value) {
+        preferences.edit()
+                .putString(key, value)
+                .apply();
+    }
+}

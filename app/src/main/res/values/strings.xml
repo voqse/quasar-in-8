@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">а Quasar-1:	Nixie Tube</string>
+    <string name="app_name">Quasar-1:	Nixie Tube</string>
+    <string name="configuration_format_24">24-часовой формат</string>
 </resources>
