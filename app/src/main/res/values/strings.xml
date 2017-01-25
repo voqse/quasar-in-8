@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Quasar-1:	Nixie Tube</string>
     <string name="configuration_format_24">24-часовой формат</string>
+    <string name="configuration_date_format">Формат даты</string>
 </resources>

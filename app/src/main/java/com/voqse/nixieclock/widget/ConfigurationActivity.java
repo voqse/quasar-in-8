@@ -23,8 +23,11 @@ import com.voqse.nixieclock.timezone.TimeZoneInfo;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment.OnTimeZoneSelectedListener;
 import com.voqse.nixieclock.timezone.TimeZones;
+import com.voqse.nixieclock.widget.support.DateFormatDialogFragment;
+import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormatSelectedListener;
 
-public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, OnTimeZoneSelectedListener {
+public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener,
+        View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener {
 
     private static final String EXTRA_WIDGET_ID = BuildConfig.APPLICATION_ID + ".EXTRA_WIDGET_ID";
 
@@ -32,6 +35,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private ViewPager widgetsViewPager;
     private Switch timeFormatSwitch;
     private TextView timeZoneTextView;
+    private TextView dateFormatTextView;
     private Settings settings;
     private WidgetUpdater widgetUpdater;
 
@@ -50,11 +54,13 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         this.widgetsViewPager = (ViewPager) findViewById(R.id.widgetsViewPager);
         this.timeFormatSwitch = (Switch) findViewById(R.id.timeFormatSwitch);
         this.timeZoneTextView = (TextView) findViewById(R.id.timeZoneTextView);
+        this.dateFormatTextView = (TextView) findViewById(R.id.dateFormatTextView);
 
         int[] widgetIds = getWidgetIds();
         timeFormatSwitch.setOnCheckedChangeListener(this);
         widgetsViewPager.addOnPageChangeListener(new WidgetSettingBinder(widgetIds));
         timeZoneTextView.setOnClickListener(this);
+        dateFormatTextView.setOnClickListener(this);
 
         this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, settings);
         widgetsViewPager.setAdapter(widgetsAdapter);
@@ -90,38 +96,57 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         TimeZoneInfo timeZoneInfo = TimeZones.getTimeZoneInfo(this, timeZoneId);
         String formattedTimeZone = TimeZones.format(timeZoneInfo);
         timeZoneTextView.setText(formattedTimeZone);
+
+        boolean monthFirst = settings.isMonthFirst(widgetId);
+        String date = Utils.getCurrentDate(monthFirst, timeZoneId);
+        dateFormatTextView.setText(getString(R.string.configuration_date_format) + "\n" + date);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.timeZoneTextView:
-                onTimeZoneClick();
+                new TimeZonePickerDialogFragment().show(getSupportFragmentManager(), "TimeZonePicker");
+                break;
+            case R.id.dateFormatTextView:
+                DateFormatDialogFragment.show(getSupportFragmentManager(), getCurrentWidgetId());
                 break;
             default:
                 throw new IllegalStateException();
         }
     }
 
-    private void onTimeZoneClick() {
-        new TimeZonePickerDialogFragment().show(getSupportFragmentManager(), "TimeZonePicker");
-    }
-
     @Override
     public void onCheckedChanged(CompoundButton timeFormatSwitch, boolean format24) {
-        int currentWidget = widgetsViewPager.getCurrentItem();
-        int widgetId = widgetsAdapter.getWidgetId(currentWidget);
-        settings.setTimeFormat(widgetId, format24);
-        updatePreviewAndWidget(currentWidget, widgetId);
+        settings.setTimeFormat(getCurrentWidget(), format24);
+        updatePreviewAndWidget(getCurrentWidgetId(), getCurrentWidget());
     }
 
     @Override
     public void onTimeZoneSelected(TimeZoneInfo timeZoneInfo) {
-        int currentWidget = widgetsViewPager.getCurrentItem();
-        int widgetId = widgetsAdapter.getWidgetId(currentWidget);
+        int widgetId = getCurrentWidgetId();
         settings.setTimezone(widgetId, timeZoneInfo.id);
         timeZoneTextView.setText(TimeZones.format(timeZoneInfo));
+        updatePreviewAndWidget(getCurrentWidget(), widgetId);
+    }
+
+    @Override
+    public void onDateFormatSelected(boolean monthFirst) {
+        int currentWidget = getCurrentWidget();
+        int widgetId = widgetsAdapter.getWidgetId(currentWidget);
+        settings.setMonthFirst(widgetId, monthFirst);
+        String date = Utils.getCurrentDate(monthFirst, settings.getTimeZone(widgetId));
+        dateFormatTextView.setText(getString(R.string.configuration_date_format) + "\n" + date);
         updatePreviewAndWidget(currentWidget, widgetId);
+    }
+
+    private int getCurrentWidget() {
+        return widgetsViewPager.getCurrentItem();
+    }
+
+    private int getCurrentWidgetId() {
+        int currentWidget = widgetsViewPager.getCurrentItem();
+        return widgetsAdapter.getWidgetId(currentWidget);
     }
 
     private void updatePreviewAndWidget(int currentWidget, int widgetId) {

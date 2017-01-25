@@ -30,6 +30,13 @@
             android:clickable="true"
             android:padding="16dp" />
 
+        <TextView
+            android:id="@+id/dateFormatTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:padding="16dp" />
+
     </LinearLayout>
 
 </ScrollView>

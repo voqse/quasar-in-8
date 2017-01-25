@@ -14,6 +14,7 @@ public class Settings {
 
     private static final String KEY_24_TIME_FORMAT = "24_time_format";
     private static final String KEY_TIMEZONE = "timezone";
+    private static final String KEY_MONTH_FIRST = "month_first";
 
     private final SharedPreferences preferences;
 
@@ -29,6 +30,16 @@ public class Settings {
     public void setTimeFormat(int widgetId, boolean format24) {
         String widgetKey = getWidgetKey(KEY_24_TIME_FORMAT, widgetId);
         put(widgetKey, format24);
+    }
+
+    public boolean isMonthFirst(int widgetId) {
+        String widgetKey = getWidgetKey(KEY_MONTH_FIRST, widgetId);
+        return preferences.getBoolean(widgetKey, false);
+    }
+
+    public void setMonthFirst(int widgetId, boolean monthFirst) {
+        String widgetKey = getWidgetKey(KEY_MONTH_FIRST, widgetId);
+        put(widgetKey, monthFirst);
     }
 
     public String getTimeZone(int widgetId) {
