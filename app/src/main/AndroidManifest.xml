@@ -2,6 +2,8 @@
 <manifest package="com.voqse.nixieclock"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -37,6 +39,10 @@
         <receiver
             android:name=".widget.WidgetClickListener"
             android:exported="false" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="d08133a3be51c9e0794de631f28111184d54520c" />
 
     </application>
 
