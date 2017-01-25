@@ -1,16 +1,16 @@
 package com.voqse.nixieclock.widget;
 
+import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
+import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -27,10 +27,15 @@ import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormat
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment;
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment.OnThemeSelectedListener;
 
+import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_CONFIGURE;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
+import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
 
 public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener,
         View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener {
+
+    private static final int APP_WIDGET_HOST_ID = 8800;
+    private static final int REQUEST_CODE_ADD_WIDGET = 42;
 
     private WidgetsAdapter widgetsAdapter;
     private ViewPager widgetsViewPager;
@@ -38,8 +43,13 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private TextView timeZoneTextView;
     private TextView dateFormatTextView;
     private TextView themeTextView;
+    private TextView appTextView;
+    private Switch hideIconSwitch;
+    private Button addWidgetButton;
+    private AppWidgetHost appWidgetHost;
     private Settings settings;
     private WidgetUpdater widgetUpdater;
+    private View noWidgetsView;
 
     public static Intent newIntent(Context context, int widgetId) {
         return new Intent(context, ConfigurationActivity.class)
@@ -50,37 +60,60 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     protected void onCreate(Bundle state) {
         super.onCreate(state);
 
-        setContentView(R.layout.activity_configuration);
         this.settings = new Settings(this);
         this.widgetUpdater = new WidgetUpdater(this);
+        this.appWidgetHost = new AppWidgetHost(this, APP_WIDGET_HOST_ID);
+
+        setContentView(R.layout.activity_configuration);
+        findViews();
+        int[] widgetIds = getWidgetIds();
+        setupViews(widgetIds);
+        setupUi(widgetIds);
+    }
+
+    private void findViews() {
         this.widgetsViewPager = (ViewPager) findViewById(R.id.widgetsViewPager);
         this.timeFormatSwitch = (Switch) findViewById(R.id.timeFormatSwitch);
         this.timeZoneTextView = (TextView) findViewById(R.id.timeZoneTextView);
         this.dateFormatTextView = (TextView) findViewById(R.id.dateFormatTextView);
         this.themeTextView = (TextView) findViewById(R.id.themeTextView);
-        Switch hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
+        this.appTextView = (TextView) findViewById(R.id.appTextView);
+        this.noWidgetsView = findViewById(R.id.noWidgetsView);
+        this.hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
+        this.addWidgetButton = (Button) findViewById(R.id.addWidgetButton);
+    }
 
-        int[] widgetIds = getWidgetIds();
+    private void setupViews(int[] widgetIds) {
         timeFormatSwitch.setOnCheckedChangeListener(this);
         hideIconSwitch.setOnCheckedChangeListener(this);
         widgetsViewPager.addOnPageChangeListener(new WidgetSettingBinder(widgetIds));
         timeZoneTextView.setOnClickListener(this);
         dateFormatTextView.setOnClickListener(this);
         themeTextView.setOnClickListener(this);
+        addWidgetButton.setOnClickListener(this);
         hideIconSwitch.setChecked(settings.isHideIcon());
-
         this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, settings);
         widgetsViewPager.setAdapter(widgetsAdapter);
+    }
+
+    private void setupUi(int[] widgetIds) {
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
-        if (currentWidget == 0) {
+        boolean hasWidgets = currentWidget >= 0;
+        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
+        addWidgetButton.setVisibility(isNewlyCreatedWidget() ? View.VISIBLE : View.GONE);
+        if (hasWidgets) {
             bindWidgetSettings(widgetIds[0]);
+        } else {
+            bindWidgetSettings(-1);
+            setSettingsEnabled(false);
         }
     }
 
     private int[] getWidgetIds() {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        return appWidgetManager.getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
+        return isNewlyCreatedWidget() ?
+                new int[]{getIntent().getIntExtra(EXTRA_APPWIDGET_ID, INVALID_APPWIDGET_ID)} :
+                AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
     }
 
     public int getCurrentWidget(int[] widgetIds) {
@@ -92,7 +125,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
                 }
             }
         }
-        return 0;
+        return -1;
     }
 
     private void bindWidgetSettings(int widgetId) {
@@ -106,10 +139,10 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
 
         boolean monthFirst = settings.isMonthFirst(widgetId);
         String date = Utils.getCurrentDate(monthFirst, timeZoneId);
-        dateFormatTextView.setText(getString(R.string.configuration_date_format, date));
+        dateFormatTextView.setText(getString(R.string.date_format, date));
 
         Theme theme = settings.getTheme(widgetId);
-        themeTextView.setText(getString(R.string.configuration_theme, getString(theme.nameId)));
+        themeTextView.setText(getString(R.string.theme, getString(theme.nameId)));
     }
 
     @Override
@@ -123,6 +156,9 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
                 break;
             case R.id.themeTextView:
                 new ThemePickerDialogFragment().show(getSupportFragmentManager(), "ThemePicker");
+                break;
+            case R.id.addWidgetButton:
+                applyNewWidget();
                 break;
             default:
                 throw new IllegalStateException();
@@ -144,8 +180,10 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     }
 
     private void onTimeFormatChanged(boolean format24) {
-        settings.setTimeFormat(getCurrentWidget(), format24);
-        updatePreviewAndWidget();
+        if (widgetsAdapter.getCount() > 0) {
+            settings.setTimeFormat(getCurrentWidget(), format24);
+            updatePreviewAndWidget();
+        }
     }
 
     @Override
@@ -160,14 +198,14 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         int widgetId = getCurrentWidgetId();
         settings.setMonthFirst(widgetId, monthFirst);
         String date = Utils.getCurrentDate(monthFirst, settings.getTimeZone(widgetId));
-        dateFormatTextView.setText(getString(R.string.configuration_date_format, date));
+        dateFormatTextView.setText(getString(R.string.date_format, date));
         updatePreviewAndWidget();
     }
 
     @Override
     public void onThemeSelected(Theme theme) {
         settings.setTheme(getCurrentWidgetId(), theme);
-        themeTextView.setText(getString(R.string.configuration_theme, getString(theme.nameId)));
+        themeTextView.setText(getString(R.string.theme, getString(theme.nameId)));
         updatePreviewAndWidget();
     }
 
@@ -192,71 +230,28 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         widgetUpdater.updateImmediately(getCurrentWidgetId());
     }
 
-    // TODO: do it on button "apply"!
-    @Override
-    public void onBackPressed() {
+    private void openWidgetPicker() {
+        int appWidgetId = appWidgetHost.allocateAppWidgetId();
+        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
+        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        startActivityForResult(pickIntent, REQUEST_CODE_ADD_WIDGET);
+    }
+
+    private void applyNewWidget() {
         Intent resultValue = new Intent();
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, getCurrentWidgetId());
         setResult(RESULT_OK, resultValue);
         finish();
     }
 
-    private static class WidgetsAdapter extends PagerAdapter {
-
-        private final int[] widgetIds;
-        private final LayoutInflater inflater;
-        private final Settings settings;
-
-        private WidgetsAdapter(int[] widgetIds, Context context, Settings settings) {
-            this.widgetIds = widgetIds;
-            this.inflater = LayoutInflater.from(context);
-            this.settings = settings;
+    private void setSettingsEnabled(boolean enabled) {
+        for (View view : new View[]{timeFormatSwitch, timeZoneTextView, dateFormatTextView, themeTextView, appTextView, hideIconSwitch}) {
+            view.setEnabled(enabled);
         }
+    }
 
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            View view = inflater.inflate(R.layout.widget, container, false);
-            bind(view, position);
-            container.addView(view);
-            return view;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            View view = (View) object;
-            container.removeView(view);
-        }
-
-        @Override
-        public int getCount() {
-            return widgetIds.length;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        void refresh(ViewPager viewPager, int position) {
-            View view = viewPager.findViewWithTag(position);
-            if (view != null) {
-                bind(view, position);
-            }
-        }
-
-        void bind(View view, int position) {
-            TextView timeTextView = (TextView) view.findViewById(R.id.timeTextView);
-            int widgetId = widgetIds[position];
-            boolean format24 = settings.is24TimeFormat(widgetId);
-            String timeZone = settings.getTimeZone(widgetId);
-            timeTextView.setText(Utils.getCurrentTime(format24, timeZone));
-
-            view.setTag(position);
-        }
-
-        int getWidgetId(int position) {
-            return widgetIds[position];
-        }
+    private boolean isNewlyCreatedWidget() {
+        return TextUtils.equals(getIntent().getAction(), ACTION_APPWIDGET_CONFIGURE);
     }
 
     private class WidgetSettingBinder implements ViewPager.OnPageChangeListener {

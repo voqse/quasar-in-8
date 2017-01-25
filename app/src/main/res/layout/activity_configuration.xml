@@ -11,17 +11,83 @@
         android:orientation="vertical"
         tools:context="com.voqse.nixieclock.widget.ConfigurationActivity">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/widgetsViewPager"
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:background="@color/background">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/widgetsViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <LinearLayout
+                android:id="@+id/noWidgetsView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="@string/no_widgets"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/no_widgets_explain"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="wrap_content"
+            android:background="@color/background"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
+
+            <Button
+                android:id="@+id/upgradeButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:text="@string/button_upgrade" />
+
+            <Button
+                android:id="@+id/addWidgetButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                android:text="@string/button_apply" />
+
+        </LinearLayout>
 
         <Switch
             android:id="@+id/timeFormatSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/configuration_format_24" />
+            android:text="@string/format_24" />
 
         <TextView
             android:id="@+id/timeZoneTextView"
@@ -42,7 +108,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:text="@string/configuration_other"
+            android:text="@string/other_settings"
             android:textStyle="bold" />
 
         <TextView
@@ -57,14 +123,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/configuration_app" />
+            android:text="@string/app_to_launch" />
 
         <Switch
             android:id="@+id/hideIconSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="@string/configuration_hide_icon" />
+            android:text="@string/hide_icon" />
 
     </LinearLayout>
 

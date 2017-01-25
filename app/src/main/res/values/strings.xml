@@ -1,11 +1,16 @@
 <resources>
     <string name="app_name">Quasar-1:	Nixie Tube</string>
-    <string name="configuration_format_24">24-часовой формат</string>
-    <string name="configuration_date_format">Формат даты\n%s</string>
-    <string name="configuration_other">Другое</string>
-    <string name="configuration_theme">Тема оформления\n%s</string>
-    <string name="configuration_app">Запускать приложение\nTODO</string>
-    <string name="configuration_hide_icon">Скрыть иконку</string>
+    <string name="no_widgets">Нет активных виджетов</string>
+    <string name="no_widgets_explain">Вы ещё не добавили ни одного виджета</string>
+    <string name="format_24">24-часовой формат</string>
+    <string name="date_format">Формат даты\n%s</string>
+    <string name="other_settings">Другое</string>
+    <string name="theme">Тема оформления\n%s</string>
+    <string name="app_to_launch">Запускать приложение\nTODO</string>
+    <string name="hide_icon">Скрыть иконку</string>
+    <string name="button_upgrade">ВСЕ ФУНКЦИИ</string>
+    <string name="button_add_widget">ДОБАВИТЬ</string>
+    <string name="button_apply">ПРИМЕНИТЬ</string>
     <string name="theme_quasar_1">Квазар-1</string>
     <string name="theme_quasar_2">Квазар-2</string>
     <string name="theme_quasar_3">Квазар-3</string>
