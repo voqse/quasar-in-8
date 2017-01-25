@@ -4,18 +4,16 @@ import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.voqse.nixieclock.R;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).
@@ -87,10 +85,8 @@ public class TimeZones {
                 }
                 parser.next();
             }
-        } catch (XmlPullParserException xppe) {
-            Log.e(TAG, "Ill-formatted timezones.xml file");
-        } catch (java.io.IOException ioe) {
-            Log.e(TAG, "Unable to read timezones.xml file");
+        } catch (XmlPullParserException | IOException e) {
+            throw new IllegalStateException("Can't parse timezones.xml", e);
         } finally {
             if (parser != null) {
                 parser.close();

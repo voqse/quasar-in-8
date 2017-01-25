@@ -13,6 +13,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 repositories {
+    maven { url 'https://dl.bintray.com/alexeydanilov/maven' }
     maven { url 'https://maven.fabric.io/public' }
 }
 
@@ -40,6 +41,8 @@ android {
 dependencies {
     compile 'com.evernote:android-job:1.1.4'
     compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'org.bitbucket.yahor_makouski:slf4j-composite:1.2'
+    compile 'org.slf4j:slf4j-api:1.7.18'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
