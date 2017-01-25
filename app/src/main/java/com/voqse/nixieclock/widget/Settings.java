@@ -16,6 +16,7 @@ public class Settings {
     private static final String KEY_TIMEZONE = "timezone";
     private static final String KEY_MONTH_FIRST = "month_first";
     private static final String KEY_THEME = "theme";
+    private static final String KEY_HIDE_ICON = "hide_icon";
 
     private final SharedPreferences preferences;
 
@@ -62,6 +63,14 @@ public class Settings {
     public void setTheme(int widgetId, Theme theme) {
         String widgetKey = getWidgetKey(KEY_THEME, widgetId);
         put(widgetKey, theme.name());
+    }
+
+    public boolean isHideIcon() {
+        return preferences.getBoolean(KEY_HIDE_ICON, false);
+    }
+
+    public void setHideIcon(boolean hide) {
+        put(KEY_HIDE_ICON, hide);
     }
 
     public void remove(int... widgetIds) {

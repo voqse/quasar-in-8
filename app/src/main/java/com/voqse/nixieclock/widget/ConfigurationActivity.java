@@ -15,7 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.Utils;
 import com.voqse.nixieclock.WidgetUpdater;
@@ -28,14 +27,15 @@ import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormat
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment;
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment.OnThemeSelectedListener;
 
+import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
+
 public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener,
         View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener {
-
-    private static final String EXTRA_WIDGET_ID = BuildConfig.APPLICATION_ID + ".EXTRA_WIDGET_ID";
 
     private WidgetsAdapter widgetsAdapter;
     private ViewPager widgetsViewPager;
     private Switch timeFormatSwitch;
+    private Switch hideIconSwitch;
     private TextView timeZoneTextView;
     private TextView dateFormatTextView;
     private TextView themeTextView;
@@ -44,7 +44,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
 
     public static Intent newIntent(Context context, int widgetId) {
         return new Intent(context, ConfigurationActivity.class)
-                .putExtra(EXTRA_WIDGET_ID, widgetId);
+                .putExtra(EXTRA_APPWIDGET_ID, widgetId);
     }
 
     @Override
@@ -56,16 +56,19 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         this.widgetUpdater = new WidgetUpdater(this);
         this.widgetsViewPager = (ViewPager) findViewById(R.id.widgetsViewPager);
         this.timeFormatSwitch = (Switch) findViewById(R.id.timeFormatSwitch);
+        this.hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
         this.timeZoneTextView = (TextView) findViewById(R.id.timeZoneTextView);
         this.dateFormatTextView = (TextView) findViewById(R.id.dateFormatTextView);
         this.themeTextView = (TextView) findViewById(R.id.themeTextView);
 
         int[] widgetIds = getWidgetIds();
         timeFormatSwitch.setOnCheckedChangeListener(this);
+        hideIconSwitch.setOnCheckedChangeListener(this);
         widgetsViewPager.addOnPageChangeListener(new WidgetSettingBinder(widgetIds));
         timeZoneTextView.setOnClickListener(this);
         dateFormatTextView.setOnClickListener(this);
         themeTextView.setOnClickListener(this);
+        hideIconSwitch.setChecked(settings.isHideIcon());
 
         this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, settings);
         widgetsViewPager.setAdapter(widgetsAdapter);
@@ -82,8 +85,8 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     }
 
     public int getCurrentWidget(int[] widgetIds) {
-        if (getIntent().hasExtra(EXTRA_WIDGET_ID)) {
-            int widgetId = getIntent().getIntExtra(EXTRA_WIDGET_ID, -1);
+        if (getIntent().hasExtra(EXTRA_APPWIDGET_ID)) {
+            int widgetId = getIntent().getIntExtra(EXTRA_APPWIDGET_ID, -1);
             for (int i = 0; i < widgetIds.length; i++) {
                 if (widgetIds[i] == widgetId) {
                     return i;
@@ -128,7 +131,20 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton timeFormatSwitch, boolean format24) {
+    public void onCheckedChanged(CompoundButton button, boolean checked) {
+        switch (button.getId()) {
+            case R.id.timeFormatSwitch:
+                onTimeFormatChanged(checked);
+                break;
+            case R.id.hideIconSwitch:
+                onHideIconValueChanged(checked);
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+    }
+
+    private void onTimeFormatChanged(boolean format24) {
         settings.setTimeFormat(getCurrentWidget(), format24);
         updatePreviewAndWidget();
     }
@@ -156,6 +172,10 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         updatePreviewAndWidget();
     }
 
+    private void onHideIconValueChanged(boolean hideIcon) {
+        settings.setHideIcon(hideIcon);
+    }
+
     private int getCurrentWidget() {
         return widgetsViewPager.getCurrentItem();
     }
@@ -168,6 +188,15 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private void updatePreviewAndWidget() {
         widgetsAdapter.refresh(widgetsViewPager, getCurrentWidget());
         widgetUpdater.updateImmediately(getCurrentWidgetId());
+    }
+
+    // TODO: do it on button "apply"!
+    @Override
+    public void onBackPressed() {
+        Intent resultValue = new Intent();
+        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, getCurrentWidgetId());
+        setResult(RESULT_OK, resultValue);
+        finish();
     }
 
     private static class WidgetsAdapter extends PagerAdapter {

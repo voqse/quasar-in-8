@@ -7,11 +7,12 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.voqse.nixieclock.App;
-import com.voqse.nixieclock.BuildConfig;
 
 import java.util.UUID;
 
 import hugo.weaving.DebugLog;
+
+import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 
 /**
  * Handles tab and double tap to widget.
@@ -21,18 +22,17 @@ import hugo.weaving.DebugLog;
 public class WidgetClickListener extends BroadcastReceiver {
 
     private static final ClickHandler CLICK_HANDLER = new ClickHandler(500);
-    private static final String EXTRA_WIDGET_ID = BuildConfig.APPLICATION_ID + ".EXTRA_WIDGET_ID";
 
     public static Intent newIntent(Context context, int widgetId) {
         return new Intent(context, WidgetClickListener.class)
                 .setAction(UUID.randomUUID().toString())
-                .putExtra(EXTRA_WIDGET_ID, widgetId);
+                .putExtra(EXTRA_APPWIDGET_ID, widgetId);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         validateIntent(intent);
-        int widgetId = intent.getIntExtra(EXTRA_WIDGET_ID, -1);
+        int widgetId = intent.getIntExtra(EXTRA_APPWIDGET_ID, -1);
         CLICK_HANDLER.onClick(context.getApplicationContext(), widgetId);
     }
 
@@ -40,7 +40,7 @@ public class WidgetClickListener extends BroadcastReceiver {
         if (intent == null) {
             throw new NullPointerException("Click intent is null!");
         }
-        if (!intent.hasExtra(EXTRA_WIDGET_ID)) {
+        if (!intent.hasExtra(EXTRA_APPWIDGET_ID)) {
             throw new IllegalArgumentException("Invalid click intent: there is no widget's id in extras!");
         }
     }

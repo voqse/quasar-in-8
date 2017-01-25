@@ -52,6 +52,20 @@
             android:clickable="true"
             android:padding="16dp" />
 
+        <TextView
+            android:id="@+id/appTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="@string/configuration_app" />
+
+        <Switch
+            android:id="@+id/hideIconSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="@string/configuration_hide_icon" />
+
     </LinearLayout>
 
 </ScrollView>

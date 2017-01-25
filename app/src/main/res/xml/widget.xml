@@ -1,5 +1,6 @@
 <appwidget-provider
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.voqse.nixieclock.widget.ConfigurationActivity"
     android:initialLayout="@layout/widget"
     android:minHeight="64dp"
     android:minResizeHeight="64dp"
