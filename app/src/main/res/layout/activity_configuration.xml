@@ -37,6 +37,21 @@
             android:clickable="true"
             android:padding="16dp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/configuration_other"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/themeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:padding="16dp" />
+
     </LinearLayout>
 
 </ScrollView>

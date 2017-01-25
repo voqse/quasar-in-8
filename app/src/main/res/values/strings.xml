@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Quasar-1:	Nixie Tube</string>
     <string name="configuration_format_24">24-часовой формат</string>
-    <string name="configuration_date_format">Формат даты</string>
+    <string name="configuration_date_format">Формат даты\n%s</string>
+    <string name="configuration_other">Другое</string>
+    <string name="configuration_theme">Тема оформления\n%s</string>
+    <string name="theme_quasar_1">Квазар-1</string>
+    <string name="theme_quasar_2">Квазар-2</string>
+    <string name="theme_quasar_3">Квазар-3</string>
 </resources>

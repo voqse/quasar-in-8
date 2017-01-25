@@ -15,6 +15,7 @@ public class Settings {
     private static final String KEY_24_TIME_FORMAT = "24_time_format";
     private static final String KEY_TIMEZONE = "timezone";
     private static final String KEY_MONTH_FIRST = "month_first";
+    private static final String KEY_THEME = "theme";
 
     private final SharedPreferences preferences;
 
@@ -50,6 +51,17 @@ public class Settings {
     public void setTimezone(int widgetId, String timezoneId) {
         String widgetKey = getWidgetKey(KEY_TIMEZONE, widgetId);
         put(widgetKey, timezoneId);
+    }
+
+    public Theme getTheme(int widgetId) {
+        String widgetKey = getWidgetKey(KEY_THEME, widgetId);
+        String themeName = preferences.getString(widgetKey, Theme.QUASAR_1.name());
+        return Theme.valueOf(themeName);
+    }
+
+    public void setTheme(int widgetId, Theme theme) {
+        String widgetKey = getWidgetKey(KEY_THEME, widgetId);
+        put(widgetKey, theme.name());
     }
 
     public void remove(int... widgetIds) {

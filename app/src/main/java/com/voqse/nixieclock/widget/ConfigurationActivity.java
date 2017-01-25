@@ -25,9 +25,11 @@ import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment.OnTimeZoneSele
 import com.voqse.nixieclock.timezone.TimeZones;
 import com.voqse.nixieclock.widget.support.DateFormatDialogFragment;
 import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormatSelectedListener;
+import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment;
+import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment.OnThemeSelectedListener;
 
 public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener,
-        View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener {
+        View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener {
 
     private static final String EXTRA_WIDGET_ID = BuildConfig.APPLICATION_ID + ".EXTRA_WIDGET_ID";
 
@@ -36,6 +38,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private Switch timeFormatSwitch;
     private TextView timeZoneTextView;
     private TextView dateFormatTextView;
+    private TextView themeTextView;
     private Settings settings;
     private WidgetUpdater widgetUpdater;
 
@@ -55,12 +58,14 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         this.timeFormatSwitch = (Switch) findViewById(R.id.timeFormatSwitch);
         this.timeZoneTextView = (TextView) findViewById(R.id.timeZoneTextView);
         this.dateFormatTextView = (TextView) findViewById(R.id.dateFormatTextView);
+        this.themeTextView = (TextView) findViewById(R.id.themeTextView);
 
         int[] widgetIds = getWidgetIds();
         timeFormatSwitch.setOnCheckedChangeListener(this);
         widgetsViewPager.addOnPageChangeListener(new WidgetSettingBinder(widgetIds));
         timeZoneTextView.setOnClickListener(this);
         dateFormatTextView.setOnClickListener(this);
+        themeTextView.setOnClickListener(this);
 
         this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, settings);
         widgetsViewPager.setAdapter(widgetsAdapter);
@@ -99,7 +104,10 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
 
         boolean monthFirst = settings.isMonthFirst(widgetId);
         String date = Utils.getCurrentDate(monthFirst, timeZoneId);
-        dateFormatTextView.setText(getString(R.string.configuration_date_format) + "\n" + date);
+        dateFormatTextView.setText(getString(R.string.configuration_date_format, date));
+
+        Theme theme = settings.getTheme(widgetId);
+        themeTextView.setText(getString(R.string.configuration_theme, getString(theme.nameId)));
     }
 
     @Override
@@ -111,6 +119,9 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
             case R.id.dateFormatTextView:
                 DateFormatDialogFragment.show(getSupportFragmentManager(), getCurrentWidgetId());
                 break;
+            case R.id.themeTextView:
+                new ThemePickerDialogFragment().show(getSupportFragmentManager(), "ThemePicker");
+                break;
             default:
                 throw new IllegalStateException();
         }
@@ -119,25 +130,30 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     @Override
     public void onCheckedChanged(CompoundButton timeFormatSwitch, boolean format24) {
         settings.setTimeFormat(getCurrentWidget(), format24);
-        updatePreviewAndWidget(getCurrentWidgetId(), getCurrentWidget());
+        updatePreviewAndWidget();
     }
 
     @Override
     public void onTimeZoneSelected(TimeZoneInfo timeZoneInfo) {
-        int widgetId = getCurrentWidgetId();
-        settings.setTimezone(widgetId, timeZoneInfo.id);
+        settings.setTimezone(getCurrentWidgetId(), timeZoneInfo.id);
         timeZoneTextView.setText(TimeZones.format(timeZoneInfo));
-        updatePreviewAndWidget(getCurrentWidget(), widgetId);
+        updatePreviewAndWidget();
     }
 
     @Override
     public void onDateFormatSelected(boolean monthFirst) {
-        int currentWidget = getCurrentWidget();
-        int widgetId = widgetsAdapter.getWidgetId(currentWidget);
+        int widgetId = getCurrentWidgetId();
         settings.setMonthFirst(widgetId, monthFirst);
         String date = Utils.getCurrentDate(monthFirst, settings.getTimeZone(widgetId));
-        dateFormatTextView.setText(getString(R.string.configuration_date_format) + "\n" + date);
-        updatePreviewAndWidget(currentWidget, widgetId);
+        dateFormatTextView.setText(getString(R.string.configuration_date_format, date));
+        updatePreviewAndWidget();
+    }
+
+    @Override
+    public void onThemeSelected(Theme theme) {
+        settings.setTheme(getCurrentWidgetId(), theme);
+        themeTextView.setText(getString(R.string.configuration_theme, getString(theme.nameId)));
+        updatePreviewAndWidget();
     }
 
     private int getCurrentWidget() {
@@ -149,9 +165,9 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         return widgetsAdapter.getWidgetId(currentWidget);
     }
 
-    private void updatePreviewAndWidget(int currentWidget, int widgetId) {
-        widgetsAdapter.refresh(widgetsViewPager, currentWidget);
-        widgetUpdater.updateImmediately(widgetId);
+    private void updatePreviewAndWidget() {
+        widgetsAdapter.refresh(widgetsViewPager, getCurrentWidget());
+        widgetUpdater.updateImmediately(getCurrentWidgetId());
     }
 
     private static class WidgetsAdapter extends PagerAdapter {
