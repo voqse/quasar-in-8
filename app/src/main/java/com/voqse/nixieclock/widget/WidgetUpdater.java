@@ -1,4 +1,4 @@
-package com.voqse.nixieclock;
+package com.voqse.nixieclock.widget;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -8,8 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-
-import com.voqse.nixieclock.widget.WidgetProvider;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).

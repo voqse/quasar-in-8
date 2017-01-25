@@ -1,5 +1,5 @@
 
-package com.voqse.nixieclock;
+package com.voqse.nixieclock.log;
 
 /**
  * Indicates not fatal error.

@@ -19,7 +19,7 @@
         </activity>
 
         <activity
-            android:name=".LaunchConfigurationActivity"
+            android:name=".widget.LaunchConfigurationActivity"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

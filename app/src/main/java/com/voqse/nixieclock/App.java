@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.crashlytics.android.Crashlytics;
+import com.voqse.nixieclock.log.CrashlyticsLogger;
+import com.voqse.nixieclock.widget.WidgetUpdater;
 
 import org.slf4j.impl.custom.Level;
 import org.slf4j.impl.custom.NativeLoggerAdapter;
@@ -29,8 +31,8 @@ public class App extends Application {
 
         initLogger();
 
-        widgetUpdater = new WidgetUpdater(this);
-        widgetUpdater.scheduleNextUpdate();
+        this.widgetUpdater = new WidgetUpdater(this);
+        this.widgetUpdater.scheduleNextUpdate();
     }
 
     private void initLogger() {

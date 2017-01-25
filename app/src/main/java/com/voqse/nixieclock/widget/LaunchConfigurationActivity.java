@@ -1,9 +1,7 @@
-package com.voqse.nixieclock;
+package com.voqse.nixieclock.widget;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
-
-import com.voqse.nixieclock.widget.ConfigurationActivity;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).

@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
+import com.voqse.nixieclock.widget.LaunchConfigurationActivity;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

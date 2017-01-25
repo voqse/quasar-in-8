@@ -1,4 +1,4 @@
-package com.voqse.nixieclock;
+package com.voqse.nixieclock.log;
 
 import android.util.Log;
 

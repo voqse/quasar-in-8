@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.Utils;
-import com.voqse.nixieclock.WidgetUpdater;
 import com.voqse.nixieclock.timezone.TimeZoneInfo;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment.OnTimeZoneSelectedListener;
