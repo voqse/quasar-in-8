@@ -35,7 +35,6 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private WidgetsAdapter widgetsAdapter;
     private ViewPager widgetsViewPager;
     private Switch timeFormatSwitch;
-    private Switch hideIconSwitch;
     private TextView timeZoneTextView;
     private TextView dateFormatTextView;
     private TextView themeTextView;
@@ -56,10 +55,10 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         this.widgetUpdater = new WidgetUpdater(this);
         this.widgetsViewPager = (ViewPager) findViewById(R.id.widgetsViewPager);
         this.timeFormatSwitch = (Switch) findViewById(R.id.timeFormatSwitch);
-        this.hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
         this.timeZoneTextView = (TextView) findViewById(R.id.timeZoneTextView);
         this.dateFormatTextView = (TextView) findViewById(R.id.dateFormatTextView);
         this.themeTextView = (TextView) findViewById(R.id.themeTextView);
+        Switch hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
 
         int[] widgetIds = getWidgetIds();
         timeFormatSwitch.setOnCheckedChangeListener(this);
@@ -173,7 +172,10 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     }
 
     private void onHideIconValueChanged(boolean hideIcon) {
-        settings.setHideIcon(hideIcon);
+        if (settings.isHideIcon() != hideIcon) {
+            Utils.setLauncherIconVisibility(this, !hideIcon);
+            settings.setHideIcon(hideIcon);
+        }
     }
 
     private int getCurrentWidget() {

@@ -1,5 +1,9 @@
 package com.voqse.nixieclock;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.pm.PackageManager;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,5 +36,13 @@ public class Utils {
         dateFormat.setTimeZone(timeZone);
         Date now = new Date();
         return dateFormat.format(now);
+    }
+
+    // http://stackoverflow.com/a/8135377/999458 . Note that the icon may not be gone until the next reboot.
+    public static void setLauncherIconVisibility(Context context, boolean show) {
+        PackageManager packageManager = context.getPackageManager();
+        ComponentName launcherComponent = new ComponentName(context, LaunchConfigurationActivity.class);
+        int showLauncherIcon = show ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+        packageManager.setComponentEnabledSetting(launcherComponent, showLauncherIcon, PackageManager.DONT_KILL_APP);
     }
 }
