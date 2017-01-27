@@ -10,6 +10,7 @@ import android.widget.RemoteViews;
 
 import com.voqse.nixieclock.App;
 import com.voqse.nixieclock.R;
+import com.voqse.nixieclock.theme.drawer.Drawer;
 
 /**
  * Defines the basic methods that allow you to programmatically interface with the App Widget, based on broadcast events.
@@ -40,11 +41,15 @@ public class WidgetProvider extends AppWidgetProvider {
     private void updateWidget(Context context, Settings settings, AppWidgetManager appWidgetManager, int widgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
-        Drawer drawer = new Drawer(context);
-        Bitmap bitmap = drawer.draw(widgetOptions, null);
+        Bitmap bitmap = getWidgetBitmap(context, widgetOptions);
         views.setImageViewBitmap(R.id.imageView, bitmap);
         views.setOnClickPendingIntent(R.id.imageView, newClickIntent(context, widgetId));
         appWidgetManager.updateAppWidget(widgetId, views);
+    }
+
+    private Bitmap getWidgetBitmap(Context context, WidgetOptions widgetOptions) {
+        Drawer drawer = new Drawer(context);
+        return drawer.draw(widgetOptions, null);
     }
 
     private PendingIntent newClickIntent(Context context, int widgetId) {

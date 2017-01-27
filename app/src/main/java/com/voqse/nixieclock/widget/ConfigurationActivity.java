@@ -19,6 +19,7 @@ import com.voqse.nixieclock.Utils;
 import com.voqse.nixieclock.iab.InAppBilling;
 import com.voqse.nixieclock.iab.InAppBillingFactory;
 import com.voqse.nixieclock.iab.InAppBillingListener;
+import com.voqse.nixieclock.theme.Theme;
 import com.voqse.nixieclock.timezone.TimeZoneInfo;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment.OnTimeZoneSelectedListener;
@@ -103,7 +104,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
         boolean hasWidgets = currentWidget >= 0;
-        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
+//        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
         addWidgetButton.setVisibility(isNewlyCreatedWidget() ? View.VISIBLE : View.GONE);
 
         if (hasWidgets) {

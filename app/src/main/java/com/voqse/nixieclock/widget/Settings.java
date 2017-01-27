@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.voqse.nixieclock.theme.Theme;
+
 import java.util.Set;
 
 /**

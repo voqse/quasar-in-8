@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.voqse.nixieclock.R;
+import com.voqse.nixieclock.theme.drawer.Drawer;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).

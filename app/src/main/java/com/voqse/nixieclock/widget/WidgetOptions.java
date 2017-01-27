@@ -1,5 +1,7 @@
 package com.voqse.nixieclock.widget;
 
+import com.voqse.nixieclock.theme.Theme;
+
 import java.util.TimeZone;
 
 /**
@@ -8,7 +10,7 @@ import java.util.TimeZone;
 
 public class WidgetOptions {
 
-    public static final WidgetOptions DEFAULT = new WidgetOptions(true, TimeZone.getDefault().getID(), false, true, Theme.QUASAR_1);
+    public static final WidgetOptions DEFAULT = new WidgetOptions(true, TimeZone.getDefault().getID(), false, true, Theme.NEO);
 
     public final boolean format24;
     public final String timeZoneId;

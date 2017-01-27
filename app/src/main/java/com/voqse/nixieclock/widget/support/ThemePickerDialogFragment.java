@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
-import com.voqse.nixieclock.widget.Theme;
+import com.voqse.nixieclock.theme.Theme;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).
