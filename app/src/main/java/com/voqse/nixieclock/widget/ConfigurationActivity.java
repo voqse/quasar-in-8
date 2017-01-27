@@ -200,7 +200,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
 
     private void onTimeFormatChanged(boolean format24) {
         if (widgetsAdapter.getCount() > 0) {
-            settings.setTimeFormat(getCurrentWidget(), format24);
+            settings.setTimeFormat(getCurrentWidgetId(), format24);
             updatePreview();
         }
     }
