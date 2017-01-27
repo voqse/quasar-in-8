@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.Set;
+
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
@@ -74,9 +76,14 @@ public class Settings {
 
     public void remove(int... widgetIds) {
         SharedPreferences.Editor editor = preferences.edit();
+        Set<String> keys = preferences.getAll().keySet();
         for (int widgetId : widgetIds) {
-            String widgetKey = getWidgetKey(KEY_24_TIME_FORMAT, widgetId);
-            editor.remove(widgetKey);
+            for (String key : keys) {
+                String widgetIdString = Integer.toString(widgetId);
+                if (key.endsWith(widgetIdString)) {
+                    editor.remove(key);
+                }
+            }
         }
         editor.apply();
     }
