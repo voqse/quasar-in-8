@@ -48,7 +48,7 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     private PendingIntent newClickIntent(Context context, int widgetId) {
-        Intent intent = WidgetClickListener.newIntent(context, widgetId);
+        Intent intent = WidgetClickHandler.newIntent(context, widgetId);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

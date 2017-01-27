@@ -17,6 +17,9 @@ import android.widget.TextView;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.Utils;
+import com.voqse.nixieclock.iab.InAppBillingListener;
+import com.voqse.nixieclock.iab.InnAppBilling;
+import com.voqse.nixieclock.iab.InnAppBillingFactory;
 import com.voqse.nixieclock.timezone.TimeZoneInfo;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment.OnTimeZoneSelectedListener;
@@ -31,10 +34,11 @@ import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
 
 public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener,
-        View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener {
+        View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener, InAppBillingListener {
 
     private static final int APP_WIDGET_HOST_ID = 8800;
     private static final int REQUEST_CODE_ADD_WIDGET = 42;
+    private static final int REQUEST_CODE_PURCHASE = 43;
 
     private WidgetsAdapter widgetsAdapter;
     private ViewPager widgetsViewPager;
@@ -45,10 +49,12 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private TextView appTextView;
     private Switch hideIconSwitch;
     private Button addWidgetButton;
+    private Button upgradeButton;
+    private View noWidgetsView;
     private AppWidgetHost appWidgetHost;
     private Settings settings;
     private WidgetUpdater widgetUpdater;
-    private View noWidgetsView;
+    private InnAppBilling innAppBilling;
 
     public static Intent newIntent(Context context, int widgetId) {
         return new Intent(context, ConfigurationActivity.class)
@@ -68,6 +74,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         int[] widgetIds = getWidgetIds();
         setupViews(widgetIds);
         setupUi(widgetIds);
+        this.innAppBilling = InnAppBillingFactory.newInnAppBilling(this, this);
     }
 
     private void findViews() {
@@ -80,6 +87,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         this.noWidgetsView = findViewById(R.id.noWidgetsView);
         this.hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
         this.addWidgetButton = (Button) findViewById(R.id.addWidgetButton);
+        this.upgradeButton = (Button) findViewById(R.id.upgradeButton);
     }
 
     private void setupViews(int[] widgetIds) {
@@ -90,6 +98,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         dateFormatTextView.setOnClickListener(this);
         themeTextView.setOnClickListener(this);
         addWidgetButton.setOnClickListener(this);
+        upgradeButton.setOnClickListener(this);
         hideIconSwitch.setChecked(settings.isHideIcon());
         this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, settings);
         widgetsViewPager.setAdapter(widgetsAdapter);
@@ -101,6 +110,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         boolean hasWidgets = currentWidget >= 0;
 //        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
         addWidgetButton.setVisibility(isNewlyCreatedWidget() ? View.VISIBLE : View.GONE);
+
         if (hasWidgets) {
             bindWidgetSettings(widgetIds[0]);
         } else {
@@ -166,6 +176,9 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
             case R.id.addWidgetButton:
                 applyNewWidget();
                 break;
+            case R.id.upgradeButton:
+                upgradeToPro();
+                break;
             default:
                 throw new IllegalStateException();
         }
@@ -216,6 +229,13 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         updatePreview();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_PURCHASE) {
+            innAppBilling.processPurchase(requestCode, resultCode, data);
+        }
+    }
+
     private void onHideIconValueChanged(boolean hideIcon) {
         if (settings.isHideIcon() != hideIcon) {
             Utils.setLauncherIconVisibility(this, !hideIcon);
@@ -250,6 +270,10 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         finish();
     }
 
+    private void upgradeToPro() {
+        innAppBilling.purchase(this, REQUEST_CODE_PURCHASE);
+    }
+
     private void setSettingsEnabled(boolean enabled) {
         for (View view : new View[]{timeFormatSwitch, timeZoneTextView, dateFormatTextView, themeTextView, appTextView, hideIconSwitch}) {
             view.setEnabled(enabled);
@@ -258,6 +282,29 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
 
     private boolean isNewlyCreatedWidget() {
         return TextUtils.equals(getIntent().getAction(), ACTION_APPWIDGET_CONFIGURE);
+    }
+
+    @Override
+    public void onPurchasingError() {
+
+    }
+
+    @Override
+    public void onProductsFetched(boolean hasPro) {
+        setSettingsEnabled(hasPro);
+        upgradeButton.setVisibility(hasPro ? View.GONE : View.VISIBLE);
+    }
+
+    @Override
+    public void onPurchased() {
+        setSettingsEnabled(true);
+        upgradeButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        innAppBilling.release();
     }
 
     private class WidgetSettingBinder implements ViewPager.OnPageChangeListener {

@@ -3,6 +3,7 @@ package com.voqse.nixieclock;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.util.Base64;
 
 import com.voqse.nixieclock.widget.LaunchConfigurationActivity;
 
@@ -47,4 +48,28 @@ public class Utils {
         int showLauncherIcon = show ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
         packageManager.setComponentEnabledSetting(launcherComponent, showLauncherIcon, PackageManager.DONT_KILL_APP);
     }
+
+    public static String getAppPublicKey(Context context) {
+        // The key itself is not secret information, but we don't want to make it easy for an attacker
+        // to replace the public key with one  of their own and then fake messages from the server.
+        String based64XoredKey = context.getString(R.string.public_key);
+        byte[] xoredKeyBytes = Base64.decode(based64XoredKey, 0);
+        return xor(new String(xoredKeyBytes), "&1M*h^j03n619nbjs");
+    }
+
+    public static String xor(String input, String secret) {
+        byte[] inputBytes = input.getBytes();
+        byte[] secretBytes = secret.getBytes();
+        byte[] outputBytes = new byte[inputBytes.length];
+        int secretIndex = 0;
+        for (int inputIndex = 0; inputIndex < inputBytes.length; ++inputIndex) {
+            outputBytes[inputIndex] = (byte) (inputBytes[inputIndex] ^ secretBytes[secretIndex]);
+            ++secretIndex;
+            if (secretIndex >= secretBytes.length) {
+                secretIndex = 0;
+            }
+        }
+        return new String(outputBytes);
+    }
+
 }

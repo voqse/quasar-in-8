@@ -36,7 +36,8 @@ public class App extends Application {
     }
 
     private void initLogger() {
-        Level minLoggableLevel = DEBUG ? Level.TRACE : Level.WARN;
+        // TODO:
+        Level minLoggableLevel = DEBUG ? Level.TRACE : Level.DEBUG;
         NativeLoggerAdapter.setLogger(new CompositeLogger(new LogcatLogger(minLoggableLevel)));
         if (!DEBUG) {
             Fabric.with(this, new Crashlytics());

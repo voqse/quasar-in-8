@@ -19,12 +19,12 @@ import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
  *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class WidgetClickListener extends BroadcastReceiver {
+public class WidgetClickHandler extends BroadcastReceiver {
 
     private static final ClickHandler CLICK_HANDLER = new ClickHandler(500);
 
     public static Intent newIntent(Context context, int widgetId) {
-        return new Intent(context, WidgetClickListener.class)
+        return new Intent(context, WidgetClickHandler.class)
                 .setAction(UUID.randomUUID().toString())
                 .putExtra(EXTRA_APPWIDGET_ID, widgetId);
     }
