@@ -47,7 +47,7 @@ public class DateFormatDialogFragment extends DialogFragment implements DialogIn
     private String[] getDateFormats() {
         int widgetId = getArguments().getInt(ARG_WIDGET_ID);
         Settings settings = new Settings(getActivity());
-        String timeZone = settings.getTimeZone(widgetId);
+        String timeZone = settings.getWidgetOptions(widgetId).timeZoneId;
         return new String[]{
                 Utils.getCurrentDate(false, timeZone),
                 Utils.getCurrentDate(true, timeZone)

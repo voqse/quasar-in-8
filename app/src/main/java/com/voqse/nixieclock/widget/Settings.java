@@ -24,9 +24,17 @@ public class Settings {
         this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public boolean is24TimeFormat(int widgetId) {
-        String widgetKey = getWidgetKey(KEY_24_TIME_FORMAT, widgetId);
-        return preferences.getBoolean(widgetKey, true);
+    public WidgetOptions getWidgetOptions(int widgetId) {
+        String format24Key = getWidgetKey(KEY_24_TIME_FORMAT, widgetId);
+        String timeZoneKey = getWidgetKey(KEY_TIMEZONE, widgetId);
+        String monthFirstKey = getWidgetKey(KEY_MONTH_FIRST, widgetId);
+        String themeKey = getWidgetKey(KEY_THEME, widgetId);
+        return new WidgetOptions(
+                preferences.getBoolean(format24Key, true),
+                preferences.getString(timeZoneKey, TimeZone.getDefault().getID()),
+                preferences.getBoolean(monthFirstKey, false),
+                Theme.valueOf(preferences.getString(themeKey, Theme.QUASAR_1.name()))
+        );
     }
 
     public void setTimeFormat(int widgetId, boolean format24) {
@@ -34,30 +42,14 @@ public class Settings {
         put(widgetKey, format24);
     }
 
-    public boolean isMonthFirst(int widgetId) {
-        String widgetKey = getWidgetKey(KEY_MONTH_FIRST, widgetId);
-        return preferences.getBoolean(widgetKey, false);
-    }
-
     public void setMonthFirst(int widgetId, boolean monthFirst) {
         String widgetKey = getWidgetKey(KEY_MONTH_FIRST, widgetId);
         put(widgetKey, monthFirst);
     }
 
-    public String getTimeZone(int widgetId) {
-        String widgetKey = getWidgetKey(KEY_TIMEZONE, widgetId);
-        return preferences.getString(widgetKey, TimeZone.getDefault().getID());
-    }
-
     public void setTimezone(int widgetId, String timezoneId) {
         String widgetKey = getWidgetKey(KEY_TIMEZONE, widgetId);
         put(widgetKey, timezoneId);
-    }
-
-    public Theme getTheme(int widgetId) {
-        String widgetKey = getWidgetKey(KEY_THEME, widgetId);
-        String themeName = preferences.getString(widgetKey, Theme.QUASAR_1.name());
-        return Theme.valueOf(themeName);
     }
 
     public void setTheme(int widgetId, Theme theme) {

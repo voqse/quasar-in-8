@@ -5,11 +5,11 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.widget.RemoteViews;
 
 import com.voqse.nixieclock.App;
 import com.voqse.nixieclock.R;
-import com.voqse.nixieclock.Utils;
 
 /**
  * Defines the basic methods that allow you to programmatically interface with the App Widget, based on broadcast events.
@@ -39,10 +39,11 @@ public class WidgetProvider extends AppWidgetProvider {
 
     private void updateWidget(Context context, Settings settings, AppWidgetManager appWidgetManager, int widgetId) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
-        boolean format24 = settings.is24TimeFormat(widgetId);
-        String timeZone = settings.getTimeZone(widgetId);
-        views.setTextViewText(R.id.timeTextView, Utils.getCurrentTime(format24, timeZone));
-        views.setOnClickPendingIntent(R.id.timeTextView, newClickIntent(context, widgetId));
+        WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
+        Drawer drawer = new Drawer(context);
+        Bitmap bitmap = drawer.draw(widgetOptions, null);
+        views.setImageViewBitmap(R.id.imageView, bitmap);
+        views.setOnClickPendingIntent(R.id.imageView, newClickIntent(context, widgetId));
         appWidgetManager.updateAppWidget(widgetId, views);
     }
 
@@ -50,5 +51,4 @@ public class WidgetProvider extends AppWidgetProvider {
         Intent intent = WidgetClickListener.newIntent(context, widgetId);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
-
 }

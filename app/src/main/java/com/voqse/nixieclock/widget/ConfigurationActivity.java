@@ -99,7 +99,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
         boolean hasWidgets = currentWidget >= 0;
-        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
+//        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
         addWidgetButton.setVisibility(isNewlyCreatedWidget() ? View.VISIBLE : View.GONE);
         if (hasWidgets) {
             bindWidgetSettings(widgetIds[0]);
@@ -107,6 +107,13 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
             bindWidgetSettings(-1);
             setSettingsEnabled(false);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        widgetUpdater.updateImmediately();
     }
 
     private int[] getWidgetIds() {
@@ -128,19 +135,19 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     }
 
     private void bindWidgetSettings(int widgetId) {
-        boolean format24 = settings.is24TimeFormat(widgetId);
-        timeFormatSwitch.setChecked(format24);
+        WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
 
-        String timeZoneId = settings.getTimeZone(widgetId);
+        timeFormatSwitch.setChecked(widgetOptions.format24);
+
+        String timeZoneId = widgetOptions.timeZoneId;
         TimeZoneInfo timeZoneInfo = TimeZones.getTimeZoneInfo(this, timeZoneId);
         String formattedTimeZone = TimeZones.format(timeZoneInfo);
         timeZoneTextView.setText(formattedTimeZone);
 
-        boolean monthFirst = settings.isMonthFirst(widgetId);
-        String date = Utils.getCurrentDate(monthFirst, timeZoneId);
+        String date = Utils.getCurrentDate(widgetOptions.monthFirst, timeZoneId);
         dateFormatTextView.setText(getString(R.string.date_format, date));
 
-        Theme theme = settings.getTheme(widgetId);
+        Theme theme = widgetOptions.theme;
         themeTextView.setText(getString(R.string.theme, getString(theme.nameId)));
     }
 
@@ -181,7 +188,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private void onTimeFormatChanged(boolean format24) {
         if (widgetsAdapter.getCount() > 0) {
             settings.setTimeFormat(getCurrentWidget(), format24);
-            updatePreviewAndWidget();
+            updatePreview();
         }
     }
 
@@ -189,23 +196,24 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     public void onTimeZoneSelected(TimeZoneInfo timeZoneInfo) {
         settings.setTimezone(getCurrentWidgetId(), timeZoneInfo.id);
         timeZoneTextView.setText(TimeZones.format(timeZoneInfo));
-        updatePreviewAndWidget();
+        updatePreview();
     }
 
     @Override
     public void onDateFormatSelected(boolean monthFirst) {
         int widgetId = getCurrentWidgetId();
         settings.setMonthFirst(widgetId, monthFirst);
-        String date = Utils.getCurrentDate(monthFirst, settings.getTimeZone(widgetId));
+        WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
+        String date = Utils.getCurrentDate(monthFirst, widgetOptions.timeZoneId);
         dateFormatTextView.setText(getString(R.string.date_format, date));
-        updatePreviewAndWidget();
+        updatePreview();
     }
 
     @Override
     public void onThemeSelected(Theme theme) {
         settings.setTheme(getCurrentWidgetId(), theme);
         themeTextView.setText(getString(R.string.theme, getString(theme.nameId)));
-        updatePreviewAndWidget();
+        updatePreview();
     }
 
     private void onHideIconValueChanged(boolean hideIcon) {
@@ -224,9 +232,8 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         return widgetsAdapter.getWidgetId(currentWidget);
     }
 
-    private void updatePreviewAndWidget() {
+    private void updatePreview() {
         widgetsAdapter.refresh(widgetsViewPager, getCurrentWidget());
-        widgetUpdater.updateImmediately(getCurrentWidgetId());
     }
 
     private void openWidgetPicker() {

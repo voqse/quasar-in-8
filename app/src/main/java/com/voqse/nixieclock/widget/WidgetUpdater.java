@@ -15,8 +15,7 @@ import android.support.annotation.NonNull;
 
 public class WidgetUpdater {
 
-    // TODO: change it to 1 minute
-    private static final int UPDATE_INTERVAL_MS = 5 * 1000;
+    private static final int UPDATE_INTERVAL_MS = 60 * 1000;
     private final AlarmManager alarmManager;
     private final Context context;
 
@@ -32,7 +31,7 @@ public class WidgetUpdater {
         alarmManager.set(AlarmManager.ELAPSED_REALTIME, nextUpdateTime, pendingIntent);
     }
 
-    public void updateImmediately(int widgetId) {
+    public void updateImmediately() {
         Intent intent = newUpdateIntent();
         context.sendBroadcast(intent);
     }

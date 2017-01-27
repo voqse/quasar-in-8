@@ -72,7 +72,7 @@ public class WidgetClickListener extends BroadcastReceiver {
 
         @DebugLog
         private void onSingleClick(Context context, int widgetId) {
-            App.getWidgetUpdater(context).updateImmediately(widgetId);
+            App.getWidgetUpdater(context).updateImmediately();
         }
 
         private void onDoubleClick(Context context, int widgetId) {
