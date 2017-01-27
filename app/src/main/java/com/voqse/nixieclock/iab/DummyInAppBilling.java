@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class DummyInAppBilling implements InnAppBilling {
+public class DummyInAppBilling implements InAppBilling {
 
     private InAppBillingListener listener;
 

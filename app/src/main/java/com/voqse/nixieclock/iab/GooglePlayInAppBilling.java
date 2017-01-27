@@ -15,6 +15,7 @@ import com.danikula.iab.IabHelper;
 import com.danikula.iab.IabResult;
 import com.danikula.iab.Inventory;
 import com.danikula.iab.Purchase;
+import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.Utils;
 import com.voqse.nixieclock.log.NonFatalError;
 
@@ -26,7 +27,7 @@ import java.util.UUID;
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class GooglePlayInAppBilling implements InnAppBilling {
+public class GooglePlayInAppBilling implements InAppBilling {
 
     private static final Logger LOG = LoggerFactory.getLogger("GooglePlayInAppBilling");
     private static final String SKU_PRO_UPDATE = "pro.update";
@@ -40,8 +41,7 @@ public class GooglePlayInAppBilling implements InnAppBilling {
         this.context = context.getApplicationContext();
         this.iabHelper = new IabHelper(this.context, Utils.getAppPublicKey(context));
         this.listener = listener;
-        // TODO:
-        this.iabHelper.enableDebugLogging(true);
+        this.iabHelper.enableDebugLogging(BuildConfig.DEBUG);
         this.iabHelper.startSetup(new SetupFinishedListener());
     }
 

@@ -1,6 +1,5 @@
 package com.voqse.nixieclock.widget;
 
-import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,9 +16,9 @@ import android.widget.TextView;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.Utils;
+import com.voqse.nixieclock.iab.InAppBilling;
+import com.voqse.nixieclock.iab.InAppBillingFactory;
 import com.voqse.nixieclock.iab.InAppBillingListener;
-import com.voqse.nixieclock.iab.InnAppBilling;
-import com.voqse.nixieclock.iab.InnAppBillingFactory;
 import com.voqse.nixieclock.timezone.TimeZoneInfo;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment.OnTimeZoneSelectedListener;
@@ -36,9 +35,7 @@ import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
 public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener,
         View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener, InAppBillingListener {
 
-    private static final int APP_WIDGET_HOST_ID = 8800;
-    private static final int REQUEST_CODE_ADD_WIDGET = 42;
-    private static final int REQUEST_CODE_PURCHASE = 43;
+    private static final int REQUEST_CODE_PURCHASE = 42;
 
     private WidgetsAdapter widgetsAdapter;
     private ViewPager widgetsViewPager;
@@ -51,10 +48,9 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     private Button addWidgetButton;
     private Button upgradeButton;
     private View noWidgetsView;
-    private AppWidgetHost appWidgetHost;
     private Settings settings;
     private WidgetUpdater widgetUpdater;
-    private InnAppBilling innAppBilling;
+    private InAppBilling inAppBilling;
 
     public static Intent newIntent(Context context, int widgetId) {
         return new Intent(context, ConfigurationActivity.class)
@@ -67,14 +63,13 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
 
         this.settings = new Settings(this);
         this.widgetUpdater = new WidgetUpdater(this);
-        this.appWidgetHost = new AppWidgetHost(this, APP_WIDGET_HOST_ID);
 
         setContentView(R.layout.activity_configuration);
         findViews();
         int[] widgetIds = getWidgetIds();
         setupViews(widgetIds);
         setupUi(widgetIds);
-        this.innAppBilling = InnAppBillingFactory.newInnAppBilling(this, this);
+        this.inAppBilling = InAppBillingFactory.newInnAppBilling(this, this);
     }
 
     private void findViews() {
@@ -108,7 +103,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
         boolean hasWidgets = currentWidget >= 0;
-//        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
+        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
         addWidgetButton.setVisibility(isNewlyCreatedWidget() ? View.VISIBLE : View.GONE);
 
         if (hasWidgets) {
@@ -232,7 +227,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_PURCHASE) {
-            innAppBilling.processPurchase(requestCode, resultCode, data);
+            inAppBilling.processPurchase(requestCode, resultCode, data);
         }
     }
 
@@ -256,13 +251,6 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         widgetsAdapter.refresh(widgetsViewPager, getCurrentWidget());
     }
 
-    private void openWidgetPicker() {
-        int appWidgetId = appWidgetHost.allocateAppWidgetId();
-        Intent pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK);
-        pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        startActivityForResult(pickIntent, REQUEST_CODE_ADD_WIDGET);
-    }
-
     private void applyNewWidget() {
         Intent resultValue = new Intent();
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, getCurrentWidgetId());
@@ -271,7 +259,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     }
 
     private void upgradeToPro() {
-        innAppBilling.purchase(this, REQUEST_CODE_PURCHASE);
+        inAppBilling.purchase(this, REQUEST_CODE_PURCHASE);
     }
 
     private void setSettingsEnabled(boolean enabled) {
@@ -286,12 +274,12 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
 
     @Override
     public void onPurchasingError() {
-
+        // TODO:
     }
 
     @Override
     public void onProductsFetched(boolean hasPro) {
-        setSettingsEnabled(hasPro);
+        setSettingsEnabled(hasPro && widgetsAdapter.getCount() > 0);
         upgradeButton.setVisibility(hasPro ? View.GONE : View.VISIBLE);
     }
 
@@ -304,7 +292,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        innAppBilling.release();
+        inAppBilling.release();
     }
 
     private class WidgetSettingBinder implements ViewPager.OnPageChangeListener {

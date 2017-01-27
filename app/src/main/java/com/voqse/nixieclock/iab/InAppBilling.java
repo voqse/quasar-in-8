@@ -6,7 +6,7 @@ import android.content.Intent;
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public interface InnAppBilling {
+public interface InAppBilling {
 
     void release();
 
