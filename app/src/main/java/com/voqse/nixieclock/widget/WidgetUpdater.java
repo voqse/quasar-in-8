@@ -31,6 +31,7 @@ public class WidgetUpdater {
         alarmManager.set(AlarmManager.ELAPSED_REALTIME, nextUpdateTime, pendingIntent);
     }
 
+    // TODO: update single widget if possible
     public void updateImmediately() {
         Intent intent = newUpdateIntent();
         context.sendBroadcast(intent);

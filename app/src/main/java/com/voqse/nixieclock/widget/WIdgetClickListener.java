@@ -72,6 +72,11 @@ public class WidgetClickListener extends BroadcastReceiver {
 
         @DebugLog
         private void onSingleClick(Context context, int widgetId) {
+            Settings settings = new Settings(context);
+            WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
+            boolean displayTime = widgetOptions.displayTime;
+            settings.setDisplayTime(widgetId, !displayTime);
+
             App.getWidgetUpdater(context).updateImmediately();
         }
 

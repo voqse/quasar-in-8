@@ -34,7 +34,7 @@ public class Drawer {
     public Bitmap draw(WidgetOptions widgetOptions, @Nullable Bitmap bitmapToReuse) {
         Bitmap basement = decodeBasement(bitmapToReuse);
         Canvas canvas = new Canvas(basement);
-        String text = Utils.getCurrentTime(widgetOptions.format24, widgetOptions.timeZoneId);
+        String text = getTextToDraw(widgetOptions);
         drawDigit(canvas, text.charAt(0), 100, 100);
         drawDigit(canvas, text.charAt(1), 290, 100);
         drawDigit(canvas, text.charAt(3), 550, 100);
@@ -42,6 +42,12 @@ public class Drawer {
         drawDot(canvas);
         drawFront(canvas);
         return basement;
+    }
+
+    private String getTextToDraw(WidgetOptions widgetOptions) {
+        return widgetOptions.displayTime ?
+                Utils.getCurrentTime(widgetOptions.format24, widgetOptions.timeZoneId) :
+                Utils.getCurrentDate(widgetOptions.monthFirst, widgetOptions.timeZoneId);
     }
 
     private void drawDot(Canvas canvas) {
