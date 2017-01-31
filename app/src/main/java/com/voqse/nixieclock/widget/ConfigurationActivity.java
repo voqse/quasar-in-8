@@ -9,13 +9,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.voqse.nixieclock.R;
-import com.voqse.nixieclock.utils.NixieUtils;
+import com.voqse.nixieclock.clock.ExternalApp;
 import com.voqse.nixieclock.iab.InAppBilling;
 import com.voqse.nixieclock.iab.InAppBillingFactory;
 import com.voqse.nixieclock.iab.InAppBillingListener;
@@ -24,6 +26,9 @@ import com.voqse.nixieclock.timezone.TimeZoneInfo;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment.OnTimeZoneSelectedListener;
 import com.voqse.nixieclock.timezone.TimeZones;
+import com.voqse.nixieclock.utils.NixieUtils;
+import com.voqse.nixieclock.widget.support.AppPickerDialogFragment;
+import com.voqse.nixieclock.widget.support.AppPickerDialogFragment.OnAppSelectedListener;
 import com.voqse.nixieclock.widget.support.DateFormatDialogFragment;
 import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormatSelectedListener;
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment;
@@ -33,8 +38,9 @@ import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_CONFIGURE;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
 
-public class ConfigurationActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener,
-        View.OnClickListener, OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener, InAppBillingListener {
+public class ConfigurationActivity extends AppCompatActivity implements OnCheckedChangeListener, OnClickListener,
+        OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener,
+        InAppBillingListener, OnAppSelectedListener {
 
     private static final int REQUEST_CODE_PURCHASE = 42;
 
@@ -95,6 +101,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         themeTextView.setOnClickListener(this);
         addWidgetButton.setOnClickListener(this);
         upgradeButton.setOnClickListener(this);
+        appTextView.setOnClickListener(this);
         hideIconSwitch.setChecked(settings.isHideIcon());
         this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, settings);
         widgetsViewPager.setAdapter(widgetsAdapter);
@@ -153,8 +160,14 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         String date = NixieUtils.getCurrentDate(widgetOptions.monthFirst, timeZoneId);
         dateFormatTextView.setText(getString(R.string.date_format, date));
 
+        bindAppToLaunch(widgetOptions.appToLaunch);
+
         Theme theme = widgetOptions.theme;
         themeTextView.setText(getString(R.string.theme, getString(theme.nameId)));
+    }
+
+    private void bindAppToLaunch(ExternalApp app) {
+        appTextView.setText(getString(R.string.app_to_launch, app.getName(this)));
     }
 
     @Override
@@ -168,6 +181,9 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
                 break;
             case R.id.themeTextView:
                 new ThemePickerDialogFragment().show(getSupportFragmentManager(), "ThemePicker");
+                break;
+            case R.id.appTextView:
+                new AppPickerDialogFragment().show(getSupportFragmentManager(), "AppPicker");
                 break;
             case R.id.addWidgetButton:
                 applyNewWidget();
@@ -216,6 +232,12 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         String date = NixieUtils.getCurrentDate(monthFirst, widgetOptions.timeZoneId);
         dateFormatTextView.setText(getString(R.string.date_format, date));
         updatePreview();
+    }
+
+    @Override
+    public void onAppSelected(ExternalApp app) {
+        settings.setAppToLaunch(getCurrentWidgetId(), app);
+        bindAppToLaunch(app);
     }
 
     @Override

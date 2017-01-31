@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.voqse.nixieclock.clock.ExternalApp;
 import com.voqse.nixieclock.theme.Theme;
 
 import java.util.Set;
@@ -20,6 +21,7 @@ public class Settings {
     private static final String KEY_THEME = "theme";
     private static final String KEY_DISPLAY_TIME = "display_time";
     private static final String KEY_HIDE_ICON = "hide_icon";
+    private static final String KEY_APP_TO_LAUNCH = "app_to_launch";
 
     private final SharedPreferences preferences;
 
@@ -32,6 +34,7 @@ public class Settings {
         String timeZoneKey = getWidgetKey(KEY_TIMEZONE, widgetId);
         String monthFirstKey = getWidgetKey(KEY_MONTH_FIRST, widgetId);
         String displayTimeKey = getWidgetKey(KEY_DISPLAY_TIME, widgetId);
+        String appToLaunchKey = getWidgetKey(KEY_APP_TO_LAUNCH, widgetId);
         String themeKey = getWidgetKey(KEY_THEME, widgetId);
         WidgetOptions defaultValue = WidgetOptions.DEFAULT;
         return new WidgetOptions(
@@ -39,6 +42,7 @@ public class Settings {
                 preferences.getString(timeZoneKey, defaultValue.timeZoneId),
                 preferences.getBoolean(monthFirstKey, defaultValue.monthFirst),
                 preferences.getBoolean(displayTimeKey, defaultValue.displayTime),
+                ExternalApp.fromString(preferences.getString(appToLaunchKey, ExternalApp.DEFAULT_APP.pack())),
                 Theme.valueOf(preferences.getString(themeKey, defaultValue.theme.name()))
         );
     }
@@ -61,6 +65,11 @@ public class Settings {
     public void setTimezone(int widgetId, String timezoneId) {
         String widgetKey = getWidgetKey(KEY_TIMEZONE, widgetId);
         put(widgetKey, timezoneId);
+    }
+
+    public void setAppToLaunch(int widgetId, ExternalApp externalApp) {
+        String widgetKey = getWidgetKey(KEY_APP_TO_LAUNCH, widgetId);
+        put(widgetKey, externalApp.pack());
     }
 
     public void setTheme(int widgetId, Theme theme) {

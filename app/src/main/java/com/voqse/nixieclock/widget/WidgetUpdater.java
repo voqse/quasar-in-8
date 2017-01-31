@@ -15,7 +15,7 @@ import android.support.annotation.NonNull;
 
 public class WidgetUpdater {
 
-    private static final int UPDATE_INTERVAL_MS = 5 * 1000;
+    private static final int UPDATE_INTERVAL_MS = 60 * 1000;
     private final AlarmManager alarmManager;
     private final Context context;
 
