@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.voqse.nixieclock.R;
+
 import java.util.List;
 
 /**
@@ -28,6 +30,7 @@ public class TimeZonePickerDialogFragment extends DialogFragment implements Dial
     public Dialog onCreateDialog(Bundle state) {
         return new AlertDialog.Builder(getActivity())
                 .setItems(getTimeZonesArray(), this)
+                .setTitle(R.string.timezone)
                 .create();
     }
 

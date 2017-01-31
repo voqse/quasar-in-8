@@ -3,6 +3,10 @@ package com.voqse.nixieclock.utils;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Base64;
 
 import com.voqse.nixieclock.R;
@@ -71,6 +75,16 @@ public class NixieUtils {
             }
         }
         return new String(outputBytes);
+    }
+
+    public static CharSequence formatTwoLineText(String firstLine, String secondLine) {
+        String text = firstLine + "\n" + secondLine;
+        SpannableStringBuilder result = new SpannableStringBuilder(text);
+        int start = firstLine.length() + 1;
+        int end = text.length();
+        result.setSpan(new RelativeSizeSpan(.8f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        result.setSpan(new ForegroundColorSpan(0xFF7F7F7F), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return result;
     }
 
 }

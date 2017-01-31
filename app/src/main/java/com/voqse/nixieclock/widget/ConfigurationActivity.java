@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,6 +38,7 @@ import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment.OnThemeSele
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_CONFIGURE;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
+import static com.voqse.nixieclock.utils.NixieUtils.formatTwoLineText;
 
 public class ConfigurationActivity extends AppCompatActivity implements OnCheckedChangeListener, OnClickListener,
         OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener,
@@ -55,6 +57,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private Button addWidgetButton;
     private Button upgradeButton;
     private View noWidgetsView;
+    private Toolbar toolbar;
     private Settings settings;
     private WidgetUpdater widgetUpdater;
     private InAppBilling inAppBilling;
@@ -90,6 +93,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         this.hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
         this.addWidgetButton = (Button) findViewById(R.id.addWidgetButton);
         this.upgradeButton = (Button) findViewById(R.id.upgradeButton);
+        this.toolbar = (Toolbar) findViewById(R.id.toolbar);
     }
 
     private void setupViews(int[] widgetIds) {
@@ -105,6 +109,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         hideIconSwitch.setChecked(settings.isHideIcon());
         this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, settings);
         widgetsViewPager.setAdapter(widgetsAdapter);
+        setSupportActionBar(toolbar);
     }
 
     private void setupUi(int[] widgetIds) {
@@ -149,25 +154,36 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     private void bindWidgetSettings(int widgetId) {
         WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
-
         timeFormatSwitch.setChecked(widgetOptions.format24);
-
-        String timeZoneId = widgetOptions.timeZoneId;
-        TimeZoneInfo timeZoneInfo = TimeZones.getTimeZoneInfo(this, timeZoneId);
-        String formattedTimeZone = TimeZones.format(timeZoneInfo);
-        timeZoneTextView.setText(formattedTimeZone);
-
-        String date = NixieUtils.getCurrentDate(widgetOptions.monthFirst, timeZoneId);
-        dateFormatTextView.setText(getString(R.string.date_format, date));
-
+        bindTimeZone(widgetOptions.timeZoneId);
+        bindDateFormat(widgetOptions.monthFirst, widgetOptions.timeZoneId);
         bindAppToLaunch(widgetOptions.appToLaunch);
+        bindTheme(widgetOptions);
+    }
 
+    private void bindTimeZone(String timeZoneId) {
+        String label = getString(R.string.timezone);
+        TimeZoneInfo timeZoneInfo = TimeZones.getTimeZoneInfo(this, timeZoneId);
+        String timeZone = timeZoneInfo.getOffset() + " " + timeZoneInfo.city;
+        timeZoneTextView.setText(formatTwoLineText(label, timeZone));
+    }
+
+    private void bindDateFormat(boolean monthFirst, String timeZoneId) {
+        String label = getString(R.string.date_format);
+        String date = NixieUtils.getCurrentDate(monthFirst, timeZoneId);
+        dateFormatTextView.setText(formatTwoLineText(label, date));
+    }
+
+    private void bindTheme(WidgetOptions widgetOptions) {
+        String label = getString(R.string.theme);
         Theme theme = widgetOptions.theme;
-        themeTextView.setText(getString(R.string.theme, getString(theme.nameId)));
+        themeTextView.setText(formatTwoLineText(label, getString(theme.nameId)));
     }
 
     private void bindAppToLaunch(ExternalApp app) {
-        appTextView.setText(getString(R.string.app_to_launch, app.getName(this)));
+        String label = getString(R.string.app_to_launch);
+        String appName = app.getName(this);
+        appTextView.setText(formatTwoLineText(label, appName));
     }
 
     @Override
@@ -220,7 +236,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     @Override
     public void onTimeZoneSelected(TimeZoneInfo timeZoneInfo) {
         settings.setTimezone(getCurrentWidgetId(), timeZoneInfo.id);
-        timeZoneTextView.setText(TimeZones.format(timeZoneInfo));
+        bindTimeZone(timeZoneInfo.id);
         updatePreview();
     }
 
@@ -228,9 +244,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     public void onDateFormatSelected(boolean monthFirst) {
         int widgetId = getCurrentWidgetId();
         settings.setMonthFirst(widgetId, monthFirst);
-        WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
-        String date = NixieUtils.getCurrentDate(monthFirst, widgetOptions.timeZoneId);
-        dateFormatTextView.setText(getString(R.string.date_format, date));
+        bindDateFormat(monthFirst, settings.getWidgetOptions(widgetId).timeZoneId);
         updatePreview();
     }
 
@@ -286,8 +300,10 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void setSettingsEnabled(boolean enabled) {
+        float alpha = enabled ? 1f : .5f;
         for (View view : new View[]{timeFormatSwitch, timeZoneTextView, dateFormatTextView, themeTextView, appTextView, hideIconSwitch}) {
             view.setEnabled(enabled);
+            view.setAlpha(alpha);
         }
     }
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
+import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.theme.Theme;
 
 /**
@@ -28,6 +29,7 @@ public class ThemePickerDialogFragment extends DialogFragment implements DialogI
     public Dialog onCreateDialog(Bundle state) {
         return new AlertDialog.Builder(getActivity())
                 .setItems(getThemeNames(), this)
+                .setTitle(R.string.theme)
                 .create();
     }
 

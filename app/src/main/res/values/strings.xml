@@ -3,12 +3,13 @@
     <string name="no_widgets">Нет активных виджетов</string>
     <string name="no_widgets_explain">Вы ещё не добавили ни одного виджета</string>
     <string name="format_24">24-часовой формат</string>
-    <string name="date_format">Формат даты\n%s</string>
+    <string name="date_format">Формат даты</string>
+    <string name="timezone">Часовой пояс</string>
+    <string name="date_time_settings">Дата и время</string>
     <string name="other_settings">Другое</string>
-    <string name="app_to_launch_dialog_title">Запускать приложение</string>
-    <string name="app_to_launch">Запускать приложение\n%s</string>
+    <string name="app_to_launch">Запускать приложение</string>
     <string name="default_app_name">Часы (по умолчанию)</string>
-    <string name="theme">Тема оформления\n%s</string>
+    <string name="theme">Тема оформления</string>
     <string name="hide_icon">Скрыть иконку</string>
     <string name="button_upgrade">ВСЕ ФУНКЦИИ</string>
     <string name="button_apply">ПРИМЕНИТЬ</string>

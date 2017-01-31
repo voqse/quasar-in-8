@@ -9,6 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 
 import com.voqse.nixieclock.BuildConfig;
+import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.utils.NixieUtils;
 import com.voqse.nixieclock.widget.Settings;
 
@@ -41,6 +42,7 @@ public class DateFormatDialogFragment extends DialogFragment implements DialogIn
     public Dialog onCreateDialog(Bundle state) {
         return new AlertDialog.Builder(getActivity())
                 .setItems(getDateFormats(), this)
+                .setTitle(R.string.date_format)
                 .create();
     }
 

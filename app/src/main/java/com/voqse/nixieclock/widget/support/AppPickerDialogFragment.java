@@ -42,7 +42,7 @@ public class AppPickerDialogFragment extends DialogFragment implements DialogInt
     @Override
     public Dialog onCreateDialog(Bundle state) {
         return new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.app_to_launch_dialog_title)
+                .setTitle(R.string.app_to_launch)
                 .setAdapter(getAppListAdapter(), this)
                 .create();
     }
