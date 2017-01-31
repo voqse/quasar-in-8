@@ -1,10 +1,11 @@
-package com.voqse.nixieclock;
+package com.voqse.nixieclock.utils;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Base64;
 
+import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.widget.LaunchConfigurationActivity;
 
 import java.text.DateFormat;
@@ -18,7 +19,7 @@ import java.util.TimeZone;
  *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class Utils {
+public class NixieUtils {
 
     private static final DateFormat TIME_FORMAT_24 = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private static final DateFormat TIME_FORMAT_12 = new SimpleDateFormat("hh:mm", Locale.getDefault());

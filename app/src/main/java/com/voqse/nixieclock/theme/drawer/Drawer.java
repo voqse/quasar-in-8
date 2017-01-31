@@ -6,7 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 
-import com.voqse.nixieclock.Utils;
+import com.voqse.nixieclock.utils.NixieUtils;
 import com.voqse.nixieclock.theme.Theme;
 import com.voqse.nixieclock.theme.ThemeResources;
 import com.voqse.nixieclock.widget.WidgetOptions;
@@ -46,8 +46,8 @@ public class Drawer {
 
     private String getTextToDraw(WidgetOptions widgetOptions) {
         return widgetOptions.displayTime ?
-                Utils.getCurrentTime(widgetOptions.format24, widgetOptions.timeZoneId) :
-                Utils.getCurrentDate(widgetOptions.monthFirst, widgetOptions.timeZoneId);
+                NixieUtils.getCurrentTime(widgetOptions.format24, widgetOptions.timeZoneId) :
+                NixieUtils.getCurrentDate(widgetOptions.monthFirst, widgetOptions.timeZoneId);
     }
 
     private Bitmap getDigit(Theme theme, String text, int index) {

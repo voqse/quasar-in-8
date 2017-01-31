@@ -15,7 +15,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.voqse.nixieclock.R;
-import com.voqse.nixieclock.Utils;
+import com.voqse.nixieclock.utils.NixieUtils;
 import com.voqse.nixieclock.iab.InAppBilling;
 import com.voqse.nixieclock.iab.InAppBillingFactory;
 import com.voqse.nixieclock.iab.InAppBillingListener;
@@ -150,7 +150,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         String formattedTimeZone = TimeZones.format(timeZoneInfo);
         timeZoneTextView.setText(formattedTimeZone);
 
-        String date = Utils.getCurrentDate(widgetOptions.monthFirst, timeZoneId);
+        String date = NixieUtils.getCurrentDate(widgetOptions.monthFirst, timeZoneId);
         dateFormatTextView.setText(getString(R.string.date_format, date));
 
         Theme theme = widgetOptions.theme;
@@ -213,7 +213,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
         int widgetId = getCurrentWidgetId();
         settings.setMonthFirst(widgetId, monthFirst);
         WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
-        String date = Utils.getCurrentDate(monthFirst, widgetOptions.timeZoneId);
+        String date = NixieUtils.getCurrentDate(monthFirst, widgetOptions.timeZoneId);
         dateFormatTextView.setText(getString(R.string.date_format, date));
         updatePreview();
     }
@@ -234,7 +234,7 @@ public class ConfigurationActivity extends AppCompatActivity implements Compound
 
     private void onHideIconValueChanged(boolean hideIcon) {
         if (settings.isHideIcon() != hideIcon) {
-            Utils.setLauncherIconVisibility(this, !hideIcon);
+            NixieUtils.setLauncherIconVisibility(this, !hideIcon);
             settings.setHideIcon(hideIcon);
         }
     }

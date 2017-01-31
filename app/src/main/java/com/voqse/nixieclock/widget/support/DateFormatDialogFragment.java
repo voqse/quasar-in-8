@@ -9,7 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 
 import com.voqse.nixieclock.BuildConfig;
-import com.voqse.nixieclock.Utils;
+import com.voqse.nixieclock.utils.NixieUtils;
 import com.voqse.nixieclock.widget.Settings;
 
 /**
@@ -49,8 +49,8 @@ public class DateFormatDialogFragment extends DialogFragment implements DialogIn
         Settings settings = new Settings(getActivity());
         String timeZone = settings.getWidgetOptions(widgetId).timeZoneId;
         return new String[]{
-                Utils.getCurrentDate(false, timeZone),
-                Utils.getCurrentDate(true, timeZone)
+                NixieUtils.getCurrentDate(false, timeZone),
+                NixieUtils.getCurrentDate(true, timeZone)
         };
     }
 
