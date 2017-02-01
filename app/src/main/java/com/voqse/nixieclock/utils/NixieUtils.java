@@ -14,6 +14,7 @@ import com.voqse.nixieclock.widget.LaunchConfigurationActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -29,17 +30,23 @@ public class NixieUtils {
     private static final DateFormat TIME_FORMAT_12 = new SimpleDateFormat("hh:mm", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_MONTH_FIRST = new SimpleDateFormat("MM.dd.yyyy", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_DAY_FIRST = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+    private static final DateFormat DATE_FORMAT_YEAR = new SimpleDateFormat("yyyy", Locale.getDefault());
 
     public static String getCurrentTime(boolean format24, String timeZoneId) {
         DateFormat dateFormat = format24 ? TIME_FORMAT_24 : TIME_FORMAT_12;
-        TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
-        dateFormat.setTimeZone(timeZone);
-        Date now = new Date();
-        return dateFormat.format(now);
+        return formatCurrentDate(timeZoneId, dateFormat);
     }
 
     public static String getCurrentDate(boolean monthFirst, String timeZoneId) {
         DateFormat dateFormat = monthFirst ? DATE_FORMAT_MONTH_FIRST : DATE_FORMAT_DAY_FIRST;
+        return formatCurrentDate(timeZoneId, dateFormat);
+    }
+
+    public static String getCurrentYear(String timeZoneId) {
+        return formatCurrentDate(timeZoneId, DATE_FORMAT_YEAR);
+    }
+
+    private static String formatCurrentDate(String timeZoneId, DateFormat dateFormat) {
         TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
         dateFormat.setTimeZone(timeZone);
         Date now = new Date();
@@ -87,4 +94,11 @@ public class NixieUtils {
         return result;
     }
 
+    public static long getNextMinuteStart() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 100);
+        long currentMinuteStart = calendar.getTimeInMillis();
+        return currentMinuteStart + 60 * 1000;
+    }
 }

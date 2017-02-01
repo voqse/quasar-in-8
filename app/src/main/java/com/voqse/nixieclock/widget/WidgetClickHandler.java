@@ -88,10 +88,8 @@ public class WidgetClickHandler extends BroadcastReceiver {
         }
 
         private void onDoubleClick(Context context, int widgetId) {
-            Intent intent = ConfigurationActivity.newIntent(context, widgetId)
-                    .setAction(UUID.randomUUID().toString())
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
+            WidgetUpdater widgetUpdater = new WidgetUpdater(context);
+            widgetUpdater.showDate(widgetId);
         }
     }
 }

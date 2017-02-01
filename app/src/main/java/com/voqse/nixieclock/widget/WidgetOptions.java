@@ -71,4 +71,16 @@ public class WidgetOptions {
         result = 31 * result + theme.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("WidgetOptions{");
+        sb.append("format24=").append(format24);
+        sb.append(", timeZoneId='").append(timeZoneId).append('\'');
+        sb.append(", monthFirst=").append(monthFirst);
+        sb.append(", appToLaunch=").append(appToLaunch);
+        sb.append(", theme=").append(theme);
+        sb.append('}');
+        return sb.toString();
+    }
 }
