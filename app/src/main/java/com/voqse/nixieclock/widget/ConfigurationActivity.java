@@ -182,11 +182,18 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void bindWidgetSettings(WidgetOptions widgetOptions) {
-        timeFormatSwitch.setChecked(widgetOptions.format24);
+        bindTimeFormat(widgetOptions.format24, widgetOptions.timeZoneId);
         bindTimeZone(widgetOptions.timeZoneId);
         bindDateFormat(widgetOptions.monthFirst, widgetOptions.timeZoneId);
         bindAppToLaunch(widgetOptions.appToLaunch);
         bindTheme(widgetOptions.theme);
+    }
+
+    private void bindTimeFormat(boolean format24, String timeZoneId) {
+        String label = getString(R.string.format_24);
+        String time = NixieUtils.getCurrentTime(format24, timeZoneId, true);
+        timeFormatSwitch.setChecked(format24);
+        timeFormatSwitch.setText(formatTwoLineText(label, time));
     }
 
     private void bindTimeZone(String timeZoneId) {
@@ -257,6 +264,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         if (widgetsAdapter.getCount() > 0) {
             WidgetOptions newWidgetOptions = getCurrentWidgetOptions().changeFormat24(format24);
             changeCurrentWidgetOptions(newWidgetOptions);
+            bindTimeFormat(format24, newWidgetOptions.timeZoneId);
             updatePreviewAndButton();
         }
     }
