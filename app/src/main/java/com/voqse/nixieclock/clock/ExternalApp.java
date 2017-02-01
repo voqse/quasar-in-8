@@ -121,4 +121,25 @@ public class ExternalApp {
         sb.append('}');
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExternalApp that = (ExternalApp) o;
+        if (packageName != null ? !packageName.equals(that.packageName) : that.packageName != null)
+            return false;
+        if (activityClassName != null ? !activityClassName.equals(that.activityClassName) : that.activityClassName != null)
+            return false;
+        return label != null ? label.equals(that.label) : that.label == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = packageName != null ? packageName.hashCode() : 0;
+        result = 31 * result + (activityClassName != null ? activityClassName.hashCode() : 0);
+        result = 31 * result + (label != null ? label.hashCode() : 0);
+        return result;
+    }
 }

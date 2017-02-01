@@ -5,7 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatDialogFragment;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.theme.Theme;
@@ -13,7 +13,7 @@ import com.voqse.nixieclock.theme.Theme;
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class ThemePickerDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class ThemePickerDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {
 
     @Override
     public void onActivityCreated(Bundle state) {

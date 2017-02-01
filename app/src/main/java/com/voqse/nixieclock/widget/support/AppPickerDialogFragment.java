@@ -10,7 +10,7 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class AppPickerDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class AppPickerDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {
 
     @Override
     public void onActivityCreated(Bundle state) {

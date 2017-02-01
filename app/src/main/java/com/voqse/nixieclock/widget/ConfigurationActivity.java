@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.clock.ExternalApp;
@@ -34,6 +36,8 @@ import com.voqse.nixieclock.utils.NixieUtils;
 import com.voqse.nixieclock.widget.support.AboutDialogFragment;
 import com.voqse.nixieclock.widget.support.AppPickerDialogFragment;
 import com.voqse.nixieclock.widget.support.AppPickerDialogFragment.OnAppSelectedListener;
+import com.voqse.nixieclock.widget.support.ApplySettingsDialogFragment;
+import com.voqse.nixieclock.widget.support.ApplySettingsDialogFragment.OnApplySettingsDialogClickListener;
 import com.voqse.nixieclock.widget.support.DateFormatDialogFragment;
 import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormatSelectedListener;
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment;
@@ -46,7 +50,7 @@ import static com.voqse.nixieclock.utils.NixieUtils.formatTwoLineText;
 
 public class ConfigurationActivity extends AppCompatActivity implements OnCheckedChangeListener, OnClickListener,
         OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener,
-        InAppBillingListener, OnAppSelectedListener {
+        InAppBillingListener, OnAppSelectedListener, OnApplySettingsDialogClickListener, WidgetsAdapter.WidgetOptionsProvider {
 
     private static final int REQUEST_CODE_PURCHASE = 42;
 
@@ -58,13 +62,13 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private TextView themeTextView;
     private TextView appTextView;
     private Switch hideIconSwitch;
-    private Button addWidgetButton;
+    private Button applyWidgetButton;
     private Button upgradeButton;
     private View noWidgetsView;
     private Toolbar toolbar;
     private Settings settings;
-    private WidgetUpdater widgetUpdater;
     private InAppBilling inAppBilling;
+    private SparseArray<WidgetOptions> widgetsOptions;
 
     public static Intent newIntent(Context context, int widgetId) {
         return new Intent(context, ConfigurationActivity.class)
@@ -76,11 +80,11 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         super.onCreate(state);
 
         this.settings = new Settings(this);
-        this.widgetUpdater = new WidgetUpdater(this);
 
         setContentView(R.layout.activity_configuration);
         findViews();
         int[] widgetIds = getWidgetIds();
+        this.widgetsOptions = getWidgetOptions(widgetIds);
         setupViews(widgetIds);
         setupUi(widgetIds);
         this.inAppBilling = InAppBillingFactory.newInnAppBilling(this, this);
@@ -95,7 +99,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         this.appTextView = (TextView) findViewById(R.id.appTextView);
         this.noWidgetsView = findViewById(R.id.noWidgetsView);
         this.hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
-        this.addWidgetButton = (Button) findViewById(R.id.addWidgetButton);
+        this.applyWidgetButton = (Button) findViewById(R.id.applyWidgetButton);
         this.upgradeButton = (Button) findViewById(R.id.upgradeButton);
         this.toolbar = (Toolbar) findViewById(R.id.toolbar);
     }
@@ -103,15 +107,15 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private void setupViews(int[] widgetIds) {
         timeFormatSwitch.setOnCheckedChangeListener(this);
         hideIconSwitch.setOnCheckedChangeListener(this);
-        widgetsViewPager.addOnPageChangeListener(new WidgetSettingBinder(widgetIds));
+        widgetsViewPager.addOnPageChangeListener(new WidgetSettingBinder());
         timeZoneTextView.setOnClickListener(this);
         dateFormatTextView.setOnClickListener(this);
         themeTextView.setOnClickListener(this);
-        addWidgetButton.setOnClickListener(this);
+        applyWidgetButton.setOnClickListener(this);
         upgradeButton.setOnClickListener(this);
         appTextView.setOnClickListener(this);
         hideIconSwitch.setChecked(settings.isHideIcon());
-        this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, settings);
+        this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, this);
         widgetsViewPager.setAdapter(widgetsAdapter);
         setSupportActionBar(toolbar);
     }
@@ -120,15 +124,21 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
         boolean hasWidgets = currentWidget >= 0;
-//        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
-        addWidgetButton.setVisibility(isNewlyCreatedWidget() ? View.VISIBLE : View.GONE);
-
-        if (hasWidgets) {
-            bindWidgetSettings(widgetIds[0]);
-        } else {
-            bindWidgetSettings(-1);
-            setSettingsEnabled(false);
+        noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
+        applyWidgetButton.setVisibility(hasWidgets ? View.VISIBLE : View.GONE);
+        WidgetOptions currentWidgetOptions = hasWidgets ? getCurrentWidgetOptions() : WidgetOptions.DEFAULT;
+        bindWidgetSettings(currentWidgetOptions);
+        if (!hasWidgets) {
+            disableSettings();
         }
+    }
+
+    private SparseArray<WidgetOptions> getWidgetOptions(int[] widgetIds) {
+        SparseArray<WidgetOptions> widgetOptionsArrays = new SparseArray<>(widgetIds.length);
+        for (int widgetId : widgetIds) {
+            widgetOptionsArrays.put(widgetId, settings.getWidgetOptions(widgetId));
+        }
+        return widgetOptionsArrays;
     }
 
     @Override
@@ -144,22 +154,15 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         return true;
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        widgetUpdater.updateImmediately();
-    }
-
     private int[] getWidgetIds() {
         return isNewlyCreatedWidget() ?
-                new int[]{getIntent().getIntExtra(EXTRA_APPWIDGET_ID, INVALID_APPWIDGET_ID)} :
+                new int[]{getWidgetIdFromExtras()} :
                 AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
     }
 
     public int getCurrentWidget(int[] widgetIds) {
         if (getIntent().hasExtra(EXTRA_APPWIDGET_ID)) {
-            int widgetId = getIntent().getIntExtra(EXTRA_APPWIDGET_ID, -1);
+            int widgetId = getWidgetIdFromExtras();
             for (int i = 0; i < widgetIds.length; i++) {
                 if (widgetIds[i] == widgetId) {
                     return i;
@@ -169,13 +172,16 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         return -1;
     }
 
-    private void bindWidgetSettings(int widgetId) {
-        WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
+    private int getWidgetIdFromExtras() {
+        return getIntent().getIntExtra(EXTRA_APPWIDGET_ID, INVALID_APPWIDGET_ID);
+    }
+
+    private void bindWidgetSettings(WidgetOptions widgetOptions) {
         timeFormatSwitch.setChecked(widgetOptions.format24);
         bindTimeZone(widgetOptions.timeZoneId);
         bindDateFormat(widgetOptions.monthFirst, widgetOptions.timeZoneId);
         bindAppToLaunch(widgetOptions.appToLaunch);
-        bindTheme(widgetOptions);
+        bindTheme(widgetOptions.theme);
     }
 
     private void bindTimeZone(String timeZoneId) {
@@ -191,9 +197,8 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         dateFormatTextView.setText(formatTwoLineText(label, date));
     }
 
-    private void bindTheme(WidgetOptions widgetOptions) {
+    private void bindTheme(Theme theme) {
         String label = getString(R.string.theme);
-        Theme theme = widgetOptions.theme;
         themeTextView.setText(formatTwoLineText(label, getString(theme.nameId)));
     }
 
@@ -218,8 +223,8 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
             case R.id.appTextView:
                 new AppPickerDialogFragment().show(getSupportFragmentManager(), "AppPicker");
                 break;
-            case R.id.addWidgetButton:
-                applyNewWidget();
+            case R.id.applyWidgetButton:
+                applySettings();
                 break;
             case R.id.upgradeButton:
                 upgradeToPro();
@@ -236,7 +241,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
                 onTimeFormatChanged(checked);
                 break;
             case R.id.hideIconSwitch:
-                onHideIconValueChanged(checked);
+                onHideIconValueChanged();
                 break;
             default:
                 throw new IllegalStateException();
@@ -245,37 +250,42 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     private void onTimeFormatChanged(boolean format24) {
         if (widgetsAdapter.getCount() > 0) {
-            settings.setTimeFormat(getCurrentWidgetId(), format24);
-            updatePreview();
+            WidgetOptions newWidgetOptions = getCurrentWidgetOptions().changeFormat24(format24);
+            changeCurrentWidgetOptions(newWidgetOptions);
+            updatePreviewAndButton();
         }
     }
 
     @Override
     public void onTimeZoneSelected(TimeZoneInfo timeZoneInfo) {
-        settings.setTimezone(getCurrentWidgetId(), timeZoneInfo.id);
+        WidgetOptions newWidgetOptions = getCurrentWidgetOptions().changeTimeZoneId(timeZoneInfo.id);
+        changeCurrentWidgetOptions(newWidgetOptions);
         bindTimeZone(timeZoneInfo.id);
-        updatePreview();
+        updatePreviewAndButton();
     }
 
     @Override
     public void onDateFormatSelected(boolean monthFirst) {
-        int widgetId = getCurrentWidgetId();
-        settings.setMonthFirst(widgetId, monthFirst);
-        bindDateFormat(monthFirst, settings.getWidgetOptions(widgetId).timeZoneId);
-        updatePreview();
+        WidgetOptions newWidgetOptions = getCurrentWidgetOptions().changeMonthFirst(monthFirst);
+        changeCurrentWidgetOptions(newWidgetOptions);
+        bindDateFormat(monthFirst, newWidgetOptions.timeZoneId);
+        updatePreviewAndButton();
     }
 
     @Override
     public void onAppSelected(ExternalApp app) {
-        settings.setAppToLaunch(getCurrentWidgetId(), app);
+        WidgetOptions newWidgetOptions = getCurrentWidgetOptions().changeAppToLaunch(app);
+        changeCurrentWidgetOptions(newWidgetOptions);
         bindAppToLaunch(app);
+        updateButtons();
     }
 
     @Override
     public void onThemeSelected(Theme theme) {
-        settings.setTheme(getCurrentWidgetId(), theme);
-        themeTextView.setText(getString(R.string.theme, getString(theme.nameId)));
-        updatePreview();
+        WidgetOptions newWidgetOptions = getCurrentWidgetOptions().changeTheme(theme);
+        changeCurrentWidgetOptions(newWidgetOptions);
+        bindTheme(theme);
+        updatePreviewAndButton();
     }
 
     @Override
@@ -285,11 +295,8 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         }
     }
 
-    private void onHideIconValueChanged(boolean hideIcon) {
-        if (settings.isHideIcon() != hideIcon) {
-            NixieUtils.setLauncherIconVisibility(this, !hideIcon);
-            settings.setHideIcon(hideIcon);
-        }
+    private void onHideIconValueChanged() {
+        updateButtons();
     }
 
     private int getCurrentWidget() {
@@ -301,26 +308,67 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         return widgetsAdapter.getWidgetId(currentWidget);
     }
 
-    private void updatePreview() {
-        widgetsAdapter.refresh(widgetsViewPager, getCurrentWidget());
+    private WidgetOptions getCurrentWidgetOptions() {
+        int widgetId = getCurrentWidgetId();
+        return widgetsOptions.get(widgetId);
     }
 
-    private void applyNewWidget() {
-        Intent resultValue = new Intent();
-        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, getCurrentWidgetId());
-        setResult(RESULT_OK, resultValue);
-        finish();
+    private void changeCurrentWidgetOptions(WidgetOptions newWidgetOptions) {
+        widgetsOptions.put(getCurrentWidgetId(), newWidgetOptions);
+    }
+
+    private void updatePreviewAndButton() {
+        widgetsAdapter.refresh(widgetsViewPager, getCurrentWidget());
+        updateButtons();
+    }
+
+    private void updateButtons() {
+        boolean hasPro = inAppBilling != null && inAppBilling.hasPro();
+        boolean anyWidgetExist = widgetsAdapter.getCount() > 0;
+        int upgradeButtonBg = hasPro || !anyWidgetExist || isCurrentWidgetSettingsChanged() ? R.drawable.btn_blue : R.drawable.btn_dark;
+        int applyButtonBg = hasPro || (anyWidgetExist && !isCurrentWidgetSettingsChanged()) ? R.drawable.btn_blue : R.drawable.btn_dark;
+        upgradeButton.setBackgroundResource(upgradeButtonBg);
+        applyWidgetButton.setBackgroundResource(applyButtonBg);
+    }
+
+    private boolean isCurrentWidgetSettingsChanged() {
+        int currentWidgetId = getCurrentWidgetId();
+        WidgetOptions currentWidgetOptions = getCurrentWidgetOptions();
+        return hideIconSwitch.isChecked() != settings.isHideIcon() ||
+                !settings.getWidgetOptions(currentWidgetId).equals(currentWidgetOptions);
+    }
+
+    private void applySettings() {
+        if ((inAppBilling == null || !inAppBilling.hasPro()) && isCurrentWidgetSettingsChanged()) {
+            new ApplySettingsDialogFragment().show(getSupportFragmentManager(), "ApplySettingsConfirm");
+        } else {
+            boolean hideIcon = hideIconSwitch.isChecked();
+            if (settings.isHideIcon() != hideIcon) {
+                NixieUtils.setLauncherIconVisibility(this, !hideIcon);
+                settings.setHideIcon(hideIcon);
+            }
+
+            WidgetOptions currentWidgetOptions = getCurrentWidgetOptions();
+            int widgetId = getCurrentWidgetId();
+            settings.setWidgetOptions(widgetId, currentWidgetOptions);
+
+            new WidgetUpdater(this).updateImmediately();
+
+            Intent resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+            setResult(RESULT_OK, resultValue);
+            finish();
+        }
     }
 
     private void upgradeToPro() {
         inAppBilling.purchase(this, REQUEST_CODE_PURCHASE);
     }
 
-    private void setSettingsEnabled(boolean enabled) {
-        float alpha = enabled ? 1f : .5f;
+    private void disableSettings() {
         for (View view : new View[]{timeFormatSwitch, timeZoneTextView, dateFormatTextView, themeTextView, appTextView, hideIconSwitch}) {
-            view.setEnabled(enabled);
-            view.setAlpha(alpha);
+            view.setEnabled(false);
+            view.setAlpha(0.5f);
         }
     }
 
@@ -330,19 +378,19 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     @Override
     public void onPurchasingError() {
-        // TODO:
+        Toast.makeText(this, R.string.purchase_error, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onProductsFetched(boolean hasPro) {
-        setSettingsEnabled(hasPro && widgetsAdapter.getCount() > 0);
         upgradeButton.setVisibility(hasPro ? View.GONE : View.VISIBLE);
+        updateButtons();
     }
 
     @Override
     public void onPurchased() {
-        setSettingsEnabled(true);
         upgradeButton.setVisibility(View.GONE);
+        updateButtons();
     }
 
     @Override
@@ -351,18 +399,29 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         inAppBilling.release();
     }
 
-    private class WidgetSettingBinder implements ViewPager.OnPageChangeListener {
-
-        private final int[] widgetIds;
-
-        WidgetSettingBinder(int[] widgetIds) {
-            this.widgetIds = widgetIds;
+    @Override
+    public void onApplySettingsClick(boolean buyClicked, boolean noClicked, boolean yesClicked) {
+        if (buyClicked) {
+            upgradeToPro();
+        } else if (yesClicked) {
+            changeCurrentWidgetOptions(WidgetOptions.DEFAULT);
+            bindWidgetSettings(WidgetOptions.DEFAULT);
+            hideIconSwitch.setChecked(false);
+            updatePreviewAndButton();
         }
+    }
+
+    @Override
+    public WidgetOptions provideWidgetOptions(int widgetId) {
+        return widgetsOptions.get(widgetId);
+    }
+
+    private class WidgetSettingBinder implements ViewPager.OnPageChangeListener {
 
         @Override
         public void onPageSelected(int position) {
-            int widgetId = widgetIds[position];
-            bindWidgetSettings(widgetId);
+            WidgetOptions widgetOptions = getCurrentWidgetOptions();
+            bindWidgetSettings(widgetOptions);
         }
 
         @Override

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -23,13 +24,13 @@ class WidgetsAdapter extends PagerAdapter {
     private final Drawer drawer;
     private final int[] widgetIds;
     private final LayoutInflater inflater;
-    private final Settings settings;
+    private final WidgetOptionsProvider widgetOptionsProvider;
 
-    WidgetsAdapter(int[] widgetIds, Context context, Settings settings) {
+    WidgetsAdapter(@NonNull int[] widgetIds, @NonNull Context context, @NonNull WidgetOptionsProvider widgetOptionsProvider) {
         this.drawer = new Drawer(context);
         this.widgetIds = widgetIds;
         this.inflater = LayoutInflater.from(context);
-        this.settings = settings;
+        this.widgetOptionsProvider = widgetOptionsProvider;
     }
 
     @Override
@@ -66,7 +67,7 @@ class WidgetsAdapter extends PagerAdapter {
     private void bind(View view, int position) {
         ImageView imageView = (ImageView) view.findViewById(R.id.widgetImageView);
         int widgetId = widgetIds[position];
-        WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
+        WidgetOptions widgetOptions = widgetOptionsProvider.provideWidgetOptions(widgetId);
         Bitmap bitmapToReuse = getImageBitmap(imageView);
         Bitmap bitmap = drawer.draw(widgetOptions, bitmapToReuse);
         imageView.setImageBitmap(bitmap);
@@ -84,5 +85,10 @@ class WidgetsAdapter extends PagerAdapter {
 
     int getWidgetId(int position) {
         return widgetIds[position];
+    }
+
+    public interface WidgetOptionsProvider {
+
+        WidgetOptions provideWidgetOptions(int widgetId);
     }
 }

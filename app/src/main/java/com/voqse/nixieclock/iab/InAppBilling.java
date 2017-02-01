@@ -14,4 +14,6 @@ public interface InAppBilling {
 
     void processPurchase(int requestCode, int resultCode, Intent data);
 
+    boolean hasPro();
+
 }

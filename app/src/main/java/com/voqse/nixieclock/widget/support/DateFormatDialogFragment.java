@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatDialogFragment;
 
 import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.R;
@@ -16,7 +17,7 @@ import com.voqse.nixieclock.widget.Settings;
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class DateFormatDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class DateFormatDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {
 
     private static final String ARG_WIDGET_ID = BuildConfig.APPLICATION_ID + ".ARG_WIDGET_ID";
 

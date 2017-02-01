@@ -8,6 +8,8 @@
 
     <style name="TextView" parent="android:Widget.TextView" />
 
+    <style name="Button" parent="android:Widget.Button" />
+
     <style name="Switch" parent="Widget.AppCompat.CompoundButton.Switch" />
 
     <style name="TextView.Header">
@@ -42,6 +44,17 @@
         <item name="android:background">@drawable/item_selectable_light_divider</item>
         <item name="android:padding">16dp</item>
         <item name="android:textColor">@color/text_black_87</item>
+    </style>
+
+    <style name="Button.Config">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

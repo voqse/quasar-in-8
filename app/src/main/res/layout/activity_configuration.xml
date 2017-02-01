@@ -74,23 +74,15 @@
 
                     <Button
                         android:id="@+id/upgradeButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_weight="1"
+                        style="@style/Button.Config"
+                        android:background="@drawable/btn_dark"
                         android:text="@string/button_upgrade"
                         android:visibility="gone" />
 
                     <Button
-                        android:id="@+id/addWidgetButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:layout_weight="1"
+                        android:id="@+id/applyWidgetButton"
+                        style="@style/Button.Config"
+                        android:background="@drawable/btn_blue"
                         android:text="@string/button_apply" />
 
                 </LinearLayout>
@@ -126,8 +118,8 @@
 
             <Switch
                 android:id="@+id/timeFormatSwitch"
-                android:text="@string/format_24"
-                style="@style/Switch.Settings" />
+                style="@style/Switch.Settings"
+                android:text="@string/format_24" />
 
             <TextView
                 android:id="@+id/timeZoneTextView"

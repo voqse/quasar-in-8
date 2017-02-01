@@ -5,7 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatDialogFragment;
 
 import com.voqse.nixieclock.R;
 
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class TimeZonePickerDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class TimeZonePickerDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {
 
     @Override
     public void onActivityCreated(Bundle state) {

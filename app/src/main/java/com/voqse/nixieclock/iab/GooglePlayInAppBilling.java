@@ -16,8 +16,8 @@ import com.danikula.iab.IabResult;
 import com.danikula.iab.Inventory;
 import com.danikula.iab.Purchase;
 import com.voqse.nixieclock.BuildConfig;
-import com.voqse.nixieclock.utils.NixieUtils;
 import com.voqse.nixieclock.log.NonFatalError;
+import com.voqse.nixieclock.utils.NixieUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +36,7 @@ public class GooglePlayInAppBilling implements InAppBilling {
     private IabHelper iabHelper;
     private InAppBillingListener listener;
     private BroadcastReceiver iabBroadcastReceiver;
+    private boolean hasPro;
 
     public GooglePlayInAppBilling(@NonNull Context context, @NonNull InAppBillingListener listener) {
         this.context = context.getApplicationContext();
@@ -72,6 +73,11 @@ public class GooglePlayInAppBilling implements InAppBilling {
         if (!isReleased()) {
             iabHelper.handleActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    @Override
+    public boolean hasPro() {
+        return hasPro;
     }
 
     private boolean isReleased() {
@@ -125,7 +131,7 @@ public class GooglePlayInAppBilling implements InAppBilling {
             return;
         }
 
-        boolean hasPro = inventory.hasPurchase(SKU_PRO_UPDATE);
+        hasPro = inventory.hasPurchase(SKU_PRO_UPDATE);
         LOG.info("Is PRO user?: {}", hasPro);
 
         listener.onProductsFetched(hasPro);
@@ -146,7 +152,22 @@ public class GooglePlayInAppBilling implements InAppBilling {
             return;
         }
 
+        hasPro = true;
         listener.onPurchased();
+    }
+
+    private void cancelTestPurchase(Purchase purchase) {
+        try {
+            iabHelper.consumeAsync(purchase, new IabHelper.OnConsumeFinishedListener() {
+
+                @Override
+                public void onConsumeFinished(Purchase purchase, IabResult result) {
+                    LOG.info("Purchase canceled with result " + result);
+                }
+            });
+        } catch (IabHelper.IabAsyncInProgressException e) {
+            LOG.error("Error canceling purchase", e);
+        }
     }
 
     private class InventoryFetchListener implements IabHelper.QueryInventoryFinishedListener {

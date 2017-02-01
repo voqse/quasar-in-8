@@ -20,4 +20,10 @@
     <string name="about">О приложении</string>
     <string name="settings">Настройки</string>
     <string name="settings_version">Версия %s</string>
+    <string name="apply_setting_dialog_title">Полная версия</string>
+    <string name="apply_setting_dialog_text">Вы не можете применить данные параметры. Использовать стандартные?</string>
+    <string name="apply_setting_dialog_buy">Купить</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="purchase_error">Ошибка при покупке полной версии</string>
 </resources>
