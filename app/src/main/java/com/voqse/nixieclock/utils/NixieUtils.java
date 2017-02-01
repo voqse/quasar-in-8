@@ -46,6 +46,14 @@ public class NixieUtils {
         return formatCurrentDate(timeZoneId, DATE_FORMAT_YEAR);
     }
 
+    public static boolean isAm(String timeZoneId) {
+        TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(timeZone);
+        int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+        return hourOfDay < 12;
+    }
+
     private static String formatCurrentDate(String timeZoneId, DateFormat dateFormat) {
         TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
         dateFormat.setTimeZone(timeZone);

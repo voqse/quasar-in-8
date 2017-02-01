@@ -2,22 +2,24 @@ package com.voqse.nixieclock.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,11 +72,6 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private InAppBilling inAppBilling;
     private SparseArray<WidgetOptions> widgetsOptions;
 
-    public static Intent newIntent(Context context, int widgetId) {
-        return new Intent(context, ConfigurationActivity.class)
-                .putExtra(EXTRA_APPWIDGET_ID, widgetId);
-    }
-
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -105,6 +102,10 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void setupViews(int[] widgetIds) {
+        setPreviewHeight();
+        setSupportActionBar(toolbar);
+        this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, this);
+        widgetsViewPager.setAdapter(widgetsAdapter);
         timeFormatSwitch.setOnCheckedChangeListener(this);
         hideIconSwitch.setOnCheckedChangeListener(this);
         widgetsViewPager.addOnPageChangeListener(new WidgetSettingBinder());
@@ -115,15 +116,19 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         upgradeButton.setOnClickListener(this);
         appTextView.setOnClickListener(this);
         hideIconSwitch.setChecked(settings.isHideIcon());
-        this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, this);
-        widgetsViewPager.setAdapter(widgetsAdapter);
-        setSupportActionBar(toolbar);
+    }
+
+    private void setPreviewHeight() {
+        View previewContainer = findViewById(R.id.previewContainer);
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int previewHeight = (int) (9f / 16f * displayMetrics.widthPixels);
+        previewContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, previewHeight));
     }
 
     private void setupUi(int[] widgetIds) {
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
-        boolean hasWidgets = currentWidget >= 0;
+        boolean hasWidgets = widgetIds.length >= 0;
         noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
         applyWidgetButton.setVisibility(hasWidgets ? View.VISIBLE : View.GONE);
         WidgetOptions currentWidgetOptions = hasWidgets ? getCurrentWidgetOptions() : WidgetOptions.DEFAULT;

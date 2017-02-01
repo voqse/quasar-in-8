@@ -40,7 +40,7 @@ public class Drawer {
         themeDrawer.drawSecondDigit(canvas, getDigit(theme, text, 1), paint);
         themeDrawer.drawThirdDigit(canvas, getDigit(theme, text, 2), paint);
         themeDrawer.drawFourthDigit(canvas, getDigit(theme, text, 3), paint);
-        if (textMode != TextMode.YEAR) {
+        if (textMode != TextMode.YEAR && (widgetOptions.format24 || !NixieUtils.isAm(widgetOptions.timeZoneId))) {
             themeDrawer.drawDot(canvas, themeResources.getDot(theme), paint);
         }
         themeDrawer.drawFront(canvas, themeResources.getFront(theme), paint);

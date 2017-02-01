@@ -9,6 +9,7 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
@@ -26,9 +27,9 @@
                 android:orientation="vertical">
 
                 <FrameLayout
+                    android:id="@+id/previewContainer"
                     android:layout_width="wrap_content"
-                    android:layout_height="200dp"
-                    android:background="@color/colorPrimary">
+                    android:layout_height="wrap_content">
 
                     <android.support.v4.view.ViewPager
                         android:id="@+id/widgetsViewPager"
@@ -67,7 +68,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
                     android:orientation="horizontal"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp">
@@ -144,10 +144,7 @@
 
             <Switch
                 android:id="@+id/hideIconSwitch"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_height"
-                android:background="@drawable/item_selectable_light_divider"
-                android:padding="16dp"
+                style="@style/Switch.Settings"
                 android:text="@string/hide_icon" />
 
         </LinearLayout>

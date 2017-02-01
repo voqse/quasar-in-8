@@ -26,4 +26,5 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="purchase_error">Ошибка при покупке полной версии</string>
+    <string name="url">voqse.com</string>
 </resources>
