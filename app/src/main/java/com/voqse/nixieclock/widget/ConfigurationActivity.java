@@ -9,6 +9,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -28,6 +31,7 @@ import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment.OnTimeZoneSelectedListener;
 import com.voqse.nixieclock.timezone.TimeZones;
 import com.voqse.nixieclock.utils.NixieUtils;
+import com.voqse.nixieclock.widget.support.AboutDialogFragment;
 import com.voqse.nixieclock.widget.support.AppPickerDialogFragment;
 import com.voqse.nixieclock.widget.support.AppPickerDialogFragment.OnAppSelectedListener;
 import com.voqse.nixieclock.widget.support.DateFormatDialogFragment;
@@ -125,6 +129,19 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
             bindWidgetSettings(-1);
             setSettingsEnabled(false);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        new AboutDialogFragment().show(getSupportFragmentManager(), "AboutDialog");
+        return true;
     }
 
     @Override

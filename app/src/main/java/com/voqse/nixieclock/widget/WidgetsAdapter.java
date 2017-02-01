@@ -34,7 +34,7 @@ class WidgetsAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View view = inflater.inflate(R.layout.widget, container, false);
+        View view = inflater.inflate(R.layout.widget_preview, container, false);
         bind(view, position);
         container.addView(view);
         return view;
@@ -64,7 +64,7 @@ class WidgetsAdapter extends PagerAdapter {
     }
 
     private void bind(View view, int position) {
-        ImageView imageView = (ImageView) view;
+        ImageView imageView = (ImageView) view.findViewById(R.id.widgetImageView);
         int widgetId = widgetIds[position];
         WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
         Bitmap bitmapToReuse = getImageBitmap(imageView);
