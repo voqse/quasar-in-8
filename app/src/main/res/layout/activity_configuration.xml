@@ -82,7 +82,7 @@
                     <Button
                         android:id="@+id/applyWidgetButton"
                         style="@style/Button.Config"
-                        android:background="@drawable/btn_blue"
+                        android:background="@drawable/btn_blue_with_disabled"
                         android:text="@string/button_apply" />
 
                 </LinearLayout>

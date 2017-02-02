@@ -345,14 +345,23 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     private void updateButtons() {
         boolean hasPro = inAppBilling != null && inAppBilling.hasPro();
-        boolean anyWidgetExist = widgetsAdapter.getCount() > 0;
-        int upgradeButtonBg = hasPro || !anyWidgetExist || isCurrentWidgetSettingsChanged() ? R.drawable.btn_blue : R.drawable.btn_dark;
-        int applyButtonBg = hasPro || (anyWidgetExist && !isCurrentWidgetSettingsChanged()) ? R.drawable.btn_blue : R.drawable.btn_dark;
-        upgradeButton.setBackgroundResource(upgradeButtonBg);
-        applyWidgetButton.setBackgroundResource(applyButtonBg);
+        boolean newWidget = isNewlyCreatedWidget();
+        boolean settingsChanged = isCurrentWidgetSettingsChanged();
+
+        boolean applyButtonActive = (newWidget && (hasPro || !settingsChanged)) || (!newWidget && hasPro && settingsChanged);
+        boolean applyButtonDisabled = !newWidget && !settingsChanged;
+        int applyButtonTextColorId = applyButtonActive ? android.R.color.white : R.color.text_white_disabled;
+
+        applyWidgetButton.setBackgroundResource(applyButtonActive ? R.drawable.btn_blue : R.drawable.btn_dark);
+        applyWidgetButton.setEnabled(!applyButtonDisabled);
+        applyWidgetButton.setTextColor(getResources().getColor(applyButtonTextColorId));
+        upgradeButton.setBackgroundResource(settingsChanged ? R.drawable.btn_blue : R.drawable.btn_dark);
     }
 
     private boolean isCurrentWidgetSettingsChanged() {
+        if (widgetsAdapter.getCount() == 0) {
+            return false;
+        }
         int currentWidgetId = getCurrentWidgetId();
         WidgetOptions currentWidgetOptions = getCurrentWidgetOptions();
         return hideIconSwitch.isChecked() != settings.isHideIcon() ||

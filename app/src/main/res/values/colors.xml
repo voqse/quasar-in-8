@@ -7,4 +7,5 @@
     <color name="colorAccentText">#5c6bc0</color>
     <color name="text_black_87">#DE000000</color>
     <color name="text_gray">#969A9E</color>
+    <color name="text_white_disabled">#1FFFFFFF</color>
 </resources>
