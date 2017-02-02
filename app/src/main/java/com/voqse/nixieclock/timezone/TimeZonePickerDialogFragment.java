@@ -8,8 +8,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatDialogFragment;
 
 import com.voqse.nixieclock.R;
+import com.voqse.nixieclock.utils.NixieUtils;
 
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).
@@ -34,12 +36,14 @@ public class TimeZonePickerDialogFragment extends AppCompatDialogFragment implem
                 .create();
     }
 
-    private String[] getTimeZonesArray() {
+    private CharSequence[] getTimeZonesArray() {
         List<TimeZoneInfo> timeZones = TimeZones.getTimeZoneInfo(getActivity());
-        String[] result = new String[timeZones.size()];
+        CharSequence[] result = new CharSequence[timeZones.size()];
         int index = 0;
         for (TimeZoneInfo timeZoneInfo : timeZones) {
-            result[index++] = TimeZones.format(timeZoneInfo);
+            TimeZone timeZone = TimeZone.getTimeZone(timeZoneInfo.id);
+            String offset = timeZone.getDisplayName(false, TimeZone.SHORT);
+            result[index++] = NixieUtils.formatTwoLineText(timeZoneInfo.city, offset);
         }
         return result;
     }

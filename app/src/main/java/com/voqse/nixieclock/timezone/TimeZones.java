@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).
@@ -41,12 +40,6 @@ public class TimeZones {
             }
         }
         throw new IllegalArgumentException("Unknown timezone with id " + id);
-    }
-
-    public static String format(TimeZoneInfo timeZoneInfo) {
-        TimeZone timeZone = TimeZone.getTimeZone(timeZoneInfo.id);
-        String offset = timeZone.getDisplayName(false, TimeZone.SHORT);
-        return timeZoneInfo.city + "\n" + offset;
     }
 
     @NonNull
