@@ -18,7 +18,7 @@ import com.voqse.nixieclock.utils.NixieUtils;
 
 public class WidgetUpdater {
 
-    private static final long MODE_CHANGE_DELAY_MS = 1000;
+    private static final long MODE_CHANGE_DELAY_MS = 2000;
     private final AlarmManager alarmManager;
     private final Context context;
     private final Handler handler = new Handler(Looper.getMainLooper());
