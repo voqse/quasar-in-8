@@ -11,6 +11,8 @@
     <string name="default_app_name">Часы (по умолчанию)</string>
     <string name="theme">Тема оформления</string>
     <string name="hide_icon">Скрыть иконку</string>
+    <string name="icon_hidden">Скрыта из лаунчера</string>
+    <string name="icon_shown">Отображается в лаунчера</string>
     <string name="button_upgrade">ВСЕ ФУНКЦИИ</string>
     <string name="button_apply">ПРИМЕНИТЬ</string>
     <string name="theme_neo">Neo</string>

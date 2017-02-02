@@ -115,7 +115,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         applyWidgetButton.setOnClickListener(this);
         upgradeButton.setOnClickListener(this);
         appTextView.setOnClickListener(this);
-        hideIconSwitch.setChecked(settings.isHideIcon());
+        bindHideIcon(settings.isHideIcon());
     }
 
     private void setPreviewHeight() {
@@ -220,6 +220,13 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         appTextView.setText(formatTwoLineText(label, appName));
     }
 
+    private void bindHideIcon(boolean hideIcon) {
+        String label = getString(R.string.hide_icon);
+        String explanation = getString(hideIcon ? R.string.icon_hidden : R.string.icon_shown);
+        hideIconSwitch.setChecked(hideIcon);
+        hideIconSwitch.setText(formatTwoLineText(label, explanation));
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -253,7 +260,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
                 onTimeFormatChanged(checked);
                 break;
             case R.id.hideIconSwitch:
-                onHideIconValueChanged();
+                onHideIconValueChanged(checked);
                 break;
             default:
                 throw new IllegalStateException();
@@ -308,8 +315,9 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         }
     }
 
-    private void onHideIconValueChanged() {
+    private void onHideIconValueChanged(boolean checked) {
         updateButtons();
+        bindHideIcon(checked);
     }
 
     private int getCurrentWidget() {
