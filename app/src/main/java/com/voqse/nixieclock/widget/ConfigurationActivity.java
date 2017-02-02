@@ -128,7 +128,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private void setupUi(int[] widgetIds) {
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
-        boolean hasWidgets = widgetIds.length >= 0;
+        boolean hasWidgets = widgetIds.length > 0;
         noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
         applyWidgetButton.setVisibility(hasWidgets ? View.VISIBLE : View.GONE);
         WidgetOptions currentWidgetOptions = hasWidgets ? getCurrentWidgetOptions() : WidgetOptions.DEFAULT;
