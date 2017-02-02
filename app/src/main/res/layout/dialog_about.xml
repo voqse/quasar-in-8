@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="200dp"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <TextView
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="@string/about"
-        android:textColor="@android:color/white"
+        android:textColor="@color/text_black_87"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -51,7 +51,7 @@
         android:autoLink="web"
         android:gravity="center_horizontal"
         android:text="@string/url"
-        android:textColorLink="@color/colorAccentText"
+        android:textColorLink="@color/colorAccent"
         android:textSize="14sp" />
 
     <Button
@@ -62,6 +62,6 @@
         android:layout_gravity="right"
         android:layout_marginTop="24dp"
         android:text="@android:string/ok"
-        android:textColor="@color/colorAccentText" />
+        android:textColor="@color/colorAccent" />
 
 </LinearLayout>
