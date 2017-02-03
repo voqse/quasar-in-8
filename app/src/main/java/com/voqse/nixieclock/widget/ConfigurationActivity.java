@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -66,6 +67,8 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private Switch hideIconSwitch;
     private Button applyWidgetButton;
     private Button upgradeButton;
+    private ImageButton leftButton;
+    private ImageButton rightButton;
     private View noWidgetsView;
     private Toolbar toolbar;
     private Settings settings;
@@ -99,6 +102,8 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         this.applyWidgetButton = (Button) findViewById(R.id.applyWidgetButton);
         this.upgradeButton = (Button) findViewById(R.id.upgradeButton);
         this.toolbar = (Toolbar) findViewById(R.id.toolbar);
+        this.leftButton = (ImageButton) findViewById(R.id.leftButton);
+        this.rightButton = (ImageButton) findViewById(R.id.rightButton);
     }
 
     private void setupViews(int[] widgetIds) {
@@ -115,6 +120,8 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         applyWidgetButton.setOnClickListener(this);
         upgradeButton.setOnClickListener(this);
         appTextView.setOnClickListener(this);
+        leftButton.setOnClickListener(this);
+        rightButton.setOnClickListener(this);
         bindHideIcon(settings.isHideIcon());
     }
 
@@ -126,6 +133,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void setupUi(int[] widgetIds) {
+        updateArrowButtons(0);
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
         boolean hasWidgets = widgetIds.length > 0;
@@ -248,6 +256,12 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
             case R.id.upgradeButton:
                 upgradeToPro();
                 break;
+            case R.id.leftButton:
+                swipeSlider(true);
+                break;
+            case R.id.rightButton:
+                swipeSlider(false);
+                break;
             default:
                 throw new IllegalStateException();
         }
@@ -358,6 +372,11 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         upgradeButton.setBackgroundResource(settingsChanged ? R.drawable.btn_blue : R.drawable.btn_dark);
     }
 
+    private void updateArrowButtons(int position) {
+        leftButton.setVisibility(position > 0 ? View.VISIBLE : View.INVISIBLE);
+        rightButton.setVisibility(position < widgetsAdapter.getCount() - 1 ? View.VISIBLE : View.INVISIBLE);
+    }
+
     private boolean isCurrentWidgetSettingsChanged() {
         if (widgetsAdapter.getCount() == 0) {
             return false;
@@ -441,6 +460,12 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         }
     }
 
+    private void swipeSlider(boolean left) {
+        int currentWidgetIndex = widgetsViewPager.getCurrentItem();
+        int newWidgetIndex = left ? --currentWidgetIndex : ++currentWidgetIndex;
+        widgetsViewPager.setCurrentItem(newWidgetIndex);
+    }
+
     @Override
     public WidgetOptions provideWidgetOptions(int widgetId) {
         return widgetsOptions.get(widgetId);
@@ -452,6 +477,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         public void onPageSelected(int position) {
             WidgetOptions widgetOptions = getCurrentWidgetOptions();
             bindWidgetSettings(widgetOptions);
+            updateArrowButtons(position);
         }
 
         @Override

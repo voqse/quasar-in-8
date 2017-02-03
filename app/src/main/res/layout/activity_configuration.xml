@@ -36,10 +36,33 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
+                    <ImageButton
+                        android:id="@+id/leftButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="8dp"
+                        android:background="@drawable/item_selectable_light"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_arrow_left"
+                        android:visibility="invisible" />
+
+                    <ImageButton
+                        android:id="@+id/rightButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|end"
+                        android:layout_margin="8dp"
+                        android:background="@drawable/item_selectable_light"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_arrow_right"
+                        android:visibility="invisible" />
+
                     <LinearLayout
                         android:id="@+id/noWidgetsView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:background="?colorPrimary"
                         android:gravity="center"
                         android:orientation="vertical"
                         android:visibility="gone">
@@ -66,8 +89,9 @@
                 </FrameLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="@dimen/settings_width"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:orientation="horizontal"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp">
