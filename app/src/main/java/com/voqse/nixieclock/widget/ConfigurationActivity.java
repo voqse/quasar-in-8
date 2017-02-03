@@ -74,7 +74,6 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private Settings settings;
     private InAppBilling inAppBilling;
     private SparseArray<WidgetOptions> widgetsOptions;
-    private boolean upgradeButtonActivated;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -365,13 +364,11 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
         boolean applyButtonActive = (newWidget && (hasPro || !settingsChanged)) || (!newWidget && hasPro && settingsChanged);
         boolean applyButtonDisabled = !newWidget && !settingsChanged;
-        boolean upgradeButtonActive = upgradeButtonActivated = upgradeButtonActivated || settingsChanged;
         int applyButtonTextColorId = applyButtonActive ? android.R.color.white : R.color.text_white_disabled;
 
         applyWidgetButton.setBackgroundResource(applyButtonActive ? R.drawable.btn_blue : R.drawable.btn_dark);
         applyWidgetButton.setEnabled(!applyButtonDisabled);
         applyWidgetButton.setTextColor(getResources().getColor(applyButtonTextColorId));
-        upgradeButton.setBackgroundResource(upgradeButtonActive ? R.drawable.btn_blue : R.drawable.btn_dark);
     }
 
     private void updateArrowButtons(int position) {
