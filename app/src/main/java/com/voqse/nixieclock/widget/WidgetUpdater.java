@@ -12,12 +12,16 @@ import android.support.annotation.NonNull;
 
 import com.voqse.nixieclock.utils.NixieUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
 
 public class WidgetUpdater {
 
+    private static final Logger LOG = LoggerFactory.getLogger("WidgetUpdater");
     private static final long MODE_CHANGE_DELAY_MS = 2000;
     private final AlarmManager alarmManager;
     private final Context context;
@@ -33,6 +37,7 @@ public class WidgetUpdater {
         alarmManager.cancel(pendingIntent);
 
         long nextUpdateTime = NixieUtils.getNextMinuteStart();
+        LOG.debug("Schedule next update on " + NixieUtils.formatTimeDetails(nextUpdateTime));
         alarmManager.set(AlarmManager.RTC, nextUpdateTime, pendingIntent);
     }
 
@@ -66,7 +71,7 @@ public class WidgetUpdater {
     }
 
     private PendingIntent newPendingUpdateIntent(Intent broadcastIntent) {
-        return PendingIntent.getBroadcast(context, 0, broadcastIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context, 0, broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private Intent newUpdateIntent() {

@@ -3,6 +3,8 @@ package com.voqse.nixieclock.utils;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.PowerManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -31,6 +33,7 @@ public class NixieUtils {
     private static final DateFormat DATE_FORMAT_MONTH_FIRST = new SimpleDateFormat("MM.dd.yyyy", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_DAY_FIRST = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_YEAR = new SimpleDateFormat("yyyy", Locale.getDefault());
+    private static final DateFormat DATE_FORMAT_TIME_DETAILS = new SimpleDateFormat("HH:mm:ss:SSS", Locale.getDefault());
 
     public static String getCurrentTime(boolean format24, String timeZoneId) {
         DateFormat dateFormat = format24 ? TIME_FORMAT_24 : TIME_FORMAT_12;
@@ -52,6 +55,10 @@ public class NixieUtils {
         calendar.setTimeZone(timeZone);
         int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
         return hourOfDay < 12;
+    }
+
+    public static String formatTimeDetails(long time) {
+        return DATE_FORMAT_TIME_DETAILS.format(new Date(time));
     }
 
     private static String formatCurrentDate(String timeZoneId, DateFormat dateFormat) {
@@ -108,5 +115,14 @@ public class NixieUtils {
         calendar.set(Calendar.MILLISECOND, 100);
         long currentMinuteStart = calendar.getTimeInMillis();
         return currentMinuteStart + 60 * 1000;
+    }
+
+    public static boolean isDeviceActive(Context context) {
+        PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            return powerManager.isInteractive();
+        } else {
+            return powerManager.isScreenOn();
+        }
     }
 }

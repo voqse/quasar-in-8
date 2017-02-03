@@ -13,6 +13,9 @@ import com.voqse.nixieclock.App;
 import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.theme.drawer.Drawer;
+import com.voqse.nixieclock.utils.NixieUtils;
+
+import hugo.weaving.DebugLog;
 
 /**
  * Defines the basic methods that allow you to programmatically interface with the App Widget, based on broadcast events.
@@ -47,14 +50,19 @@ public class WidgetProvider extends AppWidgetProvider {
         onUpdate(context, appWidgetManager, appWidgetIds, TextMode.TIME);
     }
 
+    @DebugLog
     private void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, TextMode textMode) {
+        if (appWidgetIds.length > 0) {
+            App.getWidgetUpdater(context).scheduleNextUpdate();
+        }
+
+        if (!NixieUtils.isDeviceActive(context)) {
+            return;
+        }
+
         Settings settings = new Settings(context);
         for (int appWidgetId : appWidgetIds) {
             updateWidget(context, settings, appWidgetManager, appWidgetId, textMode);
-        }
-
-        if (appWidgetIds.length > 0) {
-            App.getWidgetUpdater(context).scheduleNextUpdate();
         }
     }
 
