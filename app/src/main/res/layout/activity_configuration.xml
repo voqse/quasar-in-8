@@ -44,8 +44,7 @@
                         android:layout_margin="8dp"
                         android:background="@drawable/item_selectable_light"
                         android:padding="8dp"
-                        android:src="@drawable/ic_arrow_left"
-                        android:visibility="invisible" />
+                        android:src="@drawable/ic_arrow_left" />
 
                     <ImageButton
                         android:id="@+id/rightButton"
@@ -55,8 +54,7 @@
                         android:layout_margin="8dp"
                         android:background="@drawable/item_selectable_light"
                         android:padding="8dp"
-                        android:src="@drawable/ic_arrow_right"
-                        android:visibility="invisible" />
+                        android:src="@drawable/ic_arrow_right" />
 
                     <LinearLayout
                         android:id="@+id/noWidgetsView"

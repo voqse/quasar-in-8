@@ -133,6 +133,9 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void setupUi(int[] widgetIds) {
+        int arrowVisibility = isNewlyCreatedWidget() ? View.GONE : View.VISIBLE;
+        leftButton.setVisibility(arrowVisibility);
+        rightButton.setVisibility(arrowVisibility);
         updateArrowButtons(0);
         int currentWidget = getCurrentWidget(widgetIds);
         widgetsViewPager.setCurrentItem(currentWidget);
@@ -372,8 +375,12 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void updateArrowButtons(int position) {
-        leftButton.setVisibility(position > 0 ? View.VISIBLE : View.INVISIBLE);
-        rightButton.setVisibility(position < widgetsAdapter.getCount() - 1 ? View.VISIBLE : View.INVISIBLE);
+        boolean leftActive = position > 0;
+        boolean rightActive = position < widgetsAdapter.getCount() - 1;
+        leftButton.setEnabled(leftActive);
+        rightButton.setEnabled(rightActive);
+        leftButton.setAlpha(leftActive ? 1f : .3f);
+        rightButton.setAlpha(rightActive ? 1f : .3f);
     }
 
     private boolean isCurrentWidgetSettingsChanged() {
