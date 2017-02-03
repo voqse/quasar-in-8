@@ -402,11 +402,14 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
             settings.setWidgetOptions(widgetId, currentWidgetOptions);
 
             new WidgetUpdater(this).updateImmediately();
+            updatePreviewAndButton();
 
-            Intent resultValue = new Intent();
-            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-            setResult(RESULT_OK, resultValue);
-            finish();
+            if (isNewlyCreatedWidget()) {
+                Intent resultValue = new Intent();
+                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+                setResult(RESULT_OK, resultValue);
+                finish();
+            }
         }
     }
 
