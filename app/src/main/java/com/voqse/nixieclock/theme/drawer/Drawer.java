@@ -51,7 +51,7 @@ public class Drawer {
         String text;
         switch (textMode) {
             case TIME:
-                text = NixieUtils.getCurrentTime(widgetOptions.format24, widgetOptions.timeZoneId, false);
+                text = NixieUtils.getCurrentTime(widgetOptions.format24, widgetOptions.timeZoneId);
                 break;
             case DATE:
                 text = NixieUtils.getCurrentDate(widgetOptions.monthFirst, widgetOptions.timeZoneId);

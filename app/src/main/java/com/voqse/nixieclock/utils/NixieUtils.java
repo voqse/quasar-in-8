@@ -28,14 +28,12 @@ public class NixieUtils {
 
     private static final DateFormat TIME_FORMAT_24 = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private static final DateFormat TIME_FORMAT_12 = new SimpleDateFormat("hh:mm", Locale.getDefault());
-    private static final DateFormat TIME_FORMAT_12_AM_PM = new SimpleDateFormat("h:mm a", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_MONTH_FIRST = new SimpleDateFormat("MM.dd.yyyy", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_DAY_FIRST = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_YEAR = new SimpleDateFormat("yyyy", Locale.getDefault());
 
-    public static String getCurrentTime(boolean format24, String timeZoneId, boolean showAmPm) {
-        DateFormat dateFormat = format24 ? TIME_FORMAT_24 :
-                showAmPm ? TIME_FORMAT_12_AM_PM : TIME_FORMAT_12;
+    public static String getCurrentTime(boolean format24, String timeZoneId) {
+        DateFormat dateFormat = format24 ? TIME_FORMAT_24 : TIME_FORMAT_12;
         return formatCurrentDate(timeZoneId, dateFormat);
     }
 

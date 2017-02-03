@@ -3,6 +3,8 @@
     <string name="no_widgets">Нет активных виджетов</string>
     <string name="no_widgets_explain">Вы ещё не добавили ни одного виджета</string>
     <string name="format_24">24-часовой формат</string>
+    <string name="format_24_yes">13:00</string>
+    <string name="format_24_no">1:00 PM</string>
     <string name="date_format">Формат даты</string>
     <string name="timezone">Часовой пояс</string>
     <string name="date_time_settings">Дата и время</string>
