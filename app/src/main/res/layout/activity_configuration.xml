@@ -100,6 +100,8 @@
                         android:id="@+id/upgradeButton"
                         style="@style/Button.Config"
                         android:background="@drawable/btn_dark"
+                        android:drawableLeft="@drawable/ic_unlock"
+                        android:padding="8dp"
                         android:text="@string/button_upgrade"
                         android:visibility="gone" />
 
