@@ -216,7 +216,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     private void bindDateFormat(boolean monthFirst, String timeZoneId) {
         String label = getString(R.string.date_format);
-        String date = NixieUtils.getCurrentDate(monthFirst, timeZoneId);
+        String date = NixieUtils.getNewYerDate(monthFirst);
         dateFormatTextView.setText(formatTwoLineText(label, date));
     }
 
@@ -245,7 +245,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
                 new TimeZonePickerDialogFragment().show(getSupportFragmentManager(), "TimeZonePicker");
                 break;
             case R.id.dateFormatTextView:
-                DateFormatDialogFragment.show(getSupportFragmentManager(), getCurrentWidgetId());
+                new DateFormatDialogFragment().show(getSupportFragmentManager(), "DateFormatPicker");
                 break;
             case R.id.themeTextView:
                 new ThemePickerDialogFragment().show(getSupportFragmentManager(), "ThemePicker");

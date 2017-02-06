@@ -30,8 +30,10 @@ public class NixieUtils {
 
     private static final DateFormat TIME_FORMAT_24 = new SimpleDateFormat("HH:mm", Locale.getDefault());
     private static final DateFormat TIME_FORMAT_12 = new SimpleDateFormat("hh:mm", Locale.getDefault());
-    private static final DateFormat DATE_FORMAT_MONTH_FIRST = new SimpleDateFormat("MM.dd.yyyy", Locale.getDefault());
-    private static final DateFormat DATE_FORMAT_DAY_FIRST = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+    private static final DateFormat DATE_FORMAT_US = new SimpleDateFormat("MM.dd.yyyy", Locale.getDefault());
+    private static final DateFormat DATE_FORMAT_RU = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+    private static final DateFormat DATE_FORMAT_NEW_YEAR_US = new SimpleDateFormat("12/31/yyyy", Locale.getDefault());
+    private static final DateFormat DATE_FORMAT_NEW_YEAR_RU = new SimpleDateFormat("31.12.yyyy", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_YEAR = new SimpleDateFormat("yyyy", Locale.getDefault());
     private static final DateFormat DATE_FORMAT_TIME_DETAILS = new SimpleDateFormat("HH:mm:ss:SSS", Locale.getDefault());
 
@@ -41,8 +43,13 @@ public class NixieUtils {
     }
 
     public static String getCurrentDate(boolean monthFirst, String timeZoneId) {
-        DateFormat dateFormat = monthFirst ? DATE_FORMAT_MONTH_FIRST : DATE_FORMAT_DAY_FIRST;
+        DateFormat dateFormat = monthFirst ? DATE_FORMAT_US : DATE_FORMAT_RU;
         return formatCurrentDate(timeZoneId, dateFormat);
+    }
+
+    public static String getNewYerDate(boolean monthFirst) {
+        DateFormat dateFormat = monthFirst ? DATE_FORMAT_NEW_YEAR_US : DATE_FORMAT_NEW_YEAR_RU;
+        return dateFormat.format(new Date());
     }
 
     public static String getCurrentYear(String timeZoneId) {
