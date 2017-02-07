@@ -3,7 +3,6 @@ package com.voqse.nixieclock.timezone;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.voqse.nixieclock.R;
 
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).
@@ -35,7 +35,7 @@ public class TimeZones {
     public static TimeZoneInfo getTimeZoneInfo(Context context, String id) {
         List<TimeZoneInfo> timeZones = getTimeZoneInfo(context);
         for (TimeZoneInfo timeZoneInfo : timeZones) {
-            if (TextUtils.equals(id, timeZoneInfo.id)) {
+            if (timeZoneInfo.hasId(id)) {
                 return timeZoneInfo;
             }
         }
@@ -72,7 +72,8 @@ public class TimeZones {
                     parser.next();
                 }
                 String city = parser.getText();
-                result.add(new TimeZoneInfo(timeZoneId, city));
+                String deviceTimeZoneId = TimeZone.getTimeZone(timeZoneId).getID();
+                result.add(new TimeZoneInfo(timeZoneId, deviceTimeZoneId, city));
                 while (parser.getEventType() != XmlResourceParser.END_TAG) {
                     parser.next();
                 }
