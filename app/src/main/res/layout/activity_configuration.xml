@@ -141,6 +141,12 @@
                 android:text="@string/date_time_settings" />
 
             <Switch
+                android:id="@+id/systemSettingsSwitch"
+                style="@style/Switch.Settings"
+                android:checked="true"
+                android:text="@string/system_settings" />
+
+            <Switch
                 android:id="@+id/timeFormatSwitch"
                 style="@style/Switch.Settings"
                 android:text="@string/format_24" />

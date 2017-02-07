@@ -15,6 +15,7 @@ import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.widget.LaunchConfigurationActivity;
 
 import java.text.DateFormat;
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -131,5 +132,11 @@ public class NixieUtils {
         } else {
             return powerManager.isScreenOn();
         }
+    }
+
+    public static boolean isSystemUseMonthFirst(Context context) {
+        Format dateFormat = android.text.format.DateFormat.getDateFormat(context);
+        String pattern = ((SimpleDateFormat) dateFormat).toLocalizedPattern();
+        return pattern.startsWith("M");
     }
 }

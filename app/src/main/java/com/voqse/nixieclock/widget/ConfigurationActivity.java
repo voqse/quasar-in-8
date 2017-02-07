@@ -59,6 +59,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     private WidgetsAdapter widgetsAdapter;
     private ViewPager widgetsViewPager;
+    private Switch systemSettingsSwitch;
     private Switch timeFormatSwitch;
     private TextView timeZoneTextView;
     private TextView dateFormatTextView;
@@ -93,6 +94,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private void findViews() {
         this.widgetsViewPager = (ViewPager) findViewById(R.id.widgetsViewPager);
         this.timeFormatSwitch = (Switch) findViewById(R.id.timeFormatSwitch);
+        this.systemSettingsSwitch = (Switch) findViewById(R.id.systemSettingsSwitch);
         this.timeZoneTextView = (TextView) findViewById(R.id.timeZoneTextView);
         this.dateFormatTextView = (TextView) findViewById(R.id.dateFormatTextView);
         this.themeTextView = (TextView) findViewById(R.id.themeTextView);
@@ -113,6 +115,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         widgetsViewPager.setAdapter(widgetsAdapter);
         timeFormatSwitch.setOnCheckedChangeListener(this);
         hideIconSwitch.setOnCheckedChangeListener(this);
+        systemSettingsSwitch.setOnCheckedChangeListener(this);
         widgetsViewPager.addOnPageChangeListener(new WidgetSettingBinder());
         timeZoneTextView.setOnClickListener(this);
         dateFormatTextView.setOnClickListener(this);
@@ -123,6 +126,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         leftButton.setOnClickListener(this);
         rightButton.setOnClickListener(this);
         bindHideIcon(settings.isHideIcon());
+        bindUseSystemSettings(settings.isUseSystemPreferences());
     }
 
     private void setPreviewHeight() {
@@ -142,10 +146,10 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         boolean hasWidgets = widgetIds.length > 0;
         noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
         applyWidgetButton.setVisibility(hasWidgets ? View.VISIBLE : View.GONE);
-        WidgetOptions currentWidgetOptions = hasWidgets ? getCurrentWidgetOptions() : WidgetOptions.DEFAULT;
+        WidgetOptions currentWidgetOptions = hasWidgets ? getCurrentWidgetOptions() : WidgetOptions.getDefault(this);
         bindWidgetSettings(currentWidgetOptions);
         if (!hasWidgets) {
-            disableSettings();
+            setEnabled(false, timeFormatSwitch, timeZoneTextView, dateFormatTextView, themeTextView, appTextView, hideIconSwitch);
         }
     }
 
@@ -238,6 +242,17 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         hideIconSwitch.setText(formatTwoLineText(label, explanation));
     }
 
+    private void bindUseSystemSettings(boolean useSystemPreferences) {
+        systemSettingsSwitch.setChecked(useSystemPreferences);
+        setEnabled(!useSystemPreferences, dateFormatTextView, timeFormatSwitch, timeZoneTextView);
+        if (useSystemPreferences) {
+            WidgetOptions defaultOptions = WidgetOptions.getDefault(this);
+            bindTimeFormat(defaultOptions.format24);
+            bindTimeZone(defaultOptions.timeZoneId);
+            bindDateFormat(defaultOptions.monthFirst);
+        }
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -278,6 +293,9 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
                 break;
             case R.id.hideIconSwitch:
                 onHideIconValueChanged(checked);
+                break;
+            case R.id.systemSettingsSwitch:
+                onUseSystemPreferencesValueChanged(checked);
                 break;
             default:
                 throw new IllegalStateException();
@@ -335,6 +353,11 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private void onHideIconValueChanged(boolean checked) {
         updateButtons();
         bindHideIcon(checked);
+    }
+
+    private void onUseSystemPreferencesValueChanged(boolean useSystemPreferences) {
+        updateButtons();
+        bindUseSystemSettings(useSystemPreferences);
     }
 
     private int getCurrentWidget() {
@@ -401,6 +424,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
             if (settings.isHideIcon() != hideIcon) {
                 NixieUtils.setLauncherIconVisibility(this, !hideIcon);
                 settings.setHideIcon(hideIcon);
+                settings.setUseSystemPreferences(systemSettingsSwitch.isChecked());
             }
 
             WidgetOptions currentWidgetOptions = getCurrentWidgetOptions();
@@ -423,10 +447,10 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         inAppBilling.purchase(this, REQUEST_CODE_PURCHASE);
     }
 
-    private void disableSettings() {
-        for (View view : new View[]{timeFormatSwitch, timeZoneTextView, dateFormatTextView, themeTextView, appTextView, hideIconSwitch}) {
-            view.setEnabled(false);
-            view.setAlpha(0.5f);
+    private void setEnabled(boolean enabled, View... views) {
+        for (View view : views) {
+            view.setEnabled(enabled);
+            view.setAlpha(enabled ? 1 : 0.5f);
         }
     }
 
@@ -462,9 +486,11 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         if (buyClicked) {
             upgradeToPro();
         } else if (yesClicked) {
-            changeCurrentWidgetOptions(WidgetOptions.DEFAULT);
-            bindWidgetSettings(WidgetOptions.DEFAULT);
+            WidgetOptions defaultOptions = WidgetOptions.getDefault(this);
+            changeCurrentWidgetOptions(defaultOptions);
+            bindWidgetSettings(defaultOptions);
             hideIconSwitch.setChecked(false);
+            systemSettingsSwitch.setChecked(true);
             updatePreviewAndButton();
         }
     }

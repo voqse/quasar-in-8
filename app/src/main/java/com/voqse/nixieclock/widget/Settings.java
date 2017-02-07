@@ -21,11 +21,14 @@ public class Settings {
     private static final String KEY_THEME = "theme";
     private static final String KEY_HIDE_ICON = "hide_icon";
     private static final String KEY_APP_TO_LAUNCH = "app_to_launch";
+    private static final String KEY_USE_SYSTEM_PREFERENCES = "use_system_preferences";
 
     private final SharedPreferences preferences;
+    private final Context context;
 
     public Settings(Context context) {
-        this.preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.context = context.getApplicationContext();
+        this.preferences = PreferenceManager.getDefaultSharedPreferences(this.context);
     }
 
     public WidgetOptions getWidgetOptions(int widgetId) {
@@ -34,12 +37,13 @@ public class Settings {
         String monthFirstKey = getWidgetKey(KEY_MONTH_FIRST, widgetId);
         String appToLaunchKey = getWidgetKey(KEY_APP_TO_LAUNCH, widgetId);
         String themeKey = getWidgetKey(KEY_THEME, widgetId);
+        WidgetOptions defaultOptions = WidgetOptions.getDefault(context);
         return new WidgetOptions(
-                preferences.getBoolean(format24Key, WidgetOptions.DEFAULT.format24),
-                preferences.getString(timeZoneKey, WidgetOptions.DEFAULT.timeZoneId),
-                preferences.getBoolean(monthFirstKey, WidgetOptions.DEFAULT.monthFirst),
-                ExternalApp.fromString(preferences.getString(appToLaunchKey, ExternalApp.DEFAULT_APP.pack())),
-                Theme.valueOf(preferences.getString(themeKey, WidgetOptions.DEFAULT.theme.name()))
+                preferences.getBoolean(format24Key, defaultOptions.format24),
+                preferences.getString(timeZoneKey, defaultOptions.timeZoneId),
+                preferences.getBoolean(monthFirstKey, defaultOptions.monthFirst),
+                ExternalApp.fromString(preferences.getString(appToLaunchKey, defaultOptions.appToLaunch.pack())),
+                Theme.valueOf(preferences.getString(themeKey, defaultOptions.theme.name()))
         );
     }
 
@@ -57,8 +61,16 @@ public class Settings {
         return preferences.getBoolean(KEY_HIDE_ICON, false);
     }
 
+    public boolean isUseSystemPreferences() {
+        return preferences.getBoolean(KEY_USE_SYSTEM_PREFERENCES, true);
+    }
+
     public void setHideIcon(boolean hide) {
         put(KEY_HIDE_ICON, hide);
+    }
+
+    public void setUseSystemPreferences(boolean useSystemPreferences) {
+        put(KEY_USE_SYSTEM_PREFERENCES, useSystemPreferences);
     }
 
     public void remove(int... widgetIds) {

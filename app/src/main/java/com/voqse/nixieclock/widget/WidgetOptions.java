@@ -1,7 +1,11 @@
 package com.voqse.nixieclock.widget;
 
+import android.content.Context;
+import android.text.format.DateFormat;
+
 import com.voqse.nixieclock.clock.ExternalApp;
 import com.voqse.nixieclock.theme.Theme;
+import com.voqse.nixieclock.utils.NixieUtils;
 
 import java.util.TimeZone;
 
@@ -10,8 +14,6 @@ import java.util.TimeZone;
  */
 
 public class WidgetOptions {
-
-    public static final WidgetOptions DEFAULT = new WidgetOptions(true, TimeZone.getDefault().getID(), false, ExternalApp.DEFAULT_APP, Theme.NEO);
 
     public final boolean format24;
     public final String timeZoneId;
@@ -25,6 +27,16 @@ public class WidgetOptions {
         this.monthFirst = monthFirst;
         this.appToLaunch = appToLaunch;
         this.theme = theme;
+    }
+
+    public static WidgetOptions getDefault(Context context) {
+        return new WidgetOptions(
+                DateFormat.is24HourFormat(context),
+                TimeZone.getDefault().getID(),
+                NixieUtils.isSystemUseMonthFirst(context),
+                ExternalApp.DEFAULT_APP,
+                Theme.NEO
+        );
     }
 
     public WidgetOptions changeFormat24(boolean format24) {
