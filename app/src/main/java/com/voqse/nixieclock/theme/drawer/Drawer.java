@@ -11,7 +11,8 @@ import com.voqse.nixieclock.utils.NixieUtils;
 import com.voqse.nixieclock.widget.TextMode;
 import com.voqse.nixieclock.widget.WidgetOptions;
 
-import hugo.weaving.DebugLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Alexey Danilov (danikula@gmail.com).
@@ -19,6 +20,7 @@ import hugo.weaving.DebugLog;
 
 public class Drawer {
 
+    private static final Logger LOG = LoggerFactory.getLogger("Drawer");
     public static final int X2_MIN_WIDTH_PX = 600;
     public static final int X2_MIN_HEIGHT_PX = 300;
 
@@ -31,13 +33,12 @@ public class Drawer {
         paint.setAntiAlias(true);
     }
 
-
-    @DebugLog
     public Bitmap draw(WidgetOptions widgetOptions, TextMode textMode, boolean x2) {
         Theme theme = widgetOptions.theme;
         Bitmap basement = themeResources.getBack(theme, x2);
         Canvas canvas = new Canvas(basement);
         String text = getTextToDraw(widgetOptions, textMode);
+        LOG.debug("Draw text '{}'", text);
         ThemeDrawer themeDrawer = theme.newThemeDrawer();
         themeDrawer.drawFirstDigit(canvas, getDigit(theme, text, 0, x2), paint, x2);
         themeDrawer.drawSecondDigit(canvas, getDigit(theme, text, 1, x2), paint, x2);

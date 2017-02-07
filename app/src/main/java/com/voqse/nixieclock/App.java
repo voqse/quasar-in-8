@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import com.crashlytics.android.Crashlytics;
 import com.voqse.nixieclock.log.CrashlyticsLogger;
 import com.voqse.nixieclock.widget.ScreenOnListener;
+import com.voqse.nixieclock.widget.WidgetServiceUpdater;
 import com.voqse.nixieclock.widget.WidgetUpdater;
 
 import org.slf4j.impl.custom.Level;
@@ -35,6 +36,7 @@ public class App extends Application {
         this.widgetUpdater = new WidgetUpdater(this);
         this.widgetUpdater.scheduleNextUpdate();
         ScreenOnListener.listenForScreenOn(this);
+        WidgetServiceUpdater.wakeUp(this);
     }
 
     private void initLogger() {

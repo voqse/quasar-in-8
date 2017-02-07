@@ -16,7 +16,8 @@ import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.theme.drawer.Drawer;
 import com.voqse.nixieclock.utils.NixieUtils;
 
-import hugo.weaving.DebugLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT;
 import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH;
@@ -30,6 +31,7 @@ import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH;
 public class WidgetProvider extends AppWidgetProvider {
 
     public static final String EXTRA_TEXT_MODE = BuildConfig.APPLICATION_ID + ".EXTRA_TEXT_MODE";
+    private static final Logger LOG = LoggerFactory.getLogger("WidgetProvider");
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -54,10 +56,12 @@ public class WidgetProvider extends AppWidgetProvider {
         onUpdate(context, appWidgetManager, appWidgetIds, TextMode.TIME);
     }
 
-    @DebugLog
     private void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, TextMode textMode) {
+        LOG.debug("Update widgets({})", appWidgetIds.length);
+
         if (appWidgetIds.length > 0) {
             App.getWidgetUpdater(context).scheduleNextUpdate();
+            WidgetServiceUpdater.wakeUp(context);
         }
 
         if (!NixieUtils.isDeviceActive(context)) {
