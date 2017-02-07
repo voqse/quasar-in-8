@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
@@ -16,6 +17,9 @@ import com.voqse.nixieclock.theme.drawer.Drawer;
 import com.voqse.nixieclock.utils.NixieUtils;
 
 import hugo.weaving.DebugLog;
+
+import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT;
+import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH;
 
 /**
  * Defines the basic methods that allow you to programmatically interface with the App Widget, based on broadcast events.
@@ -75,15 +79,35 @@ public class WidgetProvider extends AppWidgetProvider {
     private void updateWidget(Context context, Settings settings, AppWidgetManager appWidgetManager, int widgetId, TextMode textMode) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
-        Bitmap bitmap = getWidgetBitmap(context, widgetOptions, textMode);
+        boolean maxQuality = isMaxQuality(context, appWidgetManager, widgetId);
+        Bitmap bitmap = getWidgetBitmap(context, widgetOptions, textMode, maxQuality);
         views.setImageViewBitmap(R.id.imageView, bitmap);
         views.setOnClickPendingIntent(R.id.imageView, newClickIntent(context, widgetId));
         appWidgetManager.updateAppWidget(widgetId, views);
     }
 
-    private Bitmap getWidgetBitmap(Context context, WidgetOptions widgetOptions, TextMode textMode) {
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+
+        this.onUpdate(context, appWidgetManager, new int[]{appWidgetId}, TextMode.TIME);
+    }
+
+    private Bitmap getWidgetBitmap(Context context, WidgetOptions widgetOptions, TextMode textMode, boolean maxQuality) {
         Drawer drawer = new Drawer(context);
-        return drawer.draw(widgetOptions, null, textMode);
+        return drawer.draw(widgetOptions, null, textMode, maxQuality);
+    }
+
+    private boolean isMaxQuality(Context context, AppWidgetManager appWidgetManager, int widgetId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            Bundle appWidgetOptions = appWidgetManager.getAppWidgetOptions(widgetId);
+            int maxWidthDp = appWidgetOptions.getInt(OPTION_APPWIDGET_MAX_WIDTH);
+            int maxHeightDp = appWidgetOptions.getInt(OPTION_APPWIDGET_MAX_HEIGHT);
+            int maxWidthPx = NixieUtils.dipToPixels(context, maxWidthDp);
+            int maxHeightPx = NixieUtils.dipToPixels(context, maxHeightDp);
+            return maxWidthPx > Drawer.X2_MIN_WIDTH_PX && maxHeightPx >= Drawer.X2_MIN_HEIGHT_PX;
+        }
+        return true;
     }
 
     private PendingIntent newClickIntent(Context context, int widgetId) {

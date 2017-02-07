@@ -69,7 +69,7 @@ class WidgetsAdapter extends PagerAdapter {
         int widgetId = widgetIds[position];
         WidgetOptions widgetOptions = widgetOptionsProvider.provideWidgetOptions(widgetId);
         Bitmap bitmapToReuse = getImageBitmap(imageView);
-        Bitmap bitmap = drawer.draw(widgetOptions, bitmapToReuse, TextMode.TIME);
+        Bitmap bitmap = drawer.draw(widgetOptions, bitmapToReuse, TextMode.TIME, true);
         imageView.setImageBitmap(bitmap);
         view.setTag(position);
     }

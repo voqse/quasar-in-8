@@ -20,6 +20,9 @@ import hugo.weaving.DebugLog;
 
 public class Drawer {
 
+    public static final int X2_MIN_WIDTH_PX = 600;
+    public static final int X2_MIN_HEIGHT_PX = 300;
+
     private final Paint paint;
     private ThemeResources themeResources;
 
@@ -29,21 +32,22 @@ public class Drawer {
         paint.setAntiAlias(true);
     }
 
+
     @DebugLog
-    public Bitmap draw(WidgetOptions widgetOptions, @Nullable Bitmap bitmapToReuse, TextMode textMode) {
+    public Bitmap draw(WidgetOptions widgetOptions, @Nullable Bitmap bitmapToReuse, TextMode textMode, boolean x2) {
         Theme theme = widgetOptions.theme;
-        Bitmap basement = themeResources.getBasement(theme, bitmapToReuse);
+        Bitmap basement = themeResources.getBasement(theme, bitmapToReuse, x2);
         Canvas canvas = new Canvas(basement);
         String text = getTextToDraw(widgetOptions, textMode);
         ThemeDrawer themeDrawer = theme.newThemeDrawer();
-        themeDrawer.drawFirstDigit(canvas, getDigit(theme, text, 0), paint);
-        themeDrawer.drawSecondDigit(canvas, getDigit(theme, text, 1), paint);
-        themeDrawer.drawThirdDigit(canvas, getDigit(theme, text, 2), paint);
-        themeDrawer.drawFourthDigit(canvas, getDigit(theme, text, 3), paint);
+        themeDrawer.drawFirstDigit(canvas, getDigit(theme, text, 0, x2), paint, x2);
+        themeDrawer.drawSecondDigit(canvas, getDigit(theme, text, 1, x2), paint, x2);
+        themeDrawer.drawThirdDigit(canvas, getDigit(theme, text, 2, x2), paint, x2);
+        themeDrawer.drawFourthDigit(canvas, getDigit(theme, text, 3, x2), paint, x2);
         if (textMode != TextMode.YEAR && (widgetOptions.format24 || !NixieUtils.isAm(widgetOptions.timeZoneId))) {
-            themeDrawer.drawDot(canvas, themeResources.getDot(theme), paint);
+            themeDrawer.drawDot(canvas, themeResources.getDot(theme, x2), paint, x2);
         }
-        themeDrawer.drawFront(canvas, themeResources.getFront(theme), paint);
+        themeDrawer.drawFront(canvas, themeResources.getFront(theme, x2), paint, x2);
         return basement;
     }
 
@@ -65,8 +69,8 @@ public class Drawer {
         return text.replace(".", "").replace(":", "");
     }
 
-    private Bitmap getDigit(Theme theme, String text, int index) {
+    private Bitmap getDigit(Theme theme, String text, int index, boolean x2) {
         int digit = text.charAt(index) - '0';
-        return themeResources.getDigit(theme, digit);
+        return themeResources.getDigit(theme, digit, x2);
     }
 }

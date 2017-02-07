@@ -3,6 +3,7 @@ package com.voqse.nixieclock.utils;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.PowerManager;
 import android.text.SpannableStringBuilder;
@@ -10,6 +11,7 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.util.Base64;
+import android.util.TypedValue;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.widget.LaunchConfigurationActivity;
@@ -138,5 +140,9 @@ public class NixieUtils {
         Format dateFormat = android.text.format.DateFormat.getDateFormat(context);
         String pattern = ((SimpleDateFormat) dateFormat).toLocalizedPattern();
         return pattern.startsWith("M");
+    }
+    public static int dipToPixels(Context context, int dip) {
+        Resources resources = context.getResources();
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, resources.getDisplayMetrics());
     }
 }

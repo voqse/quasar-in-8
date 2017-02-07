@@ -10,32 +10,32 @@ import android.graphics.Paint;
 public class TronThemeDrawer implements ThemeDrawer {
 
     @Override
-    public void drawFirstDigit(Canvas canvas, Bitmap firstDigit, Paint paint) {
-        canvas.drawBitmap(firstDigit, 97, 89, paint);
+    public void drawFirstDigit(Canvas canvas, Bitmap firstDigit, Paint paint, boolean x2) {
+        canvas.drawBitmap(firstDigit, x2 ? 97 : 48, x2 ? 89 : 44, paint);
     }
 
     @Override
-    public void drawSecondDigit(Canvas canvas, Bitmap secondDigit, Paint paint) {
-        canvas.drawBitmap(secondDigit, 289, 89, paint);
+    public void drawSecondDigit(Canvas canvas, Bitmap secondDigit, Paint paint, boolean x2) {
+        canvas.drawBitmap(secondDigit, x2 ? 289 : 144, x2 ? 89 : 44, paint);
     }
 
     @Override
-    public void drawThirdDigit(Canvas canvas, Bitmap thirdDigit, Paint paint) {
-        canvas.drawBitmap(thirdDigit, 553, 89, paint);
+    public void drawThirdDigit(Canvas canvas, Bitmap thirdDigit, Paint paint, boolean x2) {
+        canvas.drawBitmap(thirdDigit, x2 ? 553 : 276, x2 ? 89 : 44, paint);
     }
 
     @Override
-    public void drawFourthDigit(Canvas canvas, Bitmap fourthDigit, Paint paint) {
-        canvas.drawBitmap(fourthDigit, 744, 89, paint);
+    public void drawFourthDigit(Canvas canvas, Bitmap fourthDigit, Paint paint, boolean x2) {
+        canvas.drawBitmap(fourthDigit, x2 ? 744 : 372, x2 ? 89 : 44, paint);
     }
 
     @Override
-    public void drawDot(Canvas canvas, Bitmap dot, Paint paint) {
-        canvas.drawBitmap(dot, 496, 319, paint);
+    public void drawDot(Canvas canvas, Bitmap dot, Paint paint, boolean x2) {
+        canvas.drawBitmap(dot, x2 ? 496 : 248, x2 ? 319 : 159, paint);
     }
 
     @Override
-    public void drawFront(Canvas canvas, Bitmap front, Paint paint) {
-        canvas.drawBitmap(front, 109, 50, paint);
+    public void drawFront(Canvas canvas, Bitmap front, Paint paint, boolean x2) {
+        canvas.drawBitmap(front, x2 ? 109 : 54, x2 ? 50 : 25, paint);
     }
 }

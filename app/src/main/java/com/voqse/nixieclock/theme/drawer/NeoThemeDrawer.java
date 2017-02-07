@@ -10,32 +10,32 @@ import android.graphics.Paint;
 public class NeoThemeDrawer implements ThemeDrawer {
 
     @Override
-    public void drawFirstDigit(Canvas canvas, Bitmap firstDigit, Paint paint) {
-        canvas.drawBitmap(firstDigit, 100, 104, paint);
+    public void drawFirstDigit(Canvas canvas, Bitmap firstDigit, Paint paint, boolean x2) {
+        canvas.drawBitmap(firstDigit, x2 ? 100 : 50, x2 ? 104 : 52, paint);
     }
 
     @Override
-    public void drawSecondDigit(Canvas canvas, Bitmap secondDigit, Paint paint) {
-        canvas.drawBitmap(secondDigit, 290, 100, paint);
+    public void drawSecondDigit(Canvas canvas, Bitmap secondDigit, Paint paint, boolean x2) {
+        canvas.drawBitmap(secondDigit, x2 ? 290 : 145, x2 ? 100 : 50, paint);
     }
 
     @Override
-    public void drawThirdDigit(Canvas canvas, Bitmap thirdDigit, Paint paint) {
-        canvas.drawBitmap(thirdDigit, 550, 100, paint);
+    public void drawThirdDigit(Canvas canvas, Bitmap thirdDigit, Paint paint, boolean x2) {
+        canvas.drawBitmap(thirdDigit, x2 ? 550 : 275, x2 ? 100 : 50, paint);
     }
 
     @Override
-    public void drawFourthDigit(Canvas canvas, Bitmap fourthDigit, Paint paint) {
-        canvas.drawBitmap(fourthDigit, 740, 100, paint);
+    public void drawFourthDigit(Canvas canvas, Bitmap fourthDigit, Paint paint, boolean x2) {
+        canvas.drawBitmap(fourthDigit, x2 ? 740 : 370, x2 ? 100 : 50, paint);
     }
 
     @Override
-    public void drawDot(Canvas canvas, Bitmap dot, Paint paint) {
-        canvas.drawBitmap(dot, 496, 324, paint);
+    public void drawDot(Canvas canvas, Bitmap dot, Paint paint, boolean x2) {
+        canvas.drawBitmap(dot, x2 ? 496 : 248, x2 ? 324 : 162, paint);
     }
 
     @Override
-    public void drawFront(Canvas canvas, Bitmap front, Paint paint) {
-        canvas.drawBitmap(front, 113, 40, paint);
+    public void drawFront(Canvas canvas, Bitmap front, Paint paint, boolean x2) {
+        canvas.drawBitmap(front, x2 ? 113 : 56, x2 ? 40 : 20, paint);
     }
 }

@@ -9,15 +9,15 @@ import android.graphics.Paint;
  */
 public interface ThemeDrawer {
 
-    void drawFirstDigit(Canvas canvas, Bitmap firstDigit, Paint paint);
+    void drawFirstDigit(Canvas canvas, Bitmap firstDigit, Paint paint, boolean x2);
 
-    void drawSecondDigit(Canvas canvas, Bitmap secondDigit, Paint paint);
+    void drawSecondDigit(Canvas canvas, Bitmap secondDigit, Paint paint, boolean x2);
 
-    void drawThirdDigit(Canvas canvas, Bitmap thirdDigit, Paint paint);
+    void drawThirdDigit(Canvas canvas, Bitmap thirdDigit, Paint paint, boolean x2);
 
-    void drawFourthDigit(Canvas canvas, Bitmap fourthDigit, Paint paint);
+    void drawFourthDigit(Canvas canvas, Bitmap fourthDigit, Paint paint, boolean x2);
 
-    void drawDot(Canvas canvas, Bitmap dot, Paint paint);
+    void drawDot(Canvas canvas, Bitmap dot, Paint paint, boolean x2);
 
-    void drawFront(Canvas canvas, Bitmap front, Paint paint);
+    void drawFront(Canvas canvas, Bitmap front, Paint paint, boolean x2);
 }

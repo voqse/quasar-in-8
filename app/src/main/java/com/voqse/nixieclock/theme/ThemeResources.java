@@ -29,7 +29,7 @@ public class ThemeResources {
         this.resourceCipher = new ResourceCipher();
     }
 
-    public Bitmap getBasement(@NonNull Theme theme, @Nullable Bitmap bitmapToReuse) {
+    public Bitmap getBasement(@NonNull Theme theme, @Nullable Bitmap bitmapToReuse, boolean x2) {
         if (bitmapToReuse != null) {
             cleanBitmap(bitmapToReuse);
         }
@@ -38,19 +38,23 @@ public class ThemeResources {
         options.inMutable = true;
         options.inBitmap = bitmapToReuse;
 
-        return decodeBitmap(theme, "basement_back", options);
+        return decodeBitmap(theme, getName("basement_back", x2), options);
     }
 
-    public Bitmap getFront(@NonNull Theme theme) {
-        return decodeBitmap(theme, "basement_front", null);
+    public Bitmap getFront(@NonNull Theme theme, boolean x2) {
+        return decodeBitmap(theme, getName("basement_front", x2), null);
     }
 
-    public Bitmap getDot(@NonNull Theme theme) {
-        return decodeBitmap(theme, "binary", null);
+    public Bitmap getDot(@NonNull Theme theme, boolean x2) {
+        return decodeBitmap(theme, getName("binary", x2), null);
     }
 
-    public Bitmap getDigit(@NonNull Theme theme, int digit) {
-        return decodeBitmap(theme, "n" + digit, null);
+    public Bitmap getDigit(@NonNull Theme theme, int digit, boolean x2) {
+        return decodeBitmap(theme, getName("n" + digit, x2), null);
+    }
+
+    private String getName(String name, boolean x2) {
+        return x2 ? name + "_x2" : name;
     }
 
     private void cleanBitmap(@Nullable Bitmap bitmapToReuse) {
