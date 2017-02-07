@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.annotation.Nullable;
 
 import com.voqse.nixieclock.theme.Theme;
 import com.voqse.nixieclock.theme.ThemeResources;
@@ -34,9 +33,9 @@ public class Drawer {
 
 
     @DebugLog
-    public Bitmap draw(WidgetOptions widgetOptions, @Nullable Bitmap bitmapToReuse, TextMode textMode, boolean x2) {
+    public Bitmap draw(WidgetOptions widgetOptions, TextMode textMode, boolean x2) {
         Theme theme = widgetOptions.theme;
-        Bitmap basement = themeResources.getBasement(theme, bitmapToReuse, x2);
+        Bitmap basement = themeResources.getBack(theme, x2);
         Canvas canvas = new Canvas(basement);
         String text = getTextToDraw(widgetOptions, textMode);
         ThemeDrawer themeDrawer = theme.newThemeDrawer();

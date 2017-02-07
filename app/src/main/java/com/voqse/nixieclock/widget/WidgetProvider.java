@@ -95,7 +95,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     private Bitmap getWidgetBitmap(Context context, WidgetOptions widgetOptions, TextMode textMode, boolean maxQuality) {
         Drawer drawer = new Drawer(context);
-        return drawer.draw(widgetOptions, null, textMode, maxQuality);
+        return drawer.draw(widgetOptions, textMode, maxQuality);
     }
 
     private boolean isMaxQuality(Context context, AppWidgetManager appWidgetManager, int widgetId) {

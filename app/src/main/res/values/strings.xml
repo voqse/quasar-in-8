@@ -19,8 +19,11 @@
     <string name="button_upgrade">ВСЕ ФУНКЦИИ</string>
     <string name="button_apply">ПРИМЕНИТЬ</string>
     <string name="theme_neo">Neo</string>
+    <string name="theme_neo_pure">Neo Pure</string>
     <string name="theme_old">Old</string>
+    <string name="theme_old_pure">Old Pure</string>
     <string name="theme_tron">Tron</string>
+    <string name="theme_tron_pure">Tron Pure</string>
     <string name="error_open_app">Невозможно запустить приложение %s</string>
     <string name="about">О приложении</string>
     <string name="settings">Настройки</string>

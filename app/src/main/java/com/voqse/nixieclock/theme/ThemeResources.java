@@ -29,16 +29,12 @@ public class ThemeResources {
         this.resourceCipher = new ResourceCipher();
     }
 
-    public Bitmap getBasement(@NonNull Theme theme, @Nullable Bitmap bitmapToReuse, boolean x2) {
-        if (bitmapToReuse != null) {
-            cleanBitmap(bitmapToReuse);
-        }
-
+    public Bitmap getBack(@NonNull Theme theme, boolean x2) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
-        options.inBitmap = bitmapToReuse;
 
-        return decodeBitmap(theme, getName("basement_back", x2), options);
+        String back = theme.useBasement ? "basement_back" : "no_basement_back";
+        return decodeBitmap(theme, getName(back, x2), options);
     }
 
     public Bitmap getFront(@NonNull Theme theme, boolean x2) {
@@ -102,11 +98,10 @@ public class ThemeResources {
     }
 
     private String getAssetsName(Theme theme, String fileName) {
-        String themeName = theme.name().toLowerCase();
         return new StringBuilder("themes/")
-                .append(themeName)
+                .append(theme.resources)
                 .append('/')
-                .append(themeName)
+                .append(theme.resources)
                 .append('_')
                 .append(fileName)
                 .append(".png")
