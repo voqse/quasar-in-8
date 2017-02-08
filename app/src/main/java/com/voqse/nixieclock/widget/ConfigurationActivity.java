@@ -149,7 +149,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         WidgetOptions currentWidgetOptions = hasWidgets ? getCurrentWidgetOptions() : WidgetOptions.getDefault(this);
         bindWidgetSettings(currentWidgetOptions);
         if (!hasWidgets) {
-            setEnabled(false, timeFormatSwitch, timeZoneTextView, dateFormatTextView, themeTextView, appTextView, hideIconSwitch);
+            setEnabled(false, systemSettingsSwitch, timeFormatSwitch, timeZoneTextView, dateFormatTextView, themeTextView, appTextView, hideIconSwitch);
         }
     }
 
@@ -413,7 +413,8 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         int currentWidgetId = getCurrentWidgetId();
         WidgetOptions currentWidgetOptions = getCurrentWidgetOptions();
         return hideIconSwitch.isChecked() != settings.isHideIcon() ||
-                !settings.getWidgetOptions(currentWidgetId).equals(currentWidgetOptions);
+                systemSettingsSwitch.isChecked() != settings.isUseSystemPreferences() ||
+                        !settings.getWidgetOptions(currentWidgetId).equals(currentWidgetOptions);
     }
 
     private void applySettings() {
