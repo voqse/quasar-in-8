@@ -15,9 +15,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
+ * Хелпер для работы с таймознами. Парсит timezones.xml (взято из исходников платформы), чтобы поулучить красивые имена таймзон.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-
 public class TimeZones {
 
     private static TimeZones SHARED_INSTANCE;

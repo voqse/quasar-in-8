@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 
 /**
+ * Тестовая реализация интерфейса покупок.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class DummyInAppBilling implements InAppBilling {

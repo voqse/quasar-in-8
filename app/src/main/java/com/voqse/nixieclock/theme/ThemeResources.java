@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 
 /**
+ * Класс для извлечения необхдимых для отрисовки виджета ресурсов.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class ThemeResources {

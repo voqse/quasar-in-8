@@ -25,6 +25,8 @@ import com.voqse.nixieclock.clock.ExternalApp;
 import java.util.List;
 
 /**
+ * Диалог выбора стороннего приложения.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class AppPickerDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {

@@ -15,9 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Класс для отрисовки виджета на {@link Bitmap}.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-
 public class Drawer {
 
     private static final Logger LOG = LoggerFactory.getLogger("Drawer");

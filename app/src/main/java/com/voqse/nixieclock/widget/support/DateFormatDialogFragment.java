@@ -11,6 +11,8 @@ import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.utils.NixieUtils;
 
 /**
+ * Диалог выбора формата даты.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class DateFormatDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {

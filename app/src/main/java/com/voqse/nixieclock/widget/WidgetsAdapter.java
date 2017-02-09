@@ -16,6 +16,8 @@ import com.voqse.nixieclock.theme.drawer.Drawer;
 import java.util.List;
 
 /**
+ * Адаптер для слайдера виджетов.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 class WidgetsAdapter extends PagerAdapter {

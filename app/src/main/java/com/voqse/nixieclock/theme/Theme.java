@@ -10,9 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Базовая информация о теме виджета.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-
 public enum Theme {
 
     NEO("neo", R.string.theme_neo, true, 1032 * 580 * 4),

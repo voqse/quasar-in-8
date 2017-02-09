@@ -10,9 +10,10 @@ import com.voqse.nixieclock.utils.NixieUtils;
 import java.util.TimeZone;
 
 /**
+ * Настройки конкретного виджета.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-
 public class WidgetOptions {
 
     public final boolean format24;

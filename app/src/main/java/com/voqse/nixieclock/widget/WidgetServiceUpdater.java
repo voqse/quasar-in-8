@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Легкий сервис для обновления виджетов.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class WidgetServiceUpdater extends Service {

@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatDialogFragment;
 import com.voqse.nixieclock.R;
 
 /**
+ * "Продающий" подписку диалог.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class ApplySettingsDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {

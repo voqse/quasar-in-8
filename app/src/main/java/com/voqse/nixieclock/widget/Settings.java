@@ -11,9 +11,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Настройки виджетов и приложения.
+ * <p>
+ * Для хранения используется {@link SharedPreferences}.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-
 public class Settings {
 
     private static final String KEY_24_TIME_FORMAT = "24_time_format";

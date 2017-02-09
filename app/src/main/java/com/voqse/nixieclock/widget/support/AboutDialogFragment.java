@@ -13,6 +13,8 @@ import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.R;
 
 /**
+ * Диалог "О приложении"
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class AboutDialogFragment extends AppCompatDialogFragment implements View.OnClickListener {

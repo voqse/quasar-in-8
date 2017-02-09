@@ -16,9 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * класс для обновления виджета, использующий {@link AlarmManager}.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-
 public class WidgetUpdater {
 
     private static final Logger LOG = LoggerFactory.getLogger("WidgetUpdater");

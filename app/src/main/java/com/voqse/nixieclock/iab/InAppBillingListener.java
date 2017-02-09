@@ -1,6 +1,8 @@
 package com.voqse.nixieclock.iab;
 
 /**
+ * Слушатель событий связанных с покупками.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public interface InAppBillingListener {

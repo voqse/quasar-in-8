@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 
 /**
+ * Консольно приложения для шифровки файлов. Не входит в apk.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class Encryptor {

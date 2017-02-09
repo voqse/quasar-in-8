@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 /**
+ * Просто запускающий {@link ConfigurationActivity}. Нужен, чтобы легко можно было удалять/возвращать иконку приложения в списке приложений
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class LaunchConfigurationActivity extends AppCompatActivity {

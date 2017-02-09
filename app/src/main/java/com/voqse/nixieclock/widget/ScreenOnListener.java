@@ -11,6 +11,10 @@ import com.voqse.nixieclock.App;
 import hugo.weaving.DebugLog;
 
 /**
+ * Слушатель включения экрана девайса.
+ * <p>
+ * При включении обновляет виджеты. Будит сервис для обновления виджетов.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class ScreenOnListener extends BroadcastReceiver {

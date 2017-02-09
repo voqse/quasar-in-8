@@ -18,7 +18,7 @@ import java.io.OutputStream;
 /**
  * Содержит ряд полезных методов для работы с потоками.
  *
- * @author danik
+ * @author Alexey Danilov (danikula@gmail.com).
  */
 public class IoUtils {
 

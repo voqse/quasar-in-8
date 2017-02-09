@@ -9,6 +9,11 @@ import org.slf4j.impl.custom.Level;
 import org.slf4j.impl.custom.LogRecord;
 import org.slf4j.impl.custom.Logger;
 
+/**
+ * Реализация slf4j логгера, пишуший в Crashlytics.
+ *
+ * @author Alexey Danilov (danikula@gmail.com).
+ */
 public class CrashlyticsLogger implements Logger {
 
     @Override

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
+ * Диалог выбора таймзоны. Список таймзон берется из timezones.xml.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class TimeZonePickerDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {

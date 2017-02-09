@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 
 /**
+ * Интерфейс для получения и работы с покупками.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public interface InAppBilling {

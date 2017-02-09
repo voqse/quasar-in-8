@@ -1,6 +1,8 @@
 package com.voqse.nixieclock.clock;
 
 /**
+ * Перечисление известных стандартных приложений-часов.
+ * <p>
  * http://stackoverflow.com/a/23016012/999458
  * http://stackoverflow.com/questions/4115649/listing-of-manufacturers-clock-alarm-package-and-class-name-please-add
  *

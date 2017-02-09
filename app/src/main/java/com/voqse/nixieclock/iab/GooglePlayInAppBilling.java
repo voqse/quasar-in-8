@@ -25,6 +25,10 @@ import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
 /**
+ * Класс для работа с Google Play In App Billing.
+ * <p>
+ * Использует код, предоставляемый Google (библиотека 'com.danikula.iab:in-app-billing:1.5@aar'.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class GooglePlayInAppBilling implements InAppBilling {

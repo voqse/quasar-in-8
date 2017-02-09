@@ -5,9 +5,10 @@ import android.text.TextUtils;
 import java.util.TimeZone;
 
 /**
+ * Базовая информация о таймзоне.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-
 public class TimeZoneInfo {
 
     public final String id;

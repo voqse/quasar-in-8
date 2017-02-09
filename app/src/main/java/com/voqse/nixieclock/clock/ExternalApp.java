@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Содержит необходимую для запуска стороннего приложения информацию.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class ExternalApp {

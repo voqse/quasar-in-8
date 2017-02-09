@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-/**
+/** Класс для отрисовки отдельных элеметов видежета на {@link Canvas}.
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public interface ThemeDrawer {

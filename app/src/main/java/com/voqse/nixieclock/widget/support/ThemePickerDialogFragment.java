@@ -11,6 +11,8 @@ import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.theme.Theme;
 
 /**
+ * Диалог выбора темы виджета.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class ThemePickerDialogFragment extends AppCompatDialogFragment implements DialogInterface.OnClickListener {

@@ -57,6 +57,11 @@ import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
 import static com.voqse.nixieclock.utils.NixieUtils.formatTwoLineText;
 
+/**
+ * Конфигурация виджета. Может запускаться как системой при добавлении виджета, так и пользователем для изменения настроек виджетов.
+ *
+ * @author Alexey Danilov (danikula@gmail.com).
+ */
 public class ConfigurationActivity extends AppCompatActivity implements OnCheckedChangeListener, OnClickListener,
         OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener,
         InAppBillingListener, OnAppSelectedListener, OnApplySettingsDialogClickListener, WidgetsAdapter.WidgetOptionsProvider {

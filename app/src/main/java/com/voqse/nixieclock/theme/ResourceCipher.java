@@ -14,6 +14,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
+ * Шифровщик-дешифровщик ресурсов.
+ *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class ResourceCipher {
