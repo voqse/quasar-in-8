@@ -135,6 +135,9 @@ public class GooglePlayInAppBilling implements InAppBilling {
         LOG.info("Is PRO user?: {}", hasPro);
 
         listener.onProductsFetched(hasPro);
+
+        // uncomment to delete test purchase
+        // cancelTestPurchase(inventory.getPurchase(SKU_PRO_UPDATE));
     }
 
     private void onIabPurchaseFinished(IabResult result, Purchase purchase, String payload) {
