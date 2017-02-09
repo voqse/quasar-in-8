@@ -1,5 +1,6 @@
 package com.voqse.nixieclock.widget;
 
+import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -7,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -25,6 +25,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.clock.ExternalApp;
 import com.voqse.nixieclock.iab.InAppBilling;
@@ -46,6 +47,11 @@ import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormat
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment;
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment.OnThemeSelectedListener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_CONFIGURE;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID;
@@ -56,6 +62,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         InAppBillingListener, OnAppSelectedListener, OnApplySettingsDialogClickListener, WidgetsAdapter.WidgetOptionsProvider {
 
     private static final int REQUEST_CODE_PURCHASE = 42;
+    private static final String STATE_CONFIGURING_WIDGET_ID = BuildConfig.APPLICATION_ID + ".STATE_CONFIGURING_WIDGET_ID";
 
     private WidgetsAdapter widgetsAdapter;
     private ViewPager widgetsViewPager;
@@ -75,20 +82,35 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private Settings settings;
     private InAppBilling inAppBilling;
     private SparseArray<WidgetOptions> widgetsOptions;
+    private int configuringWidgetId;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
 
         this.settings = new Settings(this);
+        restoreConfiguringWidgetId(state);
 
         setContentView(R.layout.activity_configuration);
         findViews();
-        int[] widgetIds = getWidgetIds();
+        List<Integer> widgetIds = getWidgetIds();
         this.widgetsOptions = getWidgetOptions(widgetIds);
         setupViews(widgetIds);
         setupUi(widgetIds);
         this.inAppBilling = InAppBillingFactory.newInnAppBilling(this, this);
+        if (isNewlyCreatedWidget()) {
+            setActivityResult(false);
+        }
+    }
+
+    private void restoreConfiguringWidgetId(Bundle activityState) {
+        if (activityState == null) {
+            if (ACTION_APPWIDGET_CONFIGURE.equals(getIntent().getAction())) {
+                configuringWidgetId = getIntent().getIntExtra(EXTRA_APPWIDGET_ID, INVALID_APPWIDGET_ID);
+            }
+        } else {
+            activityState.getInt(STATE_CONFIGURING_WIDGET_ID);
+        }
     }
 
     private void findViews() {
@@ -108,7 +130,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         this.rightButton = (ImageButton) findViewById(R.id.rightButton);
     }
 
-    private void setupViews(int[] widgetIds) {
+    private void setupViews(List<Integer> widgetIds) {
         setPreviewHeight();
         setSupportActionBar(toolbar);
         this.widgetsAdapter = new WidgetsAdapter(widgetIds, this, this);
@@ -136,14 +158,12 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         previewContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, previewHeight));
     }
 
-    private void setupUi(int[] widgetIds) {
+    private void setupUi(List<Integer> widgetIds) {
         int arrowVisibility = isNewlyCreatedWidget() ? View.GONE : View.VISIBLE;
         leftButton.setVisibility(arrowVisibility);
         rightButton.setVisibility(arrowVisibility);
         updateArrowButtons(0);
-        int currentWidget = getCurrentWidget(widgetIds);
-        widgetsViewPager.setCurrentItem(currentWidget);
-        boolean hasWidgets = widgetIds.length > 0;
+        boolean hasWidgets = !widgetIds.isEmpty();
         noWidgetsView.setVisibility(hasWidgets ? View.GONE : View.VISIBLE);
         applyWidgetButton.setVisibility(hasWidgets ? View.VISIBLE : View.GONE);
         WidgetOptions currentWidgetOptions = hasWidgets ? getCurrentWidgetOptions() : WidgetOptions.getDefault(this);
@@ -153,12 +173,18 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         }
     }
 
-    private SparseArray<WidgetOptions> getWidgetOptions(int[] widgetIds) {
-        SparseArray<WidgetOptions> widgetOptionsArrays = new SparseArray<>(widgetIds.length);
+    private SparseArray<WidgetOptions> getWidgetOptions(List<Integer> widgetIds) {
+        SparseArray<WidgetOptions> widgetOptionsArrays = new SparseArray<>(widgetIds.size());
         for (int widgetId : widgetIds) {
             widgetOptionsArrays.put(widgetId, settings.getWidgetOptions(widgetId));
         }
         return widgetOptionsArrays;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_CONFIGURING_WIDGET_ID, configuringWidgetId);
     }
 
     @Override
@@ -174,26 +200,21 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         return true;
     }
 
-    private int[] getWidgetIds() {
-        return isNewlyCreatedWidget() ?
-                new int[]{getWidgetIdFromExtras()} :
-                AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
-    }
+    private List<Integer> getWidgetIds() {
+        if (isNewlyCreatedWidget()) {
+            return Arrays.asList(configuringWidgetId);
+        }
 
-    public int getCurrentWidget(int[] widgetIds) {
-        if (getIntent().hasExtra(EXTRA_APPWIDGET_ID)) {
-            int widgetId = getWidgetIdFromExtras();
-            for (int i = 0; i < widgetIds.length; i++) {
-                if (widgetIds[i] == widgetId) {
-                    return i;
-                }
+        Set<Integer> liveWidgets = settings.getLiveWidgets();
+        int[] appWidgetIds = AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this, WidgetProvider.class));
+        List<Integer> result = new ArrayList<>();
+        for (int appWidgetId : appWidgetIds) {  // filter phantom widgets
+            if (liveWidgets.contains(appWidgetId)) {
+                result.add(appWidgetId);
             }
         }
-        return -1;
-    }
 
-    private int getWidgetIdFromExtras() {
-        return getIntent().getIntExtra(EXTRA_APPWIDGET_ID, INVALID_APPWIDGET_ID);
+        return result;
     }
 
     private void bindWidgetSettings(WidgetOptions widgetOptions) {
@@ -414,7 +435,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         WidgetOptions currentWidgetOptions = getCurrentWidgetOptions();
         return hideIconSwitch.isChecked() != settings.isHideIcon() ||
                 systemSettingsSwitch.isChecked() != settings.isUseSystemPreferences() ||
-                        !settings.getWidgetOptions(currentWidgetId).equals(currentWidgetOptions);
+                !settings.getWidgetOptions(currentWidgetId).equals(currentWidgetOptions);
     }
 
     private void applySettings() {
@@ -436,12 +457,17 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
             updatePreviewAndButton();
 
             if (isNewlyCreatedWidget()) {
-                Intent resultValue = new Intent();
-                resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
-                setResult(RESULT_OK, resultValue);
+                setActivityResult(true);
                 finish();
             }
         }
+    }
+
+    private void setActivityResult(boolean success) {
+        Intent resultValue = new Intent();
+        resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, configuringWidgetId);
+        int result = success ? Activity.RESULT_OK : Activity.RESULT_CANCELED;
+        setResult(result, resultValue);
     }
 
     private void upgradeToPro() {
@@ -456,7 +482,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private boolean isNewlyCreatedWidget() {
-        return TextUtils.equals(getIntent().getAction(), ACTION_APPWIDGET_CONFIGURE);
+        return configuringWidgetId > 0;
     }
 
     @Override

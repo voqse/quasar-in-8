@@ -2,10 +2,7 @@ package com.voqse.nixieclock.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -16,17 +13,19 @@ import android.widget.ImageView;
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.theme.drawer.Drawer;
 
+import java.util.List;
+
 /**
  * @author Alexey Danilov (danikula@gmail.com).
  */
 class WidgetsAdapter extends PagerAdapter {
 
     private final Drawer drawer;
-    private final int[] widgetIds;
+    private final List<Integer> widgetIds;
     private final LayoutInflater inflater;
     private final WidgetOptionsProvider widgetOptionsProvider;
 
-    WidgetsAdapter(@NonNull int[] widgetIds, @NonNull Context context, @NonNull WidgetOptionsProvider widgetOptionsProvider) {
+    WidgetsAdapter(@NonNull List<Integer> widgetIds, @NonNull Context context, @NonNull WidgetOptionsProvider widgetOptionsProvider) {
         this.drawer = new Drawer(context);
         this.widgetIds = widgetIds;
         this.inflater = LayoutInflater.from(context);
@@ -49,7 +48,7 @@ class WidgetsAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return widgetIds.length;
+        return widgetIds.size();
     }
 
     @Override
@@ -66,25 +65,15 @@ class WidgetsAdapter extends PagerAdapter {
 
     private void bind(View view, int position) {
         ImageView imageView = (ImageView) view.findViewById(R.id.widgetImageView);
-        int widgetId = widgetIds[position];
+        int widgetId = widgetIds.get(position);
         WidgetOptions widgetOptions = widgetOptionsProvider.provideWidgetOptions(widgetId);
-        Bitmap bitmapToReuse = getImageBitmap(imageView);
         Bitmap bitmap = drawer.draw(widgetOptions, TextMode.TIME, true);
         imageView.setImageBitmap(bitmap);
         view.setTag(position);
     }
 
-    @Nullable
-    private Bitmap getImageBitmap(ImageView imageView) {
-        Drawable drawable = imageView.getDrawable();
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
-        return null;
-    }
-
     int getWidgetId(int position) {
-        return widgetIds[position];
+        return widgetIds.get(position);
     }
 
     public interface WidgetOptionsProvider {

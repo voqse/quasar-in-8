@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import com.voqse.nixieclock.clock.ExternalApp;
 import com.voqse.nixieclock.theme.Theme;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -22,6 +23,7 @@ public class Settings {
     private static final String KEY_HIDE_ICON = "hide_icon";
     private static final String KEY_APP_TO_LAUNCH = "app_to_launch";
     private static final String KEY_USE_SYSTEM_PREFERENCES = "use_system_preferences";
+    private static final String KEY_LIVE_WIDGETS = "live_widgets"; // to avoid problem with phantom widgets https://code.google.com/p/android/issues/detail?id=2539
 
     private final SharedPreferences preferences;
     private final Context context;
@@ -48,12 +50,15 @@ public class Settings {
     }
 
     public void setWidgetOptions(int widgetId, WidgetOptions widgetOptions) {
+        Set<String> liveWidgetIds = preferences.getStringSet(KEY_LIVE_WIDGETS, new HashSet<String>());
+        liveWidgetIds.add(Integer.toString(widgetId));
         preferences.edit()
                 .putBoolean(getWidgetKey(KEY_24_TIME_FORMAT, widgetId), widgetOptions.format24)
                 .putString(getWidgetKey(KEY_TIMEZONE, widgetId), widgetOptions.timeZoneId)
                 .putBoolean(getWidgetKey(KEY_MONTH_FIRST, widgetId), widgetOptions.monthFirst)
                 .putString(getWidgetKey(KEY_APP_TO_LAUNCH, widgetId), widgetOptions.appToLaunch.pack())
                 .putString(getWidgetKey(KEY_THEME, widgetId), widgetOptions.theme.name())
+                .putStringSet(KEY_LIVE_WIDGETS, liveWidgetIds)
                 .apply();
     }
 
@@ -76,7 +81,9 @@ public class Settings {
     public void remove(int... widgetIds) {
         SharedPreferences.Editor editor = preferences.edit();
         Set<String> keys = preferences.getAll().keySet();
+        Set<String> liveWidgetIds = preferences.getStringSet(KEY_LIVE_WIDGETS, new HashSet<String>());
         for (int widgetId : widgetIds) {
+            liveWidgetIds.remove(Integer.toString(widgetId));
             for (String key : keys) {
                 String widgetIdString = Integer.toString(widgetId);
                 if (key.endsWith(widgetIdString)) {
@@ -84,7 +91,17 @@ public class Settings {
                 }
             }
         }
+        editor.putStringSet(KEY_LIVE_WIDGETS, liveWidgetIds);
         editor.apply();
+    }
+
+    public Set<Integer> getLiveWidgets() {
+        Set<String> widgetIdsSet = preferences.getStringSet(KEY_LIVE_WIDGETS, new HashSet<String>());
+        Set<Integer> result = new HashSet<>();
+        for (String widgetId : widgetIdsSet) {
+            result.add(Integer.parseInt(widgetId));
+        }
+        return result;
     }
 
     private String getWidgetKey(String key, int widgetId) {
@@ -94,12 +111,6 @@ public class Settings {
     private void put(String key, boolean value) {
         preferences.edit()
                 .putBoolean(key, value)
-                .apply();
-    }
-
-    private void put(String key, String value) {
-        preferences.edit()
-                .putString(key, value)
                 .apply();
     }
 }
