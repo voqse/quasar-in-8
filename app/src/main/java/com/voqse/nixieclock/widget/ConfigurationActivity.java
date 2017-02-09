@@ -414,7 +414,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         boolean newWidget = isNewlyCreatedWidget();
         boolean settingsChanged = isCurrentWidgetSettingsChanged();
 
-        boolean applyButtonActive = newWidget && (hasPro || !settingsChanged);
+        boolean applyButtonActive = newWidget && (hasPro || !settingsChanged) || (!newWidget && hasPro && settingsChanged);
         boolean applyButtonDisabled = !newWidget && !settingsChanged;
         int applyButtonTextColorId = applyButtonActive || settingsChanged ? android.R.color.white : R.color.text_white_disabled;
 
