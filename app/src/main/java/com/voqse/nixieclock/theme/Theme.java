@@ -15,12 +15,12 @@ import java.util.Map;
 
 public enum Theme {
 
-    NEO("neo", R.string.theme_neo, true),
-    NEO_PURE("neo", R.string.theme_neo_pure, false),
-    OLD("old", R.string.theme_old, true),
-    OLD_PURE("old", R.string.theme_old_pure, false),
-    TRON("tron", R.string.theme_tron, true),
-    TRON_PURE("tron", R.string.theme_tron_pure, false);
+    NEO("neo", R.string.theme_neo, true, 1032 * 580 * 4),
+    NEO_PURE("neo", R.string.theme_neo_pure, false, 1032 * 480 * 4),
+    OLD("old", R.string.theme_old, true, 1032 * 580 * 4),
+    OLD_PURE("old", R.string.theme_old_pure, false, 1032 * 480 * 4),
+    TRON("tron", R.string.theme_tron, true, 1032 * 580 * 4),
+    TRON_PURE("tron", R.string.theme_tron_pure, false, 1032 * 480 * 4);
 
     private static final Map<Theme, ThemeDrawer> DRAWERS = new HashMap<Theme, ThemeDrawer>() {{
         put(NEO, new NeoThemeDrawer());
@@ -33,11 +33,13 @@ public enum Theme {
     public final boolean useBasement;
     public final String resources;
     public final int nameId;
+    public final int x2BytesSize;
 
-    Theme(String resources, int nameId, boolean useBasement) {
+    Theme(String resources, int nameId, boolean useBasement, int x2BytesSize) {
         this.useBasement = useBasement;
         this.resources = resources;
         this.nameId = nameId;
+        this.x2BytesSize = x2BytesSize;
     }
 
     public ThemeDrawer newThemeDrawer() {

@@ -38,7 +38,7 @@ public class Drawer {
         Bitmap basement = themeResources.getBack(theme, x2);
         Canvas canvas = new Canvas(basement);
         String text = getTextToDraw(widgetOptions, textMode);
-        LOG.debug("Draw text '{}'", text);
+        LOG.debug("Draw text '{}'. x2 quality? {}", text, x2);
         ThemeDrawer themeDrawer = theme.newThemeDrawer();
         themeDrawer.drawFirstDigit(canvas, getDigit(theme, text, 0, x2), paint, x2);
         themeDrawer.drawSecondDigit(canvas, getDigit(theme, text, 1, x2), paint, x2);

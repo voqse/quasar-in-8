@@ -8,11 +8,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.widget.RemoteViews;
 
 import com.voqse.nixieclock.App;
 import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.R;
+import com.voqse.nixieclock.theme.Theme;
 import com.voqse.nixieclock.theme.drawer.Drawer;
 import com.voqse.nixieclock.utils.NixieUtils;
 
@@ -83,7 +85,7 @@ public class WidgetProvider extends AppWidgetProvider {
     private void updateWidget(Context context, Settings settings, AppWidgetManager appWidgetManager, int widgetId, TextMode textMode) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget);
         WidgetOptions widgetOptions = settings.getWidgetOptions(widgetId);
-        boolean maxQuality = isMaxQuality(context, appWidgetManager, widgetId);
+        boolean maxQuality = isMaxQuality(context, widgetOptions.theme, appWidgetManager, widgetId);
         Bitmap bitmap = getWidgetBitmap(context, widgetOptions, textMode, maxQuality);
         views.setImageViewBitmap(R.id.imageView, bitmap);
         views.setOnClickPendingIntent(R.id.imageView, newClickIntent(context, widgetId));
@@ -102,7 +104,15 @@ public class WidgetProvider extends AppWidgetProvider {
         return drawer.draw(widgetOptions, textMode, maxQuality);
     }
 
-    private boolean isMaxQuality(Context context, AppWidgetManager appWidgetManager, int widgetId) {
+    private boolean isMaxQuality(Context context, Theme theme, AppWidgetManager appWidgetManager, int widgetId) {
+        // https://developer.android.com/reference/android/appwidget/AppWidgetManager.html#updateAppWidget(int, android.widget.RemoteViews)
+        // The total Bitmap memory used by the RemoteViews object cannot exceed
+        // that required to fill the screen 1.5 times, ie. (screen width x screen height x 4 x 1.5) bytes.
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        boolean x2exceedQuota = theme.x2BytesSize > displayMetrics.widthPixels * displayMetrics.heightPixels * 4 * 1.5;
+        if (x2exceedQuota) {
+            return false;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             Bundle appWidgetOptions = appWidgetManager.getAppWidgetOptions(widgetId);
             int maxWidthDp = appWidgetOptions.getInt(OPTION_APPWIDGET_MAX_WIDTH);
@@ -110,8 +120,9 @@ public class WidgetProvider extends AppWidgetProvider {
             int maxWidthPx = NixieUtils.dipToPixels(context, maxWidthDp);
             int maxHeightPx = NixieUtils.dipToPixels(context, maxHeightDp);
             return maxWidthPx > Drawer.X2_MIN_WIDTH_PX && maxHeightPx >= Drawer.X2_MIN_HEIGHT_PX;
+        } else {
+            return displayMetrics.widthPixels > Drawer.X2_MIN_WIDTH_PX && displayMetrics.heightPixels > Drawer.X2_MIN_HEIGHT_PX;
         }
-        return true;
     }
 
     private PendingIntent newClickIntent(Context context, int widgetId) {
