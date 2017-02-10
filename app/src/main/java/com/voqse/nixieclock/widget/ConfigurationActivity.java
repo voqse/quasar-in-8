@@ -240,7 +240,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private void bindTimeZone(String timeZoneId) {
         String label = getString(R.string.timezone);
         TimeZoneInfo timeZoneInfo = TimeZones.getTimeZoneInfo(this, timeZoneId);
-        String timeZone = timeZoneInfo.getOffset() + " " + timeZoneInfo.city;
+        String timeZone = timeZoneInfo.getPrettyOffset() + " " + timeZoneInfo.city;
         timeZoneTextView.setText(formatTwoLineText(label, timeZone));
     }
 

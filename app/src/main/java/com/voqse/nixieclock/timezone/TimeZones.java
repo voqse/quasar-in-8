@@ -3,6 +3,7 @@ package com.voqse.nixieclock.timezone;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.voqse.nixieclock.R;
 
@@ -34,13 +35,21 @@ public class TimeZones {
     }
 
     public static TimeZoneInfo getTimeZoneInfo(Context context, String id) {
-        List<TimeZoneInfo> timeZones = getTimeZoneInfo(context);
-        for (TimeZoneInfo timeZoneInfo : timeZones) {
-            if (timeZoneInfo.hasId(id)) {
-                return timeZoneInfo;
+        int rawOffset = TimeZone.getTimeZone(id).getRawOffset();
+        TimeZoneInfo result = null;
+        for (TimeZoneInfo timeZoneInfo : getTimeZoneInfo(context)) {
+            if (timeZoneInfo.rawOffset == rawOffset) {
+                result = timeZoneInfo;
+            }
+            if (TextUtils.equals(id, timeZoneInfo.id)) {
+                result = timeZoneInfo;
+                break;
             }
         }
-        throw new IllegalArgumentException("Unknown timezone with id " + id);
+        if (result == null) {
+            throw new IllegalArgumentException("Unknown timezone with id " + id);
+        }
+        return result;
     }
 
     @NonNull
@@ -73,8 +82,8 @@ public class TimeZones {
                     parser.next();
                 }
                 String city = parser.getText();
-                String deviceTimeZoneId = TimeZone.getTimeZone(timeZoneId).getID();
-                result.add(new TimeZoneInfo(timeZoneId, deviceTimeZoneId, city));
+                TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
+                result.add(new TimeZoneInfo(timeZoneId, city, timeZone.getRawOffset()));
                 while (parser.getEventType() != XmlResourceParser.END_TAG) {
                     parser.next();
                 }
