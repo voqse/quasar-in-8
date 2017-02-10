@@ -140,13 +140,13 @@
                 style="@style/TextView.Header"
                 android:text="@string/date_time_settings" />
 
-            <Switch
+            <android.support.v7.widget.SwitchCompat
                 android:id="@+id/systemSettingsSwitch"
                 style="@style/Switch.Settings"
                 android:checked="true"
                 android:text="@string/system_settings" />
 
-            <Switch
+            <android.support.v7.widget.SwitchCompat
                 android:id="@+id/timeFormatSwitch"
                 style="@style/Switch.Settings"
                 android:text="@string/format_24" />
@@ -172,7 +172,7 @@
                 android:id="@+id/appTextView"
                 style="@style/TextView.Settings" />
 
-            <Switch
+            <android.support.v7.widget.SwitchCompat
                 android:id="@+id/hideIconSwitch"
                 style="@style/Switch.Settings"
                 android:text="@string/hide_icon" />

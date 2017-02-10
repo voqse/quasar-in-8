@@ -21,7 +21,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,13 +70,13 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     private WidgetsAdapter widgetsAdapter;
     private ViewPager widgetsViewPager;
-    private Switch systemSettingsSwitch;
-    private Switch timeFormatSwitch;
+    private CompoundButton systemSettingsSwitch;
+    private CompoundButton timeFormatSwitch;
     private TextView timeZoneTextView;
     private TextView dateFormatTextView;
     private TextView themeTextView;
     private TextView appTextView;
-    private Switch hideIconSwitch;
+    private CompoundButton hideIconSwitch;
     private Button applyWidgetButton;
     private Button upgradeButton;
     private ImageButton leftButton;
@@ -120,14 +119,14 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     private void findViews() {
         this.widgetsViewPager = (ViewPager) findViewById(R.id.widgetsViewPager);
-        this.timeFormatSwitch = (Switch) findViewById(R.id.timeFormatSwitch);
-        this.systemSettingsSwitch = (Switch) findViewById(R.id.systemSettingsSwitch);
+        this.timeFormatSwitch = (CompoundButton) findViewById(R.id.timeFormatSwitch);
+        this.systemSettingsSwitch = (CompoundButton) findViewById(R.id.systemSettingsSwitch);
         this.timeZoneTextView = (TextView) findViewById(R.id.timeZoneTextView);
         this.dateFormatTextView = (TextView) findViewById(R.id.dateFormatTextView);
         this.themeTextView = (TextView) findViewById(R.id.themeTextView);
         this.appTextView = (TextView) findViewById(R.id.appTextView);
         this.noWidgetsView = findViewById(R.id.noWidgetsView);
-        this.hideIconSwitch = (Switch) findViewById(R.id.hideIconSwitch);
+        this.hideIconSwitch = (CompoundButton) findViewById(R.id.hideIconSwitch);
         this.applyWidgetButton = (Button) findViewById(R.id.applyWidgetButton);
         this.upgradeButton = (Button) findViewById(R.id.upgradeButton);
         this.toolbar = (Toolbar) findViewById(R.id.toolbar);
