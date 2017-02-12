@@ -1,0 +1,32 @@
+<resources>
+    <string name="no_widgets">Нет активных виджетов</string>
+    <string name="no_widgets_explain">Виджеты, добавленные на рабочий стол, отобразаться здесь</string>
+    <string name="system_settings">Системная дата и время</string>
+    <string name="format_24">24-часовой формат</string>
+    <string name="date_format">Формат даты</string>
+    <string name="timezone">Выбрать часовой пояс</string>
+    <string name="date_time_settings">Дата и время</string>
+    <string name="other_settings">Другое</string>
+    <string name="app_to_launch">Выбрать приложение</string>
+    <string name="default_app_name">Часы (По умолчанию)</string>
+    <string name="icon_hidden">Не отображается в лаунчере</string>
+    <string name="icon_shown">Отображается в лаунчере</string>
+    <string name="button_upgrade">ВСЕ ФУНКЦИИ</string>
+    <string name="button_apply">ПРИМЕНИТЬ</string>
+    <string name="theme_neo_pure">Quasar IN-8 (Без подставки)</string>
+    <string name="theme_old_pure">Neutron-2 (Без подставки)</string>
+    <string name="theme_tron_pure">Dark (Без подставки)</string>
+    <string name="error_open_app">Не удается запустить приложение %s</string>
+    <string name="about">О программе</string>
+    <string name="settings">Настройки</string>
+    <string name="settings_version">Версия %s</string>
+    <string name="apply_setting_dialog_title">Полная версия</string>
+    <string name="apply_setting_dialog_buy">Купить</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="apply_setting_dialog_text">Чтобы изменять настройки, вы должны купить полную версию. Хотите использовать стандартные?</string>
+    <string name="hide_icon">Скрыть иконку</string>
+    <string name="purchase_error">Возникла ошибка во время покупки полной версии</string>
+    <string name="theme">Внешний вид</string>
+</resources>
+

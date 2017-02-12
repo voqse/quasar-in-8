@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="200dp"
     android:layout_height="wrap_content"
+    android:layout_width="200dp"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -12,39 +11,38 @@
         android:layout_height="wrap_content"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:paddingTop="24dp"
+        android:paddingTop="16dp"
         android:text="@string/about"
-        android:textColor="@color/text_black_87"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        style="@style/Base.DialogWindowTitle.AppCompat" />
 
     <ImageView
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:gravity="center_horizontal"
+        android:lineSpacingMultiplier="1.2"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
         android:text="@string/app_name"
-        android:textColor="@color/text_black_87"
-        android:textSize="16sp" />
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/versionTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:gravity="center_horizontal"
+        android:lineSpacingMultiplier="1.2"
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
-        android:textColor="@color/text_gray"
+        android:textColor="@android:color/secondary_text_light"
         android:textSize="14sp"
         tools:text="Версия 2.9.17" />
 
@@ -52,20 +50,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:autoLink="web"
         android:gravity="center_horizontal"
         android:text="@string/url"
-        android:textColorLink="@color/colorAccent"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:lineSpacingMultiplier="1.2" />
 
     <Button
         android:id="@+id/okButton"
         style="@style/Base.Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="64dp"
         android:layout_gravity="right"
-        android:layout_margin="4dp"
+        android:layout_margin="8dp"
         android:text="@android:string/ok"
         android:textColor="@color/colorAccent" />
 

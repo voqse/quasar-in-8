@@ -34,7 +34,7 @@ import java.util.UUID;
 public class GooglePlayInAppBilling implements InAppBilling {
 
     private static final Logger LOG = LoggerFactory.getLogger("GooglePlayInAppBilling");
-    private static final String SKU_PRO_UPDATE = "pro.update";
+    private static final String SKU_PRO_UPDATE = "unlock_all";
 
     private final Context context;
     private IabHelper iabHelper;

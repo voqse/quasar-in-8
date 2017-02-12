@@ -1,38 +1,39 @@
 <resources>
-    <string name="app_name">Quasar-1:	Nixie Tube</string>
-    <string name="no_widgets">Нет активных виджетов</string>
-    <string name="no_widgets_explain">Вы ещё не добавили ни одного виджета</string>
-    <string name="system_settings">Системные параметры</string>
-    <string name="format_24">24-часовой формат</string>
-    <string name="format_24_yes">13:00</string>
-    <string name="format_24_no">1:00 PM</string>
-    <string name="date_format">Формат даты</string>
-    <string name="timezone">Часовой пояс</string>
-    <string name="date_time_settings">Дата и время</string>
-    <string name="other_settings">Другое</string>
-    <string name="app_to_launch">Запускать приложение</string>
-    <string name="default_app_name">Часы (по умолчанию)</string>
-    <string name="theme">Тема оформления</string>
-    <string name="hide_icon">Скрыть иконку</string>
-    <string name="icon_hidden">Скрыта из лаунчера</string>
-    <string name="icon_shown">Отображается в лаунчера</string>
-    <string name="button_upgrade">ВСЕ ФУНКЦИИ</string>
-    <string name="button_apply">ПРИМЕНИТЬ</string>
-    <string name="theme_neo">Neo</string>
-    <string name="theme_neo_pure">Neo Pure</string>
-    <string name="theme_old">Old</string>
-    <string name="theme_old_pure">Old Pure</string>
-    <string name="theme_tron">Tron</string>
-    <string name="theme_tron_pure">Tron Pure</string>
-    <string name="error_open_app">Невозможно запустить приложение %s</string>
-    <string name="about">О приложении</string>
-    <string name="settings">Настройки</string>
-    <string name="settings_version">Версия %s</string>
-    <string name="apply_setting_dialog_title">Полная версия</string>
-    <string name="apply_setting_dialog_text">Вы не можете применить данные параметры. Использовать стандартные?</string>
-    <string name="apply_setting_dialog_buy">Купить</string>
-    <string name="yes">Да</string>
-    <string name="no">Нет</string>
-    <string name="purchase_error">Ошибка при покупке полной версии</string>
-    <string name="url">voqse.com</string>
+    <string name="app_name" translatable="false">Quasar IN-8</string>
+    <string name="no_widgets">No active widgets</string>
+    <string name="no_widgets_explain">Widgets added to the home screen will appear here</string>
+    <string name="system_settings">System date &amp; time</string>
+    <string name="format_24">Use 24-hour format</string>
+    <string name="format_24_yes" translatable="false">13:00</string>
+    <string name="format_24_no" translatable="false">1:00 PM</string>
+    <string name="date_format">Choose date format</string>
+    <string name="timezone">Select time zone</string>
+    <string name="date_time_settings">Date &amp; time</string>
+    <string name="other_settings">Miscellaneous</string>
+    <string name="app_to_launch">Select app</string>
+    <string name="default_app_name">Clock (Default)</string>
+    <string name="theme">Appearance</string>
+    <string name="icon_shown">Appear in the laucher</string>
+    <string name="button_upgrade">UNLOCK ALL</string>
+    <string name="button_apply">APPLY</string>
+    <string name="theme_neo" translatable="false">Quasar IN-8</string>
+    <string name="theme_old" translatable="false">Neutron-2</string>
+    <string name="theme_tron" translatable="false">Dark</string>
+    <string name="theme_neo_pure">Quasar IN-8 (Without stand)</string>
+    <string name="theme_old_pure">Neutron-2 (Without stand)</string>
+    <string name="theme_tron_pure">Dark (Without stand)</string>
+    <string name="error_open_app">Cannot launch the app: %s</string>
+    <string name="about">About</string>
+    <string name="settings">Settings</string>
+    <string name="settings_version">Version %s</string>
+    <string name="apply_setting_dialog_title">Unlock all</string>
+    <string name="apply_setting_dialog_buy">Buy</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="purchase_error">An error occurred when purchasing the full version</string>
+    <string name="url" translatable="false">voqse.com</string>
+    <string name="apply_setting_dialog_text">To change settings you should buy the full version. Do you want to use defaults?</string>
+    <string name="hide_icon">Hide icon</string>
+    <string name="icon_hidden">No appear in the laucher</string>
 </resources>
+
