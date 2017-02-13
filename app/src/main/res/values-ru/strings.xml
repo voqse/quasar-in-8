@@ -14,8 +14,8 @@
     <string name="button_upgrade">ВСЕ ФУНКЦИИ</string>
     <string name="button_apply">ПРИМЕНИТЬ</string>
     <string name="theme_neo_pure">Quasar IN-8 (Без подставки)</string>
-    <string name="theme_old_pure">Neutron-2 (Без подставки)</string>
-    <string name="theme_tron_pure">Dark (Без подставки)</string>
+    <string name="theme_old_pure">Dark (Без подставки)</string>
+    <string name="theme_tron_pure">Neutron-2 (Без подставки)</string>
     <string name="error_open_app">Не удается запустить приложение %s</string>
     <string name="about">О программе</string>
     <string name="settings">Настройки</string>

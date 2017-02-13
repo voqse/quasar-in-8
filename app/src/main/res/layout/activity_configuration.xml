@@ -78,7 +78,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="4dp"
                             android:gravity="center_horizontal"
                             android:lineSpacingMultiplier="1.2"
                             android:text="@string/no_widgets_explain"

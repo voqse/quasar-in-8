@@ -17,11 +17,11 @@
     <string name="button_upgrade">UNLOCK ALL</string>
     <string name="button_apply">APPLY</string>
     <string name="theme_neo" translatable="false">Quasar IN-8</string>
-    <string name="theme_old" translatable="false">Neutron-2</string>
-    <string name="theme_tron" translatable="false">Dark</string>
+    <string name="theme_old" translatable="false">Dark</string>
+    <string name="theme_tron" translatable="false">Neutron-2</string>
     <string name="theme_neo_pure">Quasar IN-8 (Without stand)</string>
-    <string name="theme_old_pure">Neutron-2 (Without stand)</string>
-    <string name="theme_tron_pure">Dark (Without stand)</string>
+    <string name="theme_old_pure">Dark (Without stand)</string>
+    <string name="theme_tron_pure">Neutron-2 (Without stand)</string>
     <string name="error_open_app">Cannot launch the app: %s</string>
     <string name="about">About</string>
     <string name="settings">Settings</string>
