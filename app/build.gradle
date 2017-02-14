@@ -65,9 +65,11 @@ dependencies {
     compile 'com.evernote:android-job:1.1.4'
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
-    compile 'org.bitbucket.yahor_makouski:slf4j-composite:1.2'
     compile 'org.slf4j:slf4j-api:1.7.18'
     compile 'com.danikula.iab:in-app-billing:1.5@aar'
+    compile('org.bitbucket.yahor_makouski:slf4j-composite:1.2') {
+        exclude group: 'com.google.android', module: 'android'
+    }
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
