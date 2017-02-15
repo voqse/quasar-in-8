@@ -74,6 +74,13 @@ public class GooglePlayInAppBilling implements InAppBilling {
                 iabHelper.launchPurchaseFlow(activity, SKU_PRO_UPDATE, IabHelper.ITEM_TYPE_INAPP, null, requestCode, new PurchasingListener(payload), payload);
             } catch (IabHelper.IabAsyncInProgressException e) {
                 LOG.error("Error launching purchase flow. Another async operation in progress.", e);
+                listener.onPurchasingError();
+            } catch (IllegalStateException e) {
+                // catch IllegalStateException if iab service was disconnected unexpectedly
+                // https://github.com/googlesamples/android-play-billing/pull/46
+                // https://github.com/danikula/Google-Play-In-App-Billing/commit/57f9d417e0a3b7e3b2718800941c7206fa81a2af
+                LOG.error("Error launching purchase flow. IAB service was disconnected", e);
+                listener.onPurchasingError();
             }
         } else {
             GoogleApiAvailability.getInstance().showErrorDialogFragment(activity, playServicesAvailable, REQUEST_CODE_PLAY_SERVICES_ERROR);
