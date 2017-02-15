@@ -66,6 +66,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
     compile 'org.slf4j:slf4j-api:1.7.18'
+    compile 'com.google.android.gms:play-services-base:10.0.1'
     compile 'com.danikula.iab:in-app-billing:1.5.1@aar'
     compile('org.bitbucket.yahor_makouski:slf4j-composite:1.2') {
         exclude group: 'com.google.android', module: 'android'

@@ -15,6 +15,8 @@ import com.danikula.iab.IabHelper;
 import com.danikula.iab.IabResult;
 import com.danikula.iab.Inventory;
 import com.danikula.iab.Purchase;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.voqse.nixieclock.log.NonFatalError;
 import com.voqse.nixieclock.utils.NixieUtils;
 
@@ -33,6 +35,7 @@ import java.util.UUID;
 public class GooglePlayInAppBilling implements InAppBilling {
 
     private static final Logger LOG = LoggerFactory.getLogger("GooglePlayInAppBilling");
+    private static final int REQUEST_CODE_PLAY_SERVICES_ERROR = 43;
     private static final String SKU_PRO_UPDATE = "unlock_all";
 
     private final Context context;
@@ -63,11 +66,17 @@ public class GooglePlayInAppBilling implements InAppBilling {
 
     @Override
     public void purchase(Activity activity, int requestCode) {
-        try {
-            String payload = UUID.randomUUID().toString();
-            iabHelper.launchPurchaseFlow(activity, SKU_PRO_UPDATE, IabHelper.ITEM_TYPE_INAPP, null, requestCode, new PurchasingListener(payload), payload);
-        } catch (IabHelper.IabAsyncInProgressException e) {
-            LOG.error("Error launching purchase flow. Another async operation in progress.", e);
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int playServicesAvailable = googleApiAvailability.isGooglePlayServicesAvailable(activity);
+        if (playServicesAvailable == ConnectionResult.SUCCESS) {
+            try {
+                String payload = UUID.randomUUID().toString();
+                iabHelper.launchPurchaseFlow(activity, SKU_PRO_UPDATE, IabHelper.ITEM_TYPE_INAPP, null, requestCode, new PurchasingListener(payload), payload);
+            } catch (IabHelper.IabAsyncInProgressException e) {
+                LOG.error("Error launching purchase flow. Another async operation in progress.", e);
+            }
+        } else {
+            GoogleApiAvailability.getInstance().showErrorDialogFragment(activity, playServicesAvailable, REQUEST_CODE_PLAY_SERVICES_ERROR);
         }
     }
 
