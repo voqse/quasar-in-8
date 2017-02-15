@@ -15,7 +15,6 @@ import com.danikula.iab.IabHelper;
 import com.danikula.iab.IabResult;
 import com.danikula.iab.Inventory;
 import com.danikula.iab.Purchase;
-import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.log.NonFatalError;
 import com.voqse.nixieclock.utils.NixieUtils;
 
@@ -46,7 +45,7 @@ public class GooglePlayInAppBilling implements InAppBilling {
         this.context = context.getApplicationContext();
         this.iabHelper = new IabHelper(this.context, NixieUtils.getAppPublicKey(context));
         this.listener = listener;
-        this.iabHelper.enableDebugLogging(BuildConfig.DEBUG);
+        this.iabHelper.enableDebugLogging(true); // TODO: enable only for debug releases
         this.iabHelper.startSetup(new SetupFinishedListener());
     }
 
