@@ -77,8 +77,18 @@ public class WidgetUpdater {
 
     private Intent newUpdateIntent() {
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int widgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+        int[] widgetIds = getWidgetsIds(appWidgetManager);
         return newUpdateIntent(widgetIds, TextMode.TIME);
+    }
+
+    private int[] getWidgetsIds(AppWidgetManager appWidgetManager) {
+        try {
+            return appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
+        } catch (RuntimeException e) {
+            // it seems due to aggressive politic to using system resources OS kills IAppWidgetService http://crashes.to/s/6661e7d5bf1
+            LOG.error("Error querying list of widget ids", e);
+            return new int[0];
+        }
     }
 
     private Intent newUpdateIntent(int widgetIds[], TextMode textMode) {

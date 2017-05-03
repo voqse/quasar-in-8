@@ -89,7 +89,16 @@ public class WidgetProvider extends AppWidgetProvider {
         Bitmap bitmap = getWidgetBitmap(context, widgetOptions, textMode, maxQuality);
         views.setImageViewBitmap(R.id.imageView, bitmap);
         views.setOnClickPendingIntent(R.id.imageView, newClickIntent(context, widgetId));
-        appWidgetManager.updateAppWidget(widgetId, views);
+        updateWidget(appWidgetManager, widgetId, views);
+    }
+
+    private void updateWidget(AppWidgetManager appWidgetManager, int widgetId, RemoteViews views) {
+        try {
+            // it seems due to aggressive politic to using system resources OS kills IAppWidgetService http://crashes.to/s/57acde098f7
+            appWidgetManager.updateAppWidget(widgetId, views);
+        } catch (RuntimeException e) {
+            LOG.error("Error updating widget " + widgetId, e);
+        }
     }
 
     @Override
