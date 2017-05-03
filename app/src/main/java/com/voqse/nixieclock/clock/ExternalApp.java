@@ -11,6 +11,7 @@ import android.provider.AlarmClock;
 import android.support.annotation.Nullable;
 
 import com.voqse.nixieclock.R;
+import com.voqse.nixieclock.log.NonFatalError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,12 +84,30 @@ public class ExternalApp {
     }
 
     private Intent getDefaultClockIntent(PackageManager packageManager) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            return new Intent(AlarmClock.ACTION_SHOW_ALARMS);
+        Intent showAlarmIntent = newShowAlarmsIntent(packageManager);
+        if (showAlarmIntent != null) {
+            return showAlarmIntent;
         }
 
         Intent clockDetectIntent = tryToDetectClockApp(packageManager);
         return clockDetectIntent != null ? clockDetectIntent : new Intent(AlarmClock.ACTION_SET_ALARM);
+    }
+
+    @Nullable
+    private Intent newShowAlarmsIntent(PackageManager packageManager) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            return null;
+        }
+
+        Intent intent = new Intent(AlarmClock.ACTION_SHOW_ALARMS);
+        boolean nobodyRespond = packageManager.queryIntentActivities(intent, 0).isEmpty();
+        if (nobodyRespond) { // http://crashes.to/s/fd65ab285bf
+            String error = "Nobody can process intent " + intent;
+            LOG.error(error, new NonFatalError(error));
+            return null;
+        }
+
+        return intent;
     }
 
     @Nullable
