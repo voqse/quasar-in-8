@@ -31,14 +31,15 @@ import java.util.TimeZone;
  */
 public class NixieUtils {
 
-    private static final DateFormat TIME_FORMAT_24 = new SimpleDateFormat("HH:mm", Locale.getDefault());
-    private static final DateFormat TIME_FORMAT_12 = new SimpleDateFormat("hh:mm", Locale.getDefault());
-    private static final DateFormat DATE_FORMAT_US = new SimpleDateFormat("MM.dd.yyyy", Locale.getDefault());
-    private static final DateFormat DATE_FORMAT_RU = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-    private static final DateFormat DATE_FORMAT_NEW_YEAR_US = new SimpleDateFormat("12/31/yyyy", Locale.getDefault());
-    private static final DateFormat DATE_FORMAT_NEW_YEAR_RU = new SimpleDateFormat("31.12.yyyy", Locale.getDefault());
-    private static final DateFormat DATE_FORMAT_YEAR = new SimpleDateFormat("yyyy", Locale.getDefault());
-    private static final DateFormat DATE_FORMAT_TIME_DETAILS = new SimpleDateFormat("HH:mm:ss:SSS", Locale.getDefault());
+    private static final Locale US_LOCALE = Locale.US;
+    private static final DateFormat TIME_FORMAT_24 = new SimpleDateFormat("HH:mm", US_LOCALE);
+    private static final DateFormat TIME_FORMAT_12 = new SimpleDateFormat("hh:mm", US_LOCALE);
+    private static final DateFormat DATE_FORMAT_US = new SimpleDateFormat("MM.dd.yyyy", US_LOCALE);
+    private static final DateFormat DATE_FORMAT_RU = new SimpleDateFormat("dd.MM.yyyy", US_LOCALE);
+    private static final DateFormat DATE_FORMAT_NEW_YEAR_US = new SimpleDateFormat("12/31/yyyy", US_LOCALE);
+    private static final DateFormat DATE_FORMAT_NEW_YEAR_RU = new SimpleDateFormat("31.12.yyyy", US_LOCALE);
+    private static final DateFormat DATE_FORMAT_YEAR = new SimpleDateFormat("yyyy", US_LOCALE);
+    private static final DateFormat DATE_FORMAT_TIME_DETAILS = new SimpleDateFormat("HH:mm:ss:SSS", US_LOCALE);
 
     public static String getCurrentTime(boolean format24, String timeZoneId) {
         DateFormat dateFormat = format24 ? TIME_FORMAT_24 : TIME_FORMAT_12;
@@ -141,6 +142,7 @@ public class NixieUtils {
         String pattern = ((SimpleDateFormat) dateFormat).toLocalizedPattern();
         return pattern.startsWith("M");
     }
+
     public static int dipToPixels(Context context, int dip) {
         Resources resources = context.getResources();
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, resources.getDisplayMetrics());
