@@ -3,11 +3,12 @@ package com.voqse.nixieclock.widget;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import 	androidx.appcompat.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -46,6 +47,9 @@ import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormat
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment;
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment.OnThemeSelectedListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,6 +68,8 @@ import static com.voqse.nixieclock.utils.NixieUtils.formatTwoLineText;
 public class ConfigurationActivity extends AppCompatActivity implements OnCheckedChangeListener, OnClickListener,
         OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener,
         InAppBillingListener, OnAppSelectedListener, OnApplySettingsDialogClickListener, WidgetsAdapter.WidgetOptionsProvider {
+
+    private static final Logger LOG = LoggerFactory.getLogger("ConfigurationActivity");
 
     private static final int REQUEST_CODE_PURCHASE = 42;
     private static final String STATE_CONFIGURING_WIDGET_ID = BuildConfig.APPLICATION_ID + ".STATE_CONFIGURING_WIDGET_ID";
@@ -105,6 +111,21 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         if (isNewlyCreatedWidget()) {
             setActivityResult(false);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        findViews();
+        List<Integer> widgetIds = getWidgetIds();
+        this.widgetsOptions = getWidgetOptions(widgetIds);
+        setupViews(widgetIds);
+        setupUi(widgetIds);
+//        this.inAppBilling = InAppBillingFactory.newInnAppBilling(this, this);
+//        if (isNewlyCreatedWidget()) {
+//            setActivityResult(false);
+//        }
     }
 
     private void restoreConfiguringWidgetId(Bundle activityState) {
@@ -280,50 +301,39 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.timeZoneTextView:
-                new TimeZonePickerDialogFragment().show(getSupportFragmentManager(), "TimeZonePicker");
-                break;
-            case R.id.dateFormatTextView:
-                new DateFormatDialogFragment().show(getSupportFragmentManager(), "DateFormatPicker");
-                break;
-            case R.id.themeTextView:
-                new ThemePickerDialogFragment().show(getSupportFragmentManager(), "ThemePicker");
-                break;
-            case R.id.appTextView:
-                new AppPickerDialogFragment().show(getSupportFragmentManager(), "AppPicker");
-                break;
-            case R.id.applyWidgetButton:
-                applySettings();
-                break;
-            case R.id.upgradeButton:
-                upgradeToPro();
-                break;
-            case R.id.leftButton:
-                swipeSlider(true);
-                break;
-            case R.id.rightButton:
-                swipeSlider(false);
-                break;
-            default:
-                throw new IllegalStateException();
+        int id = view.getId();
+        if (id == R.id.timeZoneTextView) {
+            new TimeZonePickerDialogFragment().show(getSupportFragmentManager(), "TimeZonePicker");
+        } else if (id == R.id.dateFormatTextView) {
+            new DateFormatDialogFragment().show(getSupportFragmentManager(), "DateFormatPicker");
+        } else if (id == R.id.themeTextView) {
+            new ThemePickerDialogFragment().show(getSupportFragmentManager(), "ThemePicker");
+        } else if (id == R.id.appTextView) {
+            new AppPickerDialogFragment().show(getSupportFragmentManager(), "AppPicker");
+        } else if (id == R.id.applyWidgetButton) {
+            applySettings();
+        } else if (id == R.id.upgradeButton) {
+            upgradeToPro();
+        } else if (id == R.id.leftButton) {
+            swipeSlider(true);
+        } else if (id == R.id.rightButton) {
+            swipeSlider(false);
+        } else {
+            throw new IllegalStateException();
         }
     }
 
     @Override
     public void onCheckedChanged(CompoundButton button, boolean checked) {
-        switch (button.getId()) {
-            case R.id.timeFormatSwitch:
-                onTimeFormatChanged(checked);
-                break;
-            case R.id.hideIconSwitch:
-                onHideIconValueChanged(checked);
-                break;
-            case R.id.systemSettingsSwitch:
-                onUseSystemPreferencesValueChanged(checked);
-                break;
-            default:
-                throw new IllegalStateException();
+        int id = button.getId();
+        if (id == R.id.timeFormatSwitch) {
+            onTimeFormatChanged(checked);
+        } else if (id == R.id.hideIconSwitch) {
+            onHideIconValueChanged(checked);
+        } else if (id == R.id.systemSettingsSwitch) {
+            onUseSystemPreferencesValueChanged(checked);
+        } else {
+            throw new IllegalStateException();
         }
     }
 
@@ -334,6 +344,10 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
             bindTimeFormat(format24);
             updatePreviewAndButton();
         }
+//        WidgetOptions newWidgetOptions = getCurrentWidgetOptions().changeFormat24(format24);
+//        changeCurrentWidgetOptions(newWidgetOptions);
+//        bindTimeFormat(format24);
+//        updatePreviewAndButton();
     }
 
     @Override
@@ -381,8 +395,14 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void onUseSystemPreferencesValueChanged(boolean useSystemPreferences) {
-        updateButtons();
+        WidgetOptions defaultOptions = WidgetOptions.getDefault(this);
+        WidgetOptions currentOptions = getCurrentWidgetOptions();
+
+        WidgetOptions newWidgetOptions = new WidgetOptions(defaultOptions.format24, defaultOptions.timeZoneId, defaultOptions.monthFirst, currentOptions.appToLaunch, currentOptions.theme, useSystemPreferences);
+        changeCurrentWidgetOptions(newWidgetOptions);
+
         bindUseSystemSettings(useSystemPreferences);
+        updatePreviewAndButton();
     }
 
     private int getCurrentWidget() {
@@ -438,7 +458,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         int currentWidgetId = getCurrentWidgetId();
         WidgetOptions currentWidgetOptions = getCurrentWidgetOptions();
         return hideIconSwitch.isChecked() != settings.isHideIcon() ||
-                systemSettingsSwitch.isChecked() != settings.isUseSystemPreferences() ||
+//                systemSettingsSwitch.isChecked() != settings.isUseSystemPreferences() ||
                 !settings.getWidgetOptions(currentWidgetId).equals(currentWidgetOptions);
     }
 
@@ -450,7 +470,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
             if (settings.isHideIcon() != hideIcon) {
                 NixieUtils.setLauncherIconVisibility(this, !hideIcon);
                 settings.setHideIcon(hideIcon);
-                settings.setUseSystemPreferences(systemSettingsSwitch.isChecked());
+//                settings.setUseSystemPreferences(systemSettingsSwitch.isChecked());
             }
 
             WidgetOptions currentWidgetOptions = getCurrentWidgetOptions();

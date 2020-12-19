@@ -4,8 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatDialogFragment;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.voqse.nixieclock.R;
 
@@ -33,7 +33,6 @@ public class ApplySettingsDialogFragment extends AppCompatDialogFragment impleme
                 .setMessage(R.string.apply_setting_dialog_text)
                 .setNegativeButton(R.string.no, this)
                 .setPositiveButton(R.string.yes, this)
-                .setNeutralButton(R.string.apply_setting_dialog_buy, this)
                 .create();
     }
 

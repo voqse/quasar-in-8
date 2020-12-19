@@ -1,12 +1,14 @@
 package com.voqse.nixieclock.widget;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.JobIntentService;
 
 import com.voqse.nixieclock.App;
 import com.voqse.nixieclock.utils.NixieUtils;
@@ -19,38 +21,39 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexey Danilov (danikula@gmail.com).
  */
-public class WidgetServiceUpdater extends Service {
+public class WidgetServiceUpdater extends JobIntentService {
 
     private static final Logger LOG = LoggerFactory.getLogger("WidgetServiceUpdater");
+    public static final int JOB_ID = 42;
 
     private UpdateSchedulerHandler handler;
 
-    public static void wakeUp(Context context) {
-        context.startService(new Intent(context, WidgetServiceUpdater.class));
+    public static void enqueueWork(Context context) {
+        LOG.debug("Service enqueueWork called");
+        enqueueWork(context, WidgetServiceUpdater.class, JOB_ID,
+                new Intent(context, WidgetServiceUpdater.class));
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        LOG.debug("Service created");
         WidgetUpdater widgetUpdater = App.getWidgetUpdater(this);
         this.handler = new UpdateSchedulerHandler(widgetUpdater);
     }
 
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    protected void onHandleWork(@NonNull Intent intent) {
+        handler.schedule();
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        handler.schedule();
-        return START_STICKY;
+    public void onDestroy() {
+        super.onDestroy();
+        LOG.debug("Service destroyed");
     }
 
     private static final class UpdateSchedulerHandler extends Handler {
-
         private final WidgetUpdater widgetUpdater;
 
         private UpdateSchedulerHandler(WidgetUpdater widgetUpdater) {
@@ -59,9 +62,10 @@ public class WidgetServiceUpdater extends Service {
 
         private void schedule() {
             removeMessages(0);
-            long thisMinuteEnd = NixieUtils.getNextMinuteStart() - 1000;
+            long thisMinuteEnd = NixieUtils.getNextMinuteStart() - 10000;
             long delay = thisMinuteEnd - System.currentTimeMillis();
             sendMessageDelayed(obtainMessage(0), delay);
+            LOG.debug("Service planed next update on " + NixieUtils.formatTimeDetails(thisMinuteEnd));
         }
 
         @Override

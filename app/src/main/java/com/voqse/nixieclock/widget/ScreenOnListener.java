@@ -27,6 +27,6 @@ public class ScreenOnListener extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         App.getWidgetUpdater(context).updateImmediately();
-        WidgetServiceUpdater.wakeUp(context);
+        WidgetServiceUpdater.enqueueWork(context);
     }
 }

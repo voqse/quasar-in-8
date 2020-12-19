@@ -9,5 +9,5 @@
 .externalNativeBuild
 .idea
 /app/build
-/app/prod.jks
-/app/sign.properties
+/app/keystore.properties
+/app/release.jks

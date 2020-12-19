@@ -8,7 +8,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.provider.AlarmClock;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.log.NonFatalError;

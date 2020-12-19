@@ -4,8 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatDialogFragment;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.utils.NixieUtils;

@@ -42,13 +42,15 @@ public class Settings {
         String monthFirstKey = getWidgetKey(KEY_MONTH_FIRST, widgetId);
         String appToLaunchKey = getWidgetKey(KEY_APP_TO_LAUNCH, widgetId);
         String themeKey = getWidgetKey(KEY_THEME, widgetId);
+        String useSystemDefault = getWidgetKey(KEY_USE_SYSTEM_PREFERENCES, widgetId);
         WidgetOptions defaultOptions = WidgetOptions.getDefault(context);
         return new WidgetOptions(
                 preferences.getBoolean(format24Key, defaultOptions.format24),
                 preferences.getString(timeZoneKey, defaultOptions.timeZoneId),
                 preferences.getBoolean(monthFirstKey, defaultOptions.monthFirst),
                 ExternalApp.fromString(preferences.getString(appToLaunchKey, defaultOptions.appToLaunch.pack())),
-                Theme.valueOf(preferences.getString(themeKey, defaultOptions.theme.name()))
+                Theme.valueOf(preferences.getString(themeKey, defaultOptions.theme.name())),
+                preferences.getBoolean(useSystemDefault, defaultOptions.useSystemDefault)
         );
     }
 
@@ -61,6 +63,7 @@ public class Settings {
                 .putBoolean(getWidgetKey(KEY_MONTH_FIRST, widgetId), widgetOptions.monthFirst)
                 .putString(getWidgetKey(KEY_APP_TO_LAUNCH, widgetId), widgetOptions.appToLaunch.pack())
                 .putString(getWidgetKey(KEY_THEME, widgetId), widgetOptions.theme.name())
+                .putBoolean(getWidgetKey(KEY_USE_SYSTEM_PREFERENCES, widgetId), widgetOptions.useSystemDefault)
                 .putStringSet(KEY_LIVE_WIDGETS, liveWidgetIds)
                 .apply();
     }
@@ -77,9 +80,9 @@ public class Settings {
         put(KEY_HIDE_ICON, hide);
     }
 
-    public void setUseSystemPreferences(boolean useSystemPreferences) {
-        put(KEY_USE_SYSTEM_PREFERENCES, useSystemPreferences);
-    }
+//    public void setUseSystemPreferences(boolean useSystemPreferences) {
+//        put(KEY_USE_SYSTEM_PREFERENCES, useSystemPreferences);
+//    }
 
     public void remove(int... widgetIds) {
         SharedPreferences.Editor editor = preferences.edit();

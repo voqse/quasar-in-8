@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.voqse.nixieclock.utils.IoUtils;
 
@@ -14,12 +14,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Класс для извлечения необхдимых для отрисовки виджета ресурсов.
  *
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class ThemeResources {
+
+    private static final Logger LOG = LoggerFactory.getLogger("ThemeResources");
 
     private final ResourceCipher resourceCipher;
     private final AssetManager assets;

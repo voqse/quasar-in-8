@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".App"
@@ -22,12 +23,12 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".widget.LaunchConfigurationActivity"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -36,23 +37,19 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget" />
         </receiver>
-
         <receiver
             android:name=".widget.WidgetClickHandler"
             android:exported="false" />
 
         <service
             android:name=".widget.WidgetServiceUpdater"
-            android:exported="false" />
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="d08133a3be51c9e0794de631f28111184d54520c" />
-
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

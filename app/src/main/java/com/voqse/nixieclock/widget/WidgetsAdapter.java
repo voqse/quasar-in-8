@@ -2,16 +2,18 @@ package com.voqse.nixieclock.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.voqse.nixieclock.R;
+import com.voqse.nixieclock.theme.Theme;
 import com.voqse.nixieclock.theme.drawer.Drawer;
+import com.voqse.nixieclock.theme.drawer.DrawerNew;
 
 import java.util.List;
 
@@ -22,20 +24,21 @@ import java.util.List;
  */
 class WidgetsAdapter extends PagerAdapter {
 
-    private final Drawer drawer;
+    private final Context mContext;
     private final List<Integer> widgetIds;
     private final LayoutInflater inflater;
     private final WidgetOptionsProvider widgetOptionsProvider;
 
     WidgetsAdapter(@NonNull List<Integer> widgetIds, @NonNull Context context, @NonNull WidgetOptionsProvider widgetOptionsProvider) {
-        this.drawer = new Drawer(context);
+        this.mContext = context;
         this.widgetIds = widgetIds;
         this.inflater = LayoutInflater.from(context);
         this.widgetOptionsProvider = widgetOptionsProvider;
     }
 
+    @NonNull
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View view = inflater.inflate(R.layout.widget_preview, container, false);
         bind(view, position);
         container.addView(view);
@@ -43,7 +46,7 @@ class WidgetsAdapter extends PagerAdapter {
     }
 
     @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
+    public void destroyItem(ViewGroup container, int position, @NonNull Object object) {
         View view = (View) object;
         container.removeView(view);
     }
@@ -54,7 +57,7 @@ class WidgetsAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view == object;
     }
 
@@ -69,6 +72,14 @@ class WidgetsAdapter extends PagerAdapter {
         ImageView imageView = (ImageView) view.findViewById(R.id.widgetImageView);
         int widgetId = widgetIds.get(position);
         WidgetOptions widgetOptions = widgetOptionsProvider.provideWidgetOptions(widgetId);
+
+        Drawer drawer;
+        if (widgetOptionsProvider.provideWidgetOptions(widgetId).theme.isItNew) {
+            drawer = new DrawerNew(mContext);
+        } else {
+            drawer = new Drawer(mContext);
+        }
+
         Bitmap bitmap = drawer.draw(widgetOptions, TextMode.TIME, true);
         imageView.setImageBitmap(bitmap);
         view.setTag(position);

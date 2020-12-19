@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.voqse.nixieclock.utils.NixieUtils;
 

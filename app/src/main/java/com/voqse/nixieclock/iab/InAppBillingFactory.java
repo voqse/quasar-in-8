@@ -1,7 +1,7 @@
 package com.voqse.nixieclock.iab;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.voqse.nixieclock.BuildConfig;
 

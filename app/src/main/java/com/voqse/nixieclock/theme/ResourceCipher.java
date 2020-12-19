@@ -1,6 +1,6 @@
 package com.voqse.nixieclock.theme;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;

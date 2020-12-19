@@ -16,6 +16,7 @@ import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.theme.Theme;
 import com.voqse.nixieclock.theme.drawer.Drawer;
+import com.voqse.nixieclock.theme.drawer.DrawerNew;
 import com.voqse.nixieclock.utils.NixieUtils;
 
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
         if (appWidgetIds.length > 0) {
             App.getWidgetUpdater(context).scheduleNextUpdate();
-            WidgetServiceUpdater.wakeUp(context);
+            WidgetServiceUpdater.enqueueWork(context);
         }
 
         if (!NixieUtils.isDeviceActive(context)) {
@@ -109,7 +110,12 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     private Bitmap getWidgetBitmap(Context context, WidgetOptions widgetOptions, TextMode textMode, boolean maxQuality) {
-        Drawer drawer = new Drawer(context);
+        Drawer drawer;
+        if (widgetOptions.theme.isItNew) {
+            drawer = new DrawerNew(context);
+        } else {
+            drawer = new Drawer(context);
+        }
         return drawer.draw(widgetOptions, textMode, maxQuality);
     }
 

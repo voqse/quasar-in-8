@@ -2,7 +2,7 @@ package com.voqse.nixieclock.timezone;
 
 import android.content.Context;
 import android.content.res.XmlResourceParser;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.voqse.nixieclock.R;

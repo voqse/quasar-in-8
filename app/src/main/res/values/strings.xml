@@ -1,39 +1,44 @@
 <resources>
     <string name="app_name" translatable="false">Quasar IN-8</string>
-    <string name="no_widgets">No active widgets</string>
-    <string name="no_widgets_explain">Widgets added to the home screen will appear here</string>
-    <string name="system_settings">System date &amp; time</string>
-    <string name="format_24">Use 24-hour format</string>
+    <string name="no_widgets">Add widget</string>
+    <string name="no_widgets_explain">1. Back on a Home screen, touch and hold an empty space.</string>
+    <string name="no_widgets_explain_1">2. Tap Widgets.</string>
+    <string name="no_widgets_explain_2">3. Touch and hold a widget. You\'ll get images of your Home screens.</string>
+    <string name="no_widgets_explain_3">4. Slide the widget to where you want it. Lift your finger.</string>
+    <string name="system_settings">Use system settings</string>
+    <string name="format_24">24-hour clock</string>
     <string name="format_24_yes" translatable="false">13:00</string>
     <string name="format_24_no" translatable="false">1:00 PM</string>
-    <string name="date_format">Choose date format</string>
-    <string name="timezone">Select time zone</string>
+    <string name="date_format">Date format</string>
+    <string name="timezone">Time zone</string>
     <string name="date_time_settings">Date &amp; time</string>
     <string name="other_settings">Miscellaneous</string>
-    <string name="app_to_launch">Select app</string>
-    <string name="default_app_name">Clock (Default)</string>
+    <string name="app_to_launch">Open app</string>
+    <string name="default_app_name">Alarm (Default)</string>
     <string name="theme">Appearance</string>
-    <string name="icon_shown">Appear in the laucher</string>
-    <string name="button_upgrade">UNLOCK ALL</string>
+    <string name="icon_shown">Shown in the app list</string>
+    <string name="button_upgrade" translatable="false">PREMIUM</string>
     <string name="button_apply">APPLY</string>
     <string name="theme_neo" translatable="false">Quasar IN-8</string>
+    <string name="theme_new" translatable="false">Redshift</string>
     <string name="theme_old" translatable="false">Dark</string>
     <string name="theme_tron" translatable="false">Neutron-2</string>
     <string name="theme_neo_pure">Quasar IN-8 (Without stand)</string>
+    <string name="theme_new_pure">Redshift (Without stand)</string>
     <string name="theme_old_pure">Dark (Without stand)</string>
     <string name="theme_tron_pure">Neutron-2 (Without stand)</string>
     <string name="error_open_app">Cannot launch the app: %s</string>
     <string name="about">About</string>
     <string name="settings">Settings</string>
     <string name="settings_version">Version %s</string>
-    <string name="apply_setting_dialog_title">Unlock all</string>
+    <string name="apply_setting_dialog_title">About free version</string>
     <string name="apply_setting_dialog_buy">Buy</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="purchase_error">An error occurred when purchasing the full version</string>
-    <string name="url" translatable="false">voqse.com</string>
-    <string name="apply_setting_dialog_text">To change settings you should buy the full version. Do you want to use defaults?</string>
-    <string name="hide_icon">Hide icon</string>
-    <string name="icon_hidden">No appear in the laucher</string>
+    <string name="developer" translatable="false">https://t.me/voqse</string>
+    <string name="purchase_error">An error occurred, please try again later.</string>
+    <string name="url" translatable="false">https://voqse.com</string>
+    <string name="apply_setting_dialog_text">You\'re able to use only preset settings, but the widget is fully functional for you, without ads or other limits.\n\nTurn back to defaults?</string>
+    <string name="hide_icon">Hide app icon</string>
+    <string name="icon_hidden">Hidden from the app list</string>
 </resources>
-

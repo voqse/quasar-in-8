@@ -21,13 +21,15 @@ public class WidgetOptions {
     public final boolean monthFirst;
     public final ExternalApp appToLaunch;
     public final Theme theme;
+    public final boolean useSystemDefault;
 
-    public WidgetOptions(boolean format24, String timeZoneId, boolean monthFirst, ExternalApp appToLaunch, Theme theme) {
+    public WidgetOptions(boolean format24, String timeZoneId, boolean monthFirst, ExternalApp appToLaunch, Theme theme, boolean useSystemDefault) {
         this.format24 = format24;
         this.timeZoneId = timeZoneId;
         this.monthFirst = monthFirst;
         this.appToLaunch = appToLaunch;
         this.theme = theme;
+        this.useSystemDefault = useSystemDefault;
     }
 
     public static WidgetOptions getDefault(Context context) {
@@ -36,28 +38,33 @@ public class WidgetOptions {
                 TimeZone.getDefault().getID(),
                 NixieUtils.isSystemUseMonthFirst(context),
                 ExternalApp.DEFAULT_APP,
-                Theme.NEO
+                Theme.NEO,
+                true
         );
     }
 
     public WidgetOptions changeFormat24(boolean format24) {
-        return new WidgetOptions(format24, this.timeZoneId, this.monthFirst, this.appToLaunch, this.theme);
+        return new WidgetOptions(format24, this.timeZoneId, this.monthFirst, this.appToLaunch, this.theme, this.useSystemDefault);
     }
 
     public WidgetOptions changeTimeZoneId(String timeZoneId) {
-        return new WidgetOptions(this.format24, timeZoneId, this.monthFirst, this.appToLaunch, this.theme);
+        return new WidgetOptions(this.format24, timeZoneId, this.monthFirst, this.appToLaunch, this.theme, this.useSystemDefault);
     }
 
     public WidgetOptions changeMonthFirst(boolean monthFirst) {
-        return new WidgetOptions(this.format24, this.timeZoneId, monthFirst, this.appToLaunch, this.theme);
+        return new WidgetOptions(this.format24, this.timeZoneId, monthFirst, this.appToLaunch, this.theme, this.useSystemDefault);
     }
 
     public WidgetOptions changeAppToLaunch(ExternalApp appToLaunch) {
-        return new WidgetOptions(this.format24, this.timeZoneId, this.monthFirst, appToLaunch, this.theme);
+        return new WidgetOptions(this.format24, this.timeZoneId, this.monthFirst, appToLaunch, this.theme, this.useSystemDefault);
     }
 
     public WidgetOptions changeTheme(Theme theme) {
-        return new WidgetOptions(this.format24, this.timeZoneId, this.monthFirst, appToLaunch, theme);
+        return new WidgetOptions(this.format24, this.timeZoneId, this.monthFirst, appToLaunch, theme, this.useSystemDefault);
+    }
+
+    public WidgetOptions changeSystemDefault(boolean useSystemDefault) {
+        return new WidgetOptions(this.format24, this.timeZoneId, this.monthFirst, appToLaunch, this.theme, useSystemDefault);
     }
 
     @Override
@@ -71,6 +78,7 @@ public class WidgetOptions {
         if (monthFirst != that.monthFirst) return false;
         if (!timeZoneId.equals(that.timeZoneId)) return false;
         if (!appToLaunch.equals(that.appToLaunch)) return false;
+        if (useSystemDefault != that.useSystemDefault) return false;
         return theme == that.theme;
 
     }

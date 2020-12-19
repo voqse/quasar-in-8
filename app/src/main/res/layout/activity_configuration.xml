@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <android.support.design.widget.CollapsingToolbarLayout
+        <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <android.support.v4.view.ViewPager
+                    <androidx.viewpager.widget.ViewPager
                         android:id="@+id/widgetsViewPager"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
@@ -59,8 +59,8 @@
                         android:id="@+id/noWidgetsView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:paddingLeft="40dp"
-                        android:paddingRight="40dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
                         android:background="?colorPrimary"
                         android:gravity="center"
                         android:orientation="vertical"
@@ -69,7 +69,7 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
+                            android:gravity="left"
                             android:lineSpacingMultiplier="1.2"
                             android:text="@string/no_widgets"
                             android:textColor="@android:color/primary_text_dark"
@@ -79,9 +79,39 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:gravity="center_horizontal"
+                            android:gravity="left"
                             android:lineSpacingMultiplier="1.2"
                             android:text="@string/no_widgets_explain"
+                            android:textColor="@android:color/secondary_text_dark"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="left"
+                            android:lineSpacingMultiplier="1.2"
+                            android:text="@string/no_widgets_explain_1"
+                            android:textColor="@android:color/secondary_text_dark"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="left"
+                            android:lineSpacingMultiplier="1.2"
+                            android:text="@string/no_widgets_explain_2"
+                            android:textColor="@android:color/secondary_text_dark"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="left"
+                            android:lineSpacingMultiplier="1.2"
+                            android:text="@string/no_widgets_explain_3"
                             android:textColor="@android:color/secondary_text_dark"
                             android:textSize="14sp" />
 
@@ -102,7 +132,7 @@
                         android:id="@+id/upgradeButton"
                         style="@style/Button.Config"
                         android:background="@drawable/btn_dark"
-                        android:drawableLeft="@drawable/ic_unlock"
+                        android:drawableLeft="@drawable/baseline_lock_open_white_24"
                         android:paddingLeft="8dp"
                         android:paddingRight="16dp"
                         android:text="@string/button_upgrade"
@@ -118,7 +148,7 @@
 
             </LinearLayout>
 
-            <android.support.v7.widget.Toolbar
+            <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
@@ -126,11 +156,11 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        </android.support.design.widget.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -145,13 +175,13 @@
                 style="@style/TextView.Header"
                 android:text="@string/date_time_settings" />
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/systemSettingsSwitch"
                 style="@style/Switch.Settings"
                 android:checked="true"
                 android:text="@string/system_settings" />
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/timeFormatSwitch"
                 style="@style/Switch.Settings"
                 android:text="@string/format_24" />
@@ -177,13 +207,13 @@
                 android:id="@+id/appTextView"
                 style="@style/TextView.Settings" />
 
-            <android.support.v7.widget.SwitchCompat
+            <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/hideIconSwitch"
                 style="@style/Switch.Settings"
                 android:text="@string/hide_icon" />
 
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
