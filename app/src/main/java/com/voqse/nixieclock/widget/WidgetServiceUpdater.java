@@ -26,13 +26,18 @@ public class WidgetServiceUpdater extends JobIntentService {
 
     private static final Logger LOG = LoggerFactory.getLogger("WidgetServiceUpdater");
     public static final int JOB_ID = 42;
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler();
+    private static Intent mIntent = null;
     private WidgetUpdater widgetUpdater;
 
     public static void enqueueWork(Context context) {
-        LOG.debug("Service enqueueWork called");
-        enqueueWork(context, WidgetServiceUpdater.class, JOB_ID,
-                new Intent(context, WidgetServiceUpdater.class));
+        if (mIntent == null) {
+            LOG.debug("Service enqueueWork called");
+            enqueueWork(context, WidgetServiceUpdater.class, JOB_ID,
+                    new Intent(context, WidgetServiceUpdater.class));
+        } else {
+            LOG.debug("Service skipped the same work");
+        }
     }
 
     @Override
@@ -43,17 +48,39 @@ public class WidgetServiceUpdater extends JobIntentService {
     }
 
     @Override
-    protected void onHandleWork(@NonNull Intent intent) {
-        long thisMinuteEnd = NixieUtils.getNextMinuteStart() - 10000;
-        long delay = thisMinuteEnd - System.currentTimeMillis();
-        handler.postDelayed(new Runnable() {
+    protected void onHandleWork(@NonNull final Intent intent) {
+        mIntent = intent;
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                LOG.debug("Schedule widgets update from Service");
-                widgetUpdater.scheduleNextUpdate();
+                while (true) {
+                    LOG.debug("Schedule widgets update from Service id: {}",
+                            System.identityHashCode(this));
+                    widgetUpdater.scheduleNextUpdate();
+
+                    long thisMinuteEnd = NixieUtils.getNextMinuteStart() - 5000;
+                    long delay = thisMinuteEnd - System.currentTimeMillis();
+                    if (delay >= 0) {
+                        LOG.debug("Service planned next run on short " +
+                                NixieUtils.formatTimeDetails(System.currentTimeMillis() + delay));
+                        try {
+                            Thread.sleep(delay);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        LOG.debug("Service planned next run on long " +
+                                NixieUtils.formatTimeDetails(System.currentTimeMillis() + delay + 60000));
+                        try {
+                            Thread.sleep(delay + 60000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
-        }, delay);
-        LOG.debug("Service planed next update on " + NixieUtils.formatTimeDetails(thisMinuteEnd));
+        }).start();
+
     }
 
     @Override

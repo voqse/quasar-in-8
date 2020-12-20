@@ -58,7 +58,6 @@ public class WidgetUpdater {
 
     private void changeMode(final int widgetId, final TextMode textMode, long delay) {
         handler.postDelayed(new Runnable() {
-
             @Override
             public void run() {
                 Intent intent = newUpdateIntent(new int[]{widgetId}, textMode);
@@ -91,7 +90,7 @@ public class WidgetUpdater {
         }
     }
 
-    private Intent newUpdateIntent(int widgetIds[], TextMode textMode) {
+    private Intent newUpdateIntent(int[] widgetIds, TextMode textMode) {
         return new Intent(context, WidgetProvider.class)
                 .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
                 .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)

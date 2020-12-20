@@ -70,6 +70,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'org.slf4j:slf4j-api:1.7.18'
     implementation 'com.google.android.gms:play-services-base:17.5.0'
+    // (Java only)
     implementation 'com.danikula.iab:in-app-billing:1.5.2@aar'
     implementation('org.bitbucket.yahor_makouski:slf4j-composite:1.2') {
         exclude group: 'com.google.android', module: 'android'

@@ -3,6 +3,7 @@ package com.voqse.nixieclock.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -35,6 +36,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     public static final String EXTRA_TEXT_MODE = BuildConfig.APPLICATION_ID + ".EXTRA_TEXT_MODE";
     private static final Logger LOG = LoggerFactory.getLogger("WidgetProvider");
+    private static int widgetsCount = 0;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -61,8 +63,9 @@ public class WidgetProvider extends AppWidgetProvider {
 
     private void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, TextMode textMode) {
         LOG.debug("Update widgets({})", appWidgetIds.length);
+        widgetsCount = appWidgetIds.length;
 
-        if (appWidgetIds.length > 0) {
+        if (widgetsCount > 0) {
             App.getWidgetUpdater(context).scheduleNextUpdate();
             WidgetServiceUpdater.enqueueWork(context);
         }
@@ -79,6 +82,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
+        widgetsCount = widgetsCount - appWidgetIds.length;
         Settings settings = new Settings(context);
         settings.remove(appWidgetIds);
     }
@@ -109,9 +113,12 @@ public class WidgetProvider extends AppWidgetProvider {
         this.onUpdate(context, appWidgetManager, new int[]{appWidgetId}, TextMode.TIME);
     }
 
+    public static int getWidgetsCount() {
+        return widgetsCount;
+    }
+
     private Bitmap getWidgetBitmap(Context context, WidgetOptions widgetOptions, TextMode textMode, boolean maxQuality) {
         Drawer drawer;
-
         if (widgetOptions.theme.isItNew) {
             drawer = new DrawerNew(context);
         } else {
