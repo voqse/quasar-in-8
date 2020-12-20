@@ -111,6 +111,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     private Bitmap getWidgetBitmap(Context context, WidgetOptions widgetOptions, TextMode textMode, boolean maxQuality) {
         Drawer drawer;
+
         if (widgetOptions.theme.isItNew) {
             drawer = new DrawerNew(context);
         } else {
