@@ -60,23 +60,22 @@ public class WidgetServiceUpdater extends JobIntentService {
 
                     long thisMinuteEnd = NixieUtils.getNextMinuteStart() - 5000;
                     long delay = thisMinuteEnd - System.currentTimeMillis();
-                    if (delay >= 0) {
-                        LOG.debug("Service planned next run on short " +
-                                NixieUtils.formatTimeDetails(System.currentTimeMillis() + delay));
-                        try {
+
+                    try {
+                        if (delay >= 0) {
+                            LOG.debug("Service planned next run on short " +
+                                    NixieUtils.formatTimeDetails(System.currentTimeMillis() + delay));
                             Thread.sleep(delay);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        LOG.debug("Service planned next run on long " +
-                                NixieUtils.formatTimeDetails(System.currentTimeMillis() + delay + 60000));
-                        try {
+                        } else {
+                            LOG.debug("Service planned next run on long " +
+                                    NixieUtils.formatTimeDetails(System.currentTimeMillis() + delay + 60000));
                             Thread.sleep(delay + 60000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
                         }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+
+
                 }
             }
         }).start();

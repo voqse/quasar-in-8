@@ -6,6 +6,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import 	androidx.appcompat.widget.Toolbar;
@@ -120,7 +122,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 //        findViews();
         List<Integer> widgetIds = getWidgetIds();
         this.widgetsOptions = getWidgetOptions(widgetIds);
-        setupViews(widgetIds);
+//        setupViews(widgetIds);
         setupUi(widgetIds);
 //        this.inAppBilling = InAppBillingFactory.newInnAppBilling(this, this);
 //        if (isNewlyCreatedWidget()) {
@@ -207,7 +209,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_CONFIGURING_WIDGET_ID, configuringWidgetId);
     }
@@ -384,6 +386,8 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CODE_PURCHASE) {
             inAppBilling.processPurchase(requestCode, resultCode, data);
         }
