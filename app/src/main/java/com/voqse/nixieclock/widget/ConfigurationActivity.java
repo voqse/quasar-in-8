@@ -3,15 +3,10 @@ package com.voqse.nixieclock.widget;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-import 	androidx.appcompat.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,12 +22,29 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClient.BillingResponseCode;
+import com.android.billingclient.api.BillingClient.SkuType;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesResponseListener;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.voqse.nixieclock.BuildConfig;
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.clock.ExternalApp;
-import com.voqse.nixieclock.iab.InAppBilling;
-import com.voqse.nixieclock.iab.InAppBillingFactory;
-import com.voqse.nixieclock.iab.InAppBillingListener;
 import com.voqse.nixieclock.theme.Theme;
 import com.voqse.nixieclock.timezone.TimeZoneInfo;
 import com.voqse.nixieclock.timezone.TimeZonePickerDialogFragment;
@@ -54,7 +66,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_CONFIGURE;
@@ -68,8 +82,8 @@ import static com.voqse.nixieclock.utils.NixieUtils.formatTwoLineText;
  * @author Alexey Danilov (danikula@gmail.com).
  */
 public class ConfigurationActivity extends AppCompatActivity implements OnCheckedChangeListener, OnClickListener,
-        OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener,
-        InAppBillingListener, OnAppSelectedListener, OnApplySettingsDialogClickListener, WidgetsAdapter.WidgetOptionsProvider {
+        OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener, OnAppSelectedListener,
+        OnApplySettingsDialogClickListener, WidgetsAdapter.WidgetOptionsProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger("ConfigurationActivity");
 
@@ -92,13 +106,20 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     private View noWidgetsView;
     private Toolbar toolbar;
     private Settings settings;
-    private InAppBilling inAppBilling;
     private SparseArray<WidgetOptions> widgetsOptions;
     private int configuringWidgetId;
+
+    private BillingClient mBillingClient;
+    private Map<String, SkuDetails> mSkuDetailsMap = new HashMap<>();
+    private static final String SKU_PRO_UPDATE = "unlock_all_new";
+    private boolean hasPro = false;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+
+        setupBillingClient();
+        mBillingClient.queryPurchasesAsync(SkuType.INAPP, purchasesResponseListener);
 
         this.settings = new Settings(this);
         restoreConfiguringWidgetId(state);
@@ -109,25 +130,115 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         this.widgetsOptions = getWidgetOptions(widgetIds);
         setupViews(widgetIds);
         setupUi(widgetIds);
-        this.inAppBilling = InAppBillingFactory.newInnAppBilling(this, this);
+
         if (isNewlyCreatedWidget()) {
             setActivityResult(false);
         }
+    }
+
+    private void setupBillingClient() {
+        mBillingClient = BillingClient.newBuilder(this)
+                .setListener(purchasesUpdatedListener)
+                .enablePendingPurchases()
+                .build();
+
+        mBillingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingSetupFinished(BillingResult billingResult) {
+                if (billingResult.getResponseCode() ==  BillingResponseCode.OK) {
+                    // The BillingClient is ready. You can query purchases here.
+                    querySkuDetails();
+                    onProductsFetched();
+                }
+            }
+            @Override
+            public void onBillingServiceDisconnected() {
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+            }
+        });
+    }
+
+    private PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
+        @Override
+        public void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
+            if (billingResult.getResponseCode() == BillingResponseCode.OK && purchases != null) {
+                for (Purchase purchase : purchases) {
+                    handlePurchase(purchase);
+                }
+            } else if (billingResult.getResponseCode() == BillingResponseCode.USER_CANCELED) {
+                // Handle an error caused by a user cancelling the purchase flow.
+            } else {
+                // Handle any other error codes.
+                onPurchasingError();
+            }
+        }
+    };
+
+    private PurchasesResponseListener purchasesResponseListener = new PurchasesResponseListener() {
+        @Override
+        public void onQueryPurchasesResponse(BillingResult billingResult, @NonNull List<Purchase> purchases) {
+            if (billingResult.getResponseCode() == BillingResponseCode.OK && purchases != null) {
+                for (Purchase purchase : purchases) {
+                    handlePurchase(purchase);
+                }
+            }
+        }
+    };
+
+    private void querySkuDetails() {
+        List<String> skuList = new ArrayList<> ();
+        skuList.add(SKU_PRO_UPDATE);
+        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+        params.setSkusList(skuList).setType(SkuType.INAPP);
+
+        mBillingClient.querySkuDetailsAsync(params.build(),
+                new SkuDetailsResponseListener() {
+                    @Override
+                    public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
+                        // Process the result.
+                        if (billingResult.getResponseCode() == BillingResponseCode.OK) {
+                            for (SkuDetails skuDetails : skuDetailsList) {
+                                mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void handlePurchase(Purchase purchase) {
+        // Verify the purchase.
+        // Ensure entitlement was not already granted for this purchaseToken.
+        // Grant entitlement to the user.
+
+        ConsumeParams consumeParams =
+                ConsumeParams.newBuilder()
+                        .setPurchaseToken(purchase.getPurchaseToken())
+                        .build();
+
+        mBillingClient.consumeAsync(consumeParams, new ConsumeResponseListener() {
+            @Override
+            public void onConsumeResponse(BillingResult billingResult, @NonNull String purchaseToken) {
+                if (billingResult.getResponseCode() == BillingResponseCode.OK) {
+                    // Handle the success of the consume operation.
+//                    hasPro = true;
+//                    onPurchased();
+                }
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-//        findViews();
+        mBillingClient.queryPurchasesAsync(SkuType.INAPP, purchasesResponseListener);
+
+        findViews();
         List<Integer> widgetIds = getWidgetIds();
         this.widgetsOptions = getWidgetOptions(widgetIds);
-//        setupViews(widgetIds);
+        setupViews(widgetIds);
         setupUi(widgetIds);
-//        this.inAppBilling = InAppBillingFactory.newInnAppBilling(this, this);
-//        if (isNewlyCreatedWidget()) {
-//            setActivityResult(false);
-//        }
     }
 
     private void restoreConfiguringWidgetId(Bundle activityState) {
@@ -389,7 +500,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_CODE_PURCHASE) {
-            inAppBilling.processPurchase(requestCode, resultCode, data);
+            upgradeToPro();
         }
     }
 
@@ -433,11 +544,10 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void updateButtons() {
-        boolean hasPro = inAppBilling != null && inAppBilling.hasPro();
         boolean newWidget = isNewlyCreatedWidget();
         boolean settingsChanged = isCurrentWidgetSettingsChanged();
 
-        boolean applyButtonActive = newWidget && (hasPro || !settingsChanged) || (!newWidget && hasPro && settingsChanged);
+        boolean applyButtonActive = newWidget && (hasPro || !settingsChanged) || (hasPro && settingsChanged);
         boolean applyButtonDisabled = !newWidget && !settingsChanged;
         int applyButtonTextColorId = applyButtonActive || settingsChanged ? android.R.color.white : R.color.text_white_disabled;
 
@@ -467,7 +577,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void applySettings() {
-        if ((inAppBilling == null || !inAppBilling.hasPro()) && isCurrentWidgetSettingsChanged()) {
+        if (hasPro && isCurrentWidgetSettingsChanged()) {
             new ApplySettingsDialogFragment().show(getSupportFragmentManager(), "ApplySettingsConfirm");
         } else {
             boolean hideIcon = hideIconSwitch.isChecked();
@@ -499,7 +609,11 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void upgradeToPro() {
-        inAppBilling.purchase(this, REQUEST_CODE_PURCHASE);
+        BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
+                .setSkuDetails(mSkuDetailsMap.get(SKU_PRO_UPDATE))
+                .build();
+
+        mBillingClient.launchBillingFlow(this, billingFlowParams);
     }
 
     private void setEnabled(boolean enabled, View... views) {
@@ -513,18 +627,15 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         return configuringWidgetId > 0;
     }
 
-    @Override
     public void onPurchasingError() {
         Toast.makeText(this, R.string.purchase_error, Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public void onProductsFetched(boolean hasPro) {
+    public void onProductsFetched() {
         upgradeButton.setVisibility(hasPro ? View.GONE : View.VISIBLE);
         updateButtons();
     }
 
-    @Override
     public void onPurchased() {
         upgradeButton.setVisibility(View.GONE);
         updateButtons();
@@ -533,7 +644,6 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        inAppBilling.release();
     }
 
     @Override

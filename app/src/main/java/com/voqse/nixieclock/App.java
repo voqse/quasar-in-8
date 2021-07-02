@@ -8,13 +8,6 @@ import com.voqse.nixieclock.widget.ScreenOnListener;
 import com.voqse.nixieclock.widget.WidgetServiceUpdater;
 import com.voqse.nixieclock.widget.WidgetUpdater;
 
-import org.slf4j.impl.custom.Level;
-import org.slf4j.impl.custom.NativeLoggerAdapter;
-import org.slf4j.impl.custom.loggers.CompositeLogger;
-import org.slf4j.impl.custom.loggers.LogcatLogger;
-
-import static com.voqse.nixieclock.BuildConfig.DEBUG;
-
 /**
  * Nixie Clock app.
  *
@@ -35,17 +28,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        initLogger();
-
         this.widgetUpdater = new WidgetUpdater(this);
         this.widgetUpdater.scheduleNextUpdate();
         ScreenOnListener.listenForScreenOn(this);
         WidgetServiceUpdater.enqueueWork(this);
-    }
-
-    private void initLogger() {
-        Level minLoggableLevel = DEBUG ? Level.TRACE : Level.DEBUG;
-        NativeLoggerAdapter.setLogger(new CompositeLogger(new LogcatLogger(minLoggableLevel)));
     }
 
     public static WidgetUpdater getWidgetUpdater(@NonNull Context context) {

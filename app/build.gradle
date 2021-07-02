@@ -27,15 +27,15 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '29.0.3'
+    buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId 'com.voqse.nixieclock'
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 16
-        versionName '1.3.19'
+        versionCode 17
+        versionName '1.4.0 Beta'
         vectorDrawables.useSupportLibrary = true
-        project.archivesBaseName = "${applicationId}-${versionName}".toString()
+        project.archivesBaseName = "${applicationId}-${versionName}-(${versionCode})".toString()
     }
     signingConfigs {
         debug {
@@ -66,17 +66,12 @@ android {
 
 dependencies {
     implementation 'com.evernote:android-job:1.1.4'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
     implementation 'org.slf4j:slf4j-api:1.7.18'
-    implementation 'com.google.android.gms:play-services-base:17.5.0'
-    // (Java only)
-    implementation 'com.danikula.iab:in-app-billing:1.5.2@aar'
-    implementation('org.bitbucket.yahor_makouski:slf4j-composite:1.2') {
-        exclude group: 'com.google.android', module: 'android'
-    }
+    implementation "com.android.billingclient:billing:4.0.0"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.2.1'
     testImplementation 'org.mockito:mockito-all:1.9.5'
     testImplementation('com.squareup:fest-android:1.0.8') {
