@@ -1,9 +1,8 @@
 package com.voqse.nixieclock.utils;
 
-import androidx.annotation.NonNull;
+import android.util.Log;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import androidx.annotation.NonNull;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -22,8 +21,8 @@ import java.io.OutputStream;
  */
 public class IoUtils {
 
+    private static final String TAG = "IoUtils";
     private static final int DEFAULT_BUFFER_SIZE = 8 * 1024;
-    private static final Logger LOG = LoggerFactory.getLogger("IoUtils");
 
     /**
      * Closes stream and releases any system resources associated with it.
@@ -40,7 +39,7 @@ public class IoUtils {
             }
         } catch (IOException e) {
             // hide exception, close source "silently"
-            LOG.error("Error closing closeable source", e);
+            Log.d(TAG, "closeSilently: Error closing closeable source", e);
         }
     }
 

@@ -6,13 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.voqse.nixieclock.R;
 import com.voqse.nixieclock.clock.ExternalApp;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -25,7 +23,7 @@ import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
  */
 public class WidgetClickHandler extends BroadcastReceiver {
 
-    private static final Logger LOG = LoggerFactory.getLogger("WidgetClickHandler");
+    private static final String TAG = "WidgetClickHandler";
     private static final ClickHandler CLICK_HANDLER = new ClickHandler(500);
 
     public static Intent newIntent(Context context, int widgetId) {
@@ -82,7 +80,7 @@ public class WidgetClickHandler extends BroadcastReceiver {
             try {
                 app.launch(context);
             } catch (PackageManager.NameNotFoundException e) {
-                LOG.error("Error launching external app " + this, e);
+                Log.d(TAG, "onSingleClick: Error launching external app " + this, e);
                 Toast.makeText(context, context.getString(R.string.error_open_app, app.getName(context)), Toast.LENGTH_LONG).show();
             }
         }

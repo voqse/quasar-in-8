@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.voqse.nixieclock.App;
@@ -20,8 +21,7 @@ import com.voqse.nixieclock.theme.drawer.Drawer;
 import com.voqse.nixieclock.theme.drawer.DrawerNew;
 import com.voqse.nixieclock.utils.NixieUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Arrays;
 
 import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT;
 import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH;
@@ -34,40 +34,83 @@ import static android.appwidget.AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH;
  */
 public class WidgetProvider extends AppWidgetProvider {
 
+    public static final String WIDGET_DATA_CHANGED_ACTION = "com.voqse.nixieclock.widget.WIDGET_DATA_CHANGED";
+    public static final String CLOCK_TICK_ACTION = "com.voqse.nixieclock.widget.CLOCK_TICK";
+
+    private static final String TAG = "WidgetProvider";
     public static final String EXTRA_TEXT_MODE = BuildConfig.APPLICATION_ID + ".EXTRA_TEXT_MODE";
-    private static final Logger LOG = LoggerFactory.getLogger("WidgetProvider");
     private static int widgetsCount = 0;
 
     @Override
+    public void onEnabled(Context context) {
+        super.onEnabled(context);
+
+        App.setWidgetUpdater(context);
+    }
+
+    @Override
+    public void onDisabled(Context context) {
+        super.onDisabled(context);
+
+        if (App.getWidgetUpdater(context) == null) {
+            Log.d(TAG, "onDisabled: There's no WidgetUpdater, setup another one");
+            App.setWidgetUpdater(context);
+        }
+
+        App.getWidgetUpdater(context).cancelNextUpdate();
+    }
+
+    @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)) {
+        super.onReceive(context, intent);
+
+        if (CLOCK_TICK_ACTION.equals(intent.getAction()) || WIDGET_DATA_CHANGED_ACTION.equals(intent.getAction())) {
+            Log.d(TAG, "onReceive: Clock tick or data changed action received");
+
             Bundle extras = intent.getExtras();
+
             if (extras != null) {
+//                Log.d(TAG, "onReceive: Intent have extras: " + extras);
+
+                for (String key : extras.keySet()) {
+                    Log.e(TAG, key + " : " + (extras.get(key) != null ? extras.get(key).getClass().isArray() ? Arrays.toString(extras.getIntArray(key)) : extras.get(key) : "NULL"));
+                }
+
                 int[] appWidgetIds = extras.getIntArray(AppWidgetManager.EXTRA_APPWIDGET_IDS);
+
                 if (appWidgetIds != null && appWidgetIds.length > 0) {
+                    Log.d(TAG, "onReceive: Intent has widget IDs: " + Arrays.toString(appWidgetIds));
                     TextMode textMode = extras.containsKey(EXTRA_TEXT_MODE) ?
                             (TextMode) extras.getSerializable(EXTRA_TEXT_MODE) : TextMode.TIME;
-                    onUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds, textMode);
+                    doUpdate(context, AppWidgetManager.getInstance(context), appWidgetIds, textMode);
+                } else {
+                    Log.d(TAG, "onReceive: Intent has no widget IDs, update all the widgets");
+                    AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+                    doUpdate(context, appWidgetManager, appWidgetManager.getAppWidgetIds(new ComponentName(context, this.getClass())), TextMode.TIME);
                 }
             }
-        } else {
-            super.onReceive(context, intent);
         }
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        onUpdate(context, appWidgetManager, appWidgetIds, TextMode.TIME);
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
+
+        doUpdate(context, appWidgetManager, appWidgetIds, TextMode.TIME);
     }
 
-    private void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, TextMode textMode) {
-        LOG.debug("Update widgets({})", appWidgetIds.length);
+    private void doUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds, TextMode textMode) {
         widgetsCount = appWidgetIds.length;
+        Log.d(TAG, "doUpdate: Update widgets (" + widgetsCount + ")");
+
+        if (App.getWidgetUpdater(context) == null) {
+            Log.d(TAG, "doUpdate: There's no WidgetUpdater, setup another one");
+            App.setWidgetUpdater(context);
+        }
 
         if (widgetsCount > 0) {
             App.getWidgetUpdater(context).scheduleNextUpdate();
-            WidgetServiceUpdater.enqueueWork(context);
+//            WidgetServiceUpdater.enqueueWork(context);
         }
 
         if (!NixieUtils.isDeviceActive(context)) {
@@ -82,7 +125,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
-        widgetsCount = widgetsCount - appWidgetIds.length;
+        super.onDeleted(context, appWidgetIds);
+
         Settings settings = new Settings(context);
         settings.remove(appWidgetIds);
     }
@@ -94,15 +138,12 @@ public class WidgetProvider extends AppWidgetProvider {
         Bitmap bitmap = getWidgetBitmap(context, widgetOptions, textMode, maxQuality);
         views.setImageViewBitmap(R.id.imageView, bitmap);
         views.setOnClickPendingIntent(R.id.imageView, newClickIntent(context, widgetId));
-        updateWidget(appWidgetManager, widgetId, views);
-    }
 
-    private void updateWidget(AppWidgetManager appWidgetManager, int widgetId, RemoteViews views) {
         try {
             // it seems due to aggressive politic to using system resources OS kills IAppWidgetService http://crashes.to/s/57acde098f7
             appWidgetManager.updateAppWidget(widgetId, views);
         } catch (RuntimeException e) {
-            LOG.error("Error updating widget " + widgetId, e);
+            Log.d(TAG, "updateWidget: Error updating widget " + widgetId, e);
         }
     }
 
@@ -110,11 +151,7 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
         super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
 
-        this.onUpdate(context, appWidgetManager, new int[]{appWidgetId}, TextMode.TIME);
-    }
-
-    public static int getWidgetsCount() {
-        return widgetsCount;
+        this.doUpdate(context, appWidgetManager, new int[]{appWidgetId}, TextMode.TIME);
     }
 
     private Bitmap getWidgetBitmap(Context context, WidgetOptions widgetOptions, TextMode textMode, boolean maxQuality) {

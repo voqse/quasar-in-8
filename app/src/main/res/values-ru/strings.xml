@@ -2,10 +2,10 @@
     <string name="no_widgets">Добавьте виджет</string>
     <string name="no_widgets_explain">1. Вернитесь на главный экран, нажмите и удерживайте пустой участок.</string>
     <string name="no_widgets_explain_1">2. Коснитесь значка "Виджеты".</string>
-    <string name="no_widgets_explain_2">3. Нажмите на виджет и удерживайте его. Появятся изображения главных экранов.</string>
+    <string name="no_widgets_explain_2">3. Нажмите на виджет Quasar IN-8 и удерживайте его. Появятся изображения главных экранов.</string>
     <string name="no_widgets_explain_3">4. Перетащите виджет в нужное место и отпустите.</string>
     <string name="system_settings">Использовать настройки системы</string>
-    <string name="format_24">24-часовой формат времени</string>
+    <string name="format_24">24-часовой формат</string>
     <string name="date_format">Формат даты</string>
     <string name="timezone">Часовой пояс</string>
     <string name="date_time_settings">Дата и время</string>
@@ -29,6 +29,6 @@
     <string name="no">Нет</string>
     <string name="apply_setting_dialog_text">Вам доступны только предустановленные настройки, но вы все еще можете полноценно пользоваться виджетом, никакой рекламы или других ограничений.\n\nВернуть значения к исходным?</string>
     <string name="hide_icon">Скрыть иконку приложения</string>
-    <string name="theme">Внешний вид часов</string>
+    <string name="theme">Тема</string>
     <string name="purchase_error">Возникла ошибка, пожалуйста повторите попытку позже.</string>
 </resources>

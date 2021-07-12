@@ -3,7 +3,7 @@
     <string name="no_widgets">Add widget</string>
     <string name="no_widgets_explain">1. Back on a Home screen, touch and hold an empty space.</string>
     <string name="no_widgets_explain_1">2. Tap Widgets.</string>
-    <string name="no_widgets_explain_2">3. Touch and hold a widget. You\'ll get images of your Home screens.</string>
+    <string name="no_widgets_explain_2">3. Touch and hold a Quasar IN-8 widget. You\'ll get images of your Home screens.</string>
     <string name="no_widgets_explain_3">4. Slide the widget to where you want it. Lift your finger.</string>
     <string name="system_settings">Use system settings</string>
     <string name="format_24">24-hour clock</string>
@@ -13,9 +13,9 @@
     <string name="timezone">Time zone</string>
     <string name="date_time_settings">Date &amp; time</string>
     <string name="other_settings">Miscellaneous</string>
-    <string name="app_to_launch">Open app</string>
-    <string name="default_app_name">Alarm (Default)</string>
-    <string name="theme">Appearance</string>
+    <string name="app_to_launch">App to open</string>
+    <string name="default_app_name">Alarm app (Default)</string>
+    <string name="theme">Theme</string>
     <string name="icon_shown">Shown in the app list</string>
     <string name="button_upgrade" translatable="false">PREMIUM</string>
     <string name="button_apply">APPLY</string>

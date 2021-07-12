@@ -14,9 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Класс для извлечения необхдимых для отрисовки виджета ресурсов.
  *
@@ -24,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ThemeResources {
 
-    private static final Logger LOG = LoggerFactory.getLogger("ThemeResources");
+    private static final String TAG = "ThemeResources";
 
     private final ResourceCipher resourceCipher;
     private final AssetManager assets;

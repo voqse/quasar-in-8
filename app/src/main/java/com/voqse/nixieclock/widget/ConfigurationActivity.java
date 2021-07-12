@@ -23,11 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.BillingClient.SkuType;
@@ -37,6 +38,7 @@ import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.Purchase.PurchaseState;
 import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
@@ -61,9 +63,6 @@ import com.voqse.nixieclock.widget.support.DateFormatDialogFragment.OnDateFormat
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment;
 import com.voqse.nixieclock.widget.support.ThemePickerDialogFragment.OnThemeSelectedListener;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,11 +82,9 @@ import static com.voqse.nixieclock.utils.NixieUtils.formatTwoLineText;
  */
 public class ConfigurationActivity extends AppCompatActivity implements OnCheckedChangeListener, OnClickListener,
         OnTimeZoneSelectedListener, OnDateFormatSelectedListener, OnThemeSelectedListener, OnAppSelectedListener,
-        OnApplySettingsDialogClickListener, WidgetsAdapter.WidgetOptionsProvider {
+        OnApplySettingsDialogClickListener, WidgetsAdapter.WidgetOptionsProvider, PurchasesUpdatedListener, BillingClientStateListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger("ConfigurationActivity");
-
-    private static final int REQUEST_CODE_PURCHASE = 42;
+    private static final String TAG = "ConfigurationActivity";
     private static final String STATE_CONFIGURING_WIDGET_ID = BuildConfig.APPLICATION_ID + ".STATE_CONFIGURING_WIDGET_ID";
 
     private WidgetsAdapter widgetsAdapter;
@@ -111,15 +108,21 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
 
     private BillingClient mBillingClient;
     private Map<String, SkuDetails> mSkuDetailsMap = new HashMap<>();
-    private static final String SKU_PRO_UPDATE = "unlock_all_new";
+    private static final String SKU_PRO_UPDATE = "unlock_all";
     private boolean hasPro = false;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
 
-        setupBillingClient();
-        mBillingClient.queryPurchasesAsync(SkuType.INAPP, purchasesResponseListener);
+        // Billing client start
+        mBillingClient = BillingClient.newBuilder(this)
+                .setListener(this)
+                .enablePendingPurchases()
+                .build();
+
+        connectToBillingService();
+        // Billing client end
 
         this.settings = new Settings(this);
         restoreConfiguringWidgetId(state);
@@ -136,55 +139,35 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         }
     }
 
-    private void setupBillingClient() {
-        mBillingClient = BillingClient.newBuilder(this)
-                .setListener(purchasesUpdatedListener)
-                .enablePendingPurchases()
-                .build();
+    private void connectToBillingService() {
+        if (!mBillingClient.isReady()) {
+            mBillingClient.startConnection(this);
+        }
+    }
 
-        mBillingClient.startConnection(new BillingClientStateListener() {
+    private void disconnectToBillingService() {
+        if (mBillingClient.isReady()) {
+            mBillingClient.endConnection();
+        }
+    }
+
+    // Получаем список совершенных покупок
+    private void queryPurchases() {
+        mBillingClient.queryPurchasesAsync(SkuType.INAPP, new PurchasesResponseListener() {
             @Override
-            public void onBillingSetupFinished(BillingResult billingResult) {
-                if (billingResult.getResponseCode() ==  BillingResponseCode.OK) {
-                    // The BillingClient is ready. You can query purchases here.
-                    querySkuDetails();
+            public void onQueryPurchasesResponse(BillingResult billingResult, List<Purchase> purchases) {
+                if (billingResult.getResponseCode() == BillingResponseCode.OK && purchases != null) {
+                    for (Purchase purchase : purchases) {
+                        Log.d(TAG, "onQueryPurchasesResponse: There's purchase, handle it");
+                        handlePurchase(purchase);
+                    }
+
+                    // Update buttons after fetching products
                     onProductsFetched();
                 }
             }
-            @Override
-            public void onBillingServiceDisconnected() {
-                // Try to restart the connection on the next request to
-                // Google Play by calling the startConnection() method.
-            }
         });
     }
-
-    private PurchasesUpdatedListener purchasesUpdatedListener = new PurchasesUpdatedListener() {
-        @Override
-        public void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
-            if (billingResult.getResponseCode() == BillingResponseCode.OK && purchases != null) {
-                for (Purchase purchase : purchases) {
-                    handlePurchase(purchase);
-                }
-            } else if (billingResult.getResponseCode() == BillingResponseCode.USER_CANCELED) {
-                // Handle an error caused by a user cancelling the purchase flow.
-            } else {
-                // Handle any other error codes.
-                onPurchasingError();
-            }
-        }
-    };
-
-    private PurchasesResponseListener purchasesResponseListener = new PurchasesResponseListener() {
-        @Override
-        public void onQueryPurchasesResponse(BillingResult billingResult, @NonNull List<Purchase> purchases) {
-            if (billingResult.getResponseCode() == BillingResponseCode.OK && purchases != null) {
-                for (Purchase purchase : purchases) {
-                    handlePurchase(purchase);
-                }
-            }
-        }
-    };
 
     private void querySkuDetails() {
         List<String> skuList = new ArrayList<> ();
@@ -197,7 +180,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
                     @Override
                     public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
                         // Process the result.
-                        if (billingResult.getResponseCode() == BillingResponseCode.OK) {
+                        if (billingResult.getResponseCode() == BillingResponseCode.OK && skuDetailsList != null) {
                             for (SkuDetails skuDetails : skuDetailsList) {
                                 mSkuDetailsMap.put(skuDetails.getSku(), skuDetails);
                             }
@@ -206,35 +189,38 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
                 });
     }
 
+    // Обрабатываем успешную покупку
     private void handlePurchase(Purchase purchase) {
-        // Verify the purchase.
-        // Ensure entitlement was not already granted for this purchaseToken.
-        // Grant entitlement to the user.
 
-        ConsumeParams consumeParams =
-                ConsumeParams.newBuilder()
-                        .setPurchaseToken(purchase.getPurchaseToken())
-                        .build();
+        Log.d("DEBUG", "handlePurchase: Purchase state: " + purchase.getPurchaseState());
+        if (purchase.getPurchaseState() == PurchaseState.PURCHASED) {
+            if (!purchase.isAcknowledged()) {
+                AcknowledgePurchaseParams acknowledgePurchaseParams =
+                        AcknowledgePurchaseParams.newBuilder()
+                                .setPurchaseToken(purchase.getPurchaseToken())
+                                .build();
 
-        mBillingClient.consumeAsync(consumeParams, new ConsumeResponseListener() {
-            @Override
-            public void onConsumeResponse(BillingResult billingResult, @NonNull String purchaseToken) {
-                if (billingResult.getResponseCode() == BillingResponseCode.OK) {
-                    // Handle the success of the consume operation.
-//                    hasPro = true;
-//                    onPurchased();
-                }
+                mBillingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
+                    @Override
+                    public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+                        if (billingResult.getResponseCode() == BillingResponseCode.OK) {
+                            onPurchased();
+                        }
+                    }
+                });
+            } else {
+                onPurchased();
             }
-        });
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        mBillingClient.queryPurchasesAsync(SkuType.INAPP, purchasesResponseListener);
+        queryPurchases();
 
-        findViews();
+//        findViews();
         List<Integer> widgetIds = getWidgetIds();
         this.widgetsOptions = getWidgetOptions(widgetIds);
         setupViews(widgetIds);
@@ -495,15 +481,6 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         updatePreviewAndButton();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE_PURCHASE) {
-            upgradeToPro();
-        }
-    }
-
     private void onHideIconValueChanged(boolean checked) {
         updateButtons();
         bindHideIcon(checked);
@@ -547,7 +524,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         boolean newWidget = isNewlyCreatedWidget();
         boolean settingsChanged = isCurrentWidgetSettingsChanged();
 
-        boolean applyButtonActive = newWidget && (hasPro || !settingsChanged) || (hasPro && settingsChanged);
+        boolean applyButtonActive = newWidget && (hasPro || !settingsChanged) || (!newWidget && hasPro && settingsChanged);
         boolean applyButtonDisabled = !newWidget && !settingsChanged;
         int applyButtonTextColorId = applyButtonActive || settingsChanged ? android.R.color.white : R.color.text_white_disabled;
 
@@ -577,7 +554,7 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     private void applySettings() {
-        if (hasPro && isCurrentWidgetSettingsChanged()) {
+        if ((mBillingClient == null || !hasPro) && isCurrentWidgetSettingsChanged()) {
             new ApplySettingsDialogFragment().show(getSupportFragmentManager(), "ApplySettingsConfirm");
         } else {
             boolean hideIcon = hideIconSwitch.isChecked();
@@ -632,18 +609,31 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
     }
 
     public void onProductsFetched() {
-        upgradeButton.setVisibility(hasPro ? View.GONE : View.VISIBLE);
-        updateButtons();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: SKU fetched, update UI");
+                upgradeButton.setVisibility(hasPro ? View.GONE : View.VISIBLE);
+            }
+        });
     }
 
     public void onPurchased() {
-        upgradeButton.setVisibility(View.GONE);
-        updateButtons();
+        hasPro = true;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: SKU purchased, update UI");
+                upgradeButton.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        disconnectToBillingService();
     }
 
     @Override
@@ -666,10 +656,49 @@ public class ConfigurationActivity extends AppCompatActivity implements OnChecke
         widgetsViewPager.setCurrentItem(newWidgetIndex);
     }
 
+
     @Override
     public WidgetOptions provideWidgetOptions(int widgetId) {
         return widgetsOptions.get(widgetId);
     }
+
+    // Billing service start
+    @Override
+    public void onBillingServiceDisconnected() {
+        connectToBillingService();
+    }
+
+    @Override
+    public void onBillingSetupFinished(BillingResult billingResult) {
+        if (billingResult.getResponseCode() ==  BillingResponseCode.OK) {
+            // The BillingClient is ready. You can query purchases here.
+            querySkuDetails();
+            // Проверяем уже совершенные покупки
+            queryPurchases();
+        }
+    }
+
+    @Override
+    public void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
+        if (billingResult.getResponseCode() == BillingResponseCode.OK && purchases != null) {
+            for (Purchase purchase : purchases) {
+                // Обрабатываем покупку
+                Log.d(TAG, "onPurchasesUpdated: Handle purchasing item");
+                handlePurchase(purchase);
+            }
+        } else if (billingResult.getResponseCode() == BillingResponseCode.ITEM_ALREADY_OWNED) {
+            // Обновляем список уже совершенных покупок
+            Log.d(TAG, "onPurchasesUpdated: Item already owned");
+            queryPurchases();
+            // Handle an error caused by a user cancelling the purchase flow.
+        } else if (billingResult.getResponseCode() == BillingResponseCode.USER_CANCELED) {
+            // Handle an error caused by a user cancelling the purchase flow.
+        } else {
+            // Handle any other error codes.
+            onPurchasingError();
+        }
+    }
+    // Billing service end
 
     private class WidgetSettingBinder implements ViewPager.OnPageChangeListener {
 

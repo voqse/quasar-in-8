@@ -28,13 +28,15 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        this.widgetUpdater = new WidgetUpdater(this);
-        this.widgetUpdater.scheduleNextUpdate();
         ScreenOnListener.listenForScreenOn(this);
-        WidgetServiceUpdater.enqueueWork(this);
+//        WidgetServiceUpdater.enqueueWork(this);
     }
 
-    public static WidgetUpdater getWidgetUpdater(@NonNull Context context) {
+    public static WidgetUpdater getWidgetUpdater(Context context) {
         return ((App) context.getApplicationContext()).widgetUpdater;
+    }
+
+    public static void setWidgetUpdater(Context context) {
+        ((App) context.getApplicationContext()).widgetUpdater = new WidgetUpdater(context);
     }
 }

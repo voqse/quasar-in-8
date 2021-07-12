@@ -9,9 +9,6 @@ import androidx.annotation.NonNull;
 
 import com.voqse.nixieclock.utils.IoUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,7 +22,7 @@ import java.security.GeneralSecurityException;
  */
 public class ThemeResourcesNew {
 
-    private static final Logger LOG = LoggerFactory.getLogger("ThemeResourcesNew");
+    private static final String TAG = "ThemeResourcesNew";
 
     private final AssetManager assetManager;
 

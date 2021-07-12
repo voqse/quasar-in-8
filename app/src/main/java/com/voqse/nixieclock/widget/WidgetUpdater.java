@@ -6,14 +6,15 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import androidx.annotation.NonNull;
+import android.util.Log;
 
 import com.voqse.nixieclock.utils.NixieUtils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Arrays;
+
 
 /**
  * класс для обновления виджета, использующий {@link AlarmManager}.
@@ -22,14 +23,14 @@ import org.slf4j.LoggerFactory;
  */
 public class WidgetUpdater {
 
-    private static final Logger LOG = LoggerFactory.getLogger("WidgetUpdater");
+    private static final String TAG = "WidgetUpdater";
     private static final long MODE_CHANGE_DELAY_MS = 2000;
     private final AlarmManager alarmManager;
     private final Context context;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    public WidgetUpdater(@NonNull Context context) {
-        this.context = context.getApplicationContext();
+    public WidgetUpdater(Context context) {
+        this.context = context;
         this.alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
     }
 
@@ -38,8 +39,13 @@ public class WidgetUpdater {
         alarmManager.cancel(pendingIntent);
 
         long nextUpdateTime = NixieUtils.getNextMinuteStart();
-        LOG.debug("Schedule next update on " + NixieUtils.formatTimeDetails(nextUpdateTime));
-        alarmManager.set(AlarmManager.RTC, nextUpdateTime, pendingIntent);
+        Log.d(TAG, "scheduleNextUpdate: Schedule next update on: " + NixieUtils.formatTimeDetails(nextUpdateTime));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarmManager.setExact(AlarmManager.RTC, nextUpdateTime, pendingIntent);
+        } else {
+            alarmManager.set(AlarmManager.RTC, nextUpdateTime, pendingIntent);
+        }
     }
 
     public void updateImmediately() {
@@ -48,6 +54,12 @@ public class WidgetUpdater {
 
         Intent intent = newUpdateIntent();
         context.sendBroadcast(intent);
+    }
+
+    public void cancelNextUpdate() {
+        Log.d(TAG, "cancelNextUpdate: Canceling next update");
+        PendingIntent pendingIntent = newPendingUpdateIntent();
+        alarmManager.cancel(pendingIntent);
     }
 
     public void showDate(int widgetId) {
@@ -60,7 +72,7 @@ public class WidgetUpdater {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = newUpdateIntent(new int[]{widgetId}, textMode);
+                Intent intent = newUpdateIntent(new int[] { widgetId }, textMode);
                 context.sendBroadcast(intent);
             }
         }, delay);
@@ -80,20 +92,24 @@ public class WidgetUpdater {
         return newUpdateIntent(widgetIds, TextMode.TIME);
     }
 
+    private Intent newUpdateIntent(int[] widgetIds, TextMode textMode) {
+        Log.d(TAG, "newUpdateIntent: Put IDs in Update Intent: " + Arrays.toString(widgetIds));
+        return new Intent(context, WidgetProvider.class)
+                .setAction(WidgetProvider.CLOCK_TICK_ACTION)
+                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+                .putExtra(WidgetProvider.EXTRA_TEXT_MODE, textMode)
+                .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    }
+
     private int[] getWidgetsIds(AppWidgetManager appWidgetManager) {
         try {
             return appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetProvider.class));
         } catch (RuntimeException e) {
             // it seems due to aggressive politic to using system resources OS kills IAppWidgetService http://crashes.to/s/6661e7d5bf1
-            LOG.error("Error querying list of widget ids", e);
+            Log.d(TAG, "getWidgetsIds: Error querying list of widget ids", e);
             return new int[0];
         }
     }
 
-    private Intent newUpdateIntent(int[] widgetIds, TextMode textMode) {
-        return new Intent(context, WidgetProvider.class)
-                .setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-                .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-                .putExtra(WidgetProvider.EXTRA_TEXT_MODE, textMode);
-    }
+
 }

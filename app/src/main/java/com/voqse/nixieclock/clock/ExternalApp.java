@@ -8,13 +8,11 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.provider.AlarmClock;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import com.voqse.nixieclock.R;
-import com.voqse.nixieclock.log.NonFatalError;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Содержит необходимую для запуска стороннего приложения информацию.
@@ -23,9 +21,10 @@ import org.slf4j.LoggerFactory;
  */
 public class ExternalApp {
 
+    private static final String TAG = "ExternalApp";
+
     public static final String DELIMETER = " | ";
     public static final ExternalApp DEFAULT_APP = new ExternalApp();
-    private static final Logger LOG = LoggerFactory.getLogger("ExternalApp");
 
     private final String packageName;
     private final String activityClassName;
@@ -90,7 +89,16 @@ public class ExternalApp {
         }
 
         Intent clockDetectIntent = tryToDetectClockApp(packageManager);
-        return clockDetectIntent != null ? clockDetectIntent : new Intent(AlarmClock.ACTION_SET_ALARM);
+
+        if (clockDetectIntent != null) {
+            return clockDetectIntent;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            return new Intent(AlarmClock.ACTION_SHOW_ALARMS).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } else {
+            return new Intent(AlarmClock.ACTION_SET_ALARM);
+        }
     }
 
     @Nullable
@@ -103,7 +111,7 @@ public class ExternalApp {
         boolean nobodyRespond = packageManager.queryIntentActivities(intent, 0).isEmpty();
         if (nobodyRespond) { // http://crashes.to/s/fd65ab285bf
             String error = "Nobody can process intent " + intent;
-            LOG.error(error, new NonFatalError(error));
+            Log.d(TAG, "newShowAlarmsIntent: " + error);
             return null;
         }
 
@@ -115,11 +123,11 @@ public class ExternalApp {
         for (ClockApp clockApp : ClockApp.values()) {
             try {
                 Intent intent = newLaunchIntent(packageManager, clockApp.packageName, clockApp.className);
-                LOG.info("Clock app detected: {}", clockApp);
+                Log.d(TAG, "tryToDetectClockApp: Clock app detected: " + clockApp);
                 return intent;
             } catch (PackageManager.NameNotFoundException e) {
                 // do not log exception to prevent log flood
-                LOG.error(clockApp + " not found");
+                Log.d(TAG, "tryToDetectClockApp: " + clockApp + " not found");
             }
         }
         return null;
