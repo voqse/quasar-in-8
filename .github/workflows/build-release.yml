@@ -1,0 +1,131 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Version tag (e.g., v1.5.0)'
+        required: true
+        type: string
+      release_name:
+        description: 'Release name (optional)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history for changelog generation
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Get last release tag
+      id: last_release
+      run: |
+        LAST_TAG=$(git tag --sort=-version:refname | head -n 1)
+        if [ -z "$LAST_TAG" ]; then
+          # If no tags exist, use initial commit
+          LAST_TAG=$(git rev-list --max-parents=0 HEAD)
+        fi
+        echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+        echo "Last release tag: $LAST_TAG"
+    
+    - name: Generate changelog
+      id: changelog
+      run: |
+        LAST_TAG="${{ steps.last_release.outputs.last_tag }}"
+        echo "Generating changelog from $LAST_TAG to HEAD"
+        
+        # Create changelog with commit messages
+        echo "## Changes since $LAST_TAG" > changelog.md
+        echo "" >> changelog.md
+        
+        # Get commits since last tag
+        if git rev-parse --verify "$LAST_TAG" >/dev/null 2>&1; then
+          git log --oneline --pretty=format:"- %s (%h)" "$LAST_TAG"..HEAD >> changelog.md
+        else
+          git log --oneline --pretty=format:"- %s (%h)" >> changelog.md
+        fi
+        
+        # If changelog is empty (no commits), add a note
+        if [ ! -s changelog.md ] || [ $(wc -l < changelog.md) -le 2 ]; then
+          echo "- No new commits since last release" >> changelog.md
+        fi
+        
+        echo "" >> changelog.md
+        echo "**Build Info:**" >> changelog.md
+        echo "- Build Date: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> changelog.md
+        echo "- Commit: $(git rev-parse --short HEAD)" >> changelog.md
+        echo "- Branch: ${GITHUB_REF#refs/heads/}" >> changelog.md
+        
+        cat changelog.md
+    
+    - name: Build debug APK
+      run: |
+        # Use runner's Java 11 environment
+        export JAVA_HOME=${JAVA_HOME_11_X64:-$JAVA_HOME}
+        export PATH=$JAVA_HOME/bin:$PATH
+        java -version
+        ./gradlew clean assembleDebug
+    
+    - name: Build release APK
+      run: |
+        # Use runner's Java 11 environment
+        export JAVA_HOME=${JAVA_HOME_11_X64:-$JAVA_HOME}
+        export PATH=$JAVA_HOME/bin:$PATH
+        ./gradlew assembleRelease
+    
+    - name: Rename APK files
+      run: |
+        # Find and rename APK files
+        DEBUG_APK=$(find app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+        RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
+        
+        if [ -f "$DEBUG_APK" ]; then
+          cp "$DEBUG_APK" "nixieclock-${{ inputs.version_tag }}-debug.apk"
+          echo "Debug APK renamed to: nixieclock-${{ inputs.version_tag }}-debug.apk"
+        fi
+        
+        if [ -f "$RELEASE_APK" ]; then
+          cp "$RELEASE_APK" "nixieclock-${{ inputs.version_tag }}-release.apk"
+          echo "Release APK renamed to: nixieclock-${{ inputs.version_tag }}-release.apk"
+        fi
+        
+        ls -la *.apk 2>/dev/null || echo "No APK files found"
+    
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ inputs.version_tag }}
+        name: ${{ inputs.release_name != '' && inputs.release_name || inputs.version_tag }}
+        body_path: changelog.md
+        draft: false
+        prerelease: false
+        files: |
+          *.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload APKs as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: apk-files
+        path: |
+          *.apk
+        retention-days: 30
