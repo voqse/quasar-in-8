@@ -26,8 +26,9 @@ keyPassword=android
 **CRITICAL**: Network access to dl.google.com is now ENABLED and builds work successfully.
 
 - Clean build: `./gradlew clean assembleDebug`
-  - **NEVER CANCEL** - First build takes 15-30 minutes downloading dependencies
-  - Set timeout to 60+ minutes minimum
+  - **NEVER CANCEL** - First build takes 15-30 minutes downloading dependencies (~500MB)
+  - Set timeout to 60+ minutes minimum for first build
+  - Subsequent builds take ~1-2 minutes after dependencies are cached
   - **BUILD SUCCEEDS** - APK will be generated successfully
 - Debug APK will be located at: `app/build/outputs/apk/debug/com.voqse.nixieclock-1.5.0-(20)-debug.apk`
 - APK size: ~19.5 MB when built successfully
@@ -107,8 +108,8 @@ app/src/main/java/com/voqse/nixieclock/
 - Test: JUnit 4.13.2, Robolectric 4.2.1, Mockito 1.9.5
 
 ### Code Statistics
-- Total Java files: 23
-- Total lines of code: ~2,600
+- Total Java files: 36
+- Total lines of code: ~3,400
 - Main packages: clock, theme, timezone, utils, widget
 - Test files: 1 (DateTest.java)
 
@@ -143,7 +144,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 - **Java Version**: Must use Java 11 - newer versions cause Gradle compatibility errors
 - **Network Access**: ✅ Google Maven repositories are now accessible - builds succeed
 - **Missing keystore.properties**: Must create manually for any build attempts
-- **Build Time**: Initial builds take ~1-2 minutes after dependencies are cached
+- **Build Time**: First builds take 15-30 minutes downloading dependencies, subsequent builds ~1-2 minutes
 - **Unit Tests**: ✅ NOW WORKING - Fixed deprecated Robolectric `@Config` parameter
 - **Gradle Daemon**: May need periodic restart with `./gradlew --stop`
 
