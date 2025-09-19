@@ -32,16 +32,19 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
     
-    - name: Create keystore.properties
+    - name: Create keystore.properties for debug builds
       run: |
-        echo "Creating keystore.properties file..."
+        echo "Creating keystore.properties file for debug builds only..."
+        echo "Note: Release builds are skipped as they require proper release keystore"
         cat > app/keystore.properties << EOF
+        # Debug keystore configuration only
+        # Release builds require proper release keystore setup
         storeFile=debug.jks
         storePassword=android
         keyAlias=androiddebugkey
         keyPassword=android
         EOF
-        echo "✅ keystore.properties created"
+        echo "✅ keystore.properties created for debug builds"
     
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -95,29 +98,27 @@ jobs:
         java -version
         ./gradlew clean assembleDebug
     
-    - name: Build release APK
+    - name: Note about release builds
       run: |
-        # Use runner's Java 11 environment
-        export JAVA_HOME=${JAVA_HOME_11_X64:-$JAVA_HOME}
-        export PATH=$JAVA_HOME/bin:$PATH
-        ./gradlew assembleRelease
+        echo "⚠️  Release APK build skipped"
+        echo "Release builds require proper release keystore configuration with real secrets."
+        echo "For security reasons, release APKs should be built manually with proper keystore."
+        echo "Only debug APK is included in this automated release."
     
     - name: Rename APK files
       run: |
-        # Find and rename APK files
+        # Find and rename debug APK only
         DEBUG_APK=$(find app/build/outputs/apk/debug -name "*.apk" | head -n 1)
-        RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
         
         if [ -f "$DEBUG_APK" ]; then
           cp "$DEBUG_APK" "nixieclock-${{ inputs.version_tag }}-debug.apk"
           echo "Debug APK renamed to: nixieclock-${{ inputs.version_tag }}-debug.apk"
+        else
+          echo "❌ Debug APK not found"
+          exit 1
         fi
         
-        if [ -f "$RELEASE_APK" ]; then
-          cp "$RELEASE_APK" "nixieclock-${{ inputs.version_tag }}-release.apk"
-          echo "Release APK renamed to: nixieclock-${{ inputs.version_tag }}-release.apk"
-        fi
-        
+        echo "📱 Available APK files:"
         ls -la *.apk 2>/dev/null || echo "No APK files found"
     
     - name: Create Release

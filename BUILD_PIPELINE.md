@@ -19,18 +19,35 @@ When triggered, the workflow will:
 
 1. **Setup Environment**: Configure Java 11 and Android SDK
 2. **Generate Changelog**: Collect all commit messages since the last release
-3. **Build APKs**: Create both debug and release versions
+3. **Build Debug APK**: Create debug version for testing (~19.5 MB)
 4. **Create Release**: Generate a GitHub release with:
    - Version tag you specified
    - Changelog with commit history
    - Debug APK attachment (~19.5 MB)
-   - Release APK attachment (~17.8 MB)
    - Build artifacts (retained for 30 days)
+
+⚠️ **Important Security Note**: Release APKs are **NOT** built automatically because they require proper release keystore credentials. Only debug APKs are included in automated releases for security reasons.
 
 ## APK Outputs
 
-- **Debug APK**: `nixieclock-{version}-debug.apk` - includes debugging symbols
-- **Release APK**: `nixieclock-{version}-release.apk` - optimized and minified
+- **Debug APK**: `nixieclock-{version}-debug.apk` - includes debugging symbols, suitable for testing
+- **Release APK**: Not built automatically (requires proper release keystore setup)
+
+## Release APK Building
+
+To build release APKs, you need to:
+
+1. Create a proper release keystore file (not the debug one)
+2. Configure `app/keystore.properties` with real release credentials:
+   ```properties
+   storeFile=your-release-keystore.jks
+   storePassword=your-secure-password
+   keyAlias=your-release-key-alias
+   keyPassword=your-secure-key-password
+   ```
+3. Build manually: `./gradlew assembleRelease`
+
+**Never commit real keystore credentials to version control!**
 
 ## Requirements
 
@@ -49,12 +66,16 @@ For local development, ensure you have:
 
 Build commands:
 ```bash
-# Debug build
+# Debug build (works automatically)
 ./gradlew clean assembleDebug
 
-# Release build  
+# Release build (requires proper keystore setup)
 ./gradlew assembleRelease
 
 # Run tests
 ./gradlew test
 ```
+
+## Security Note
+
+The automated pipeline only builds **debug APKs** for security reasons. Release APKs require proper release keystore credentials that should never be stored in public repositories or CI/CD systems without proper secret management.
