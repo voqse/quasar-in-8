@@ -10,6 +10,7 @@
 .idea
 /app/build
 
-# Keystore configuration (contains sensitive information)
+# Keystore files and configuration (use GitHub Secrets instead)
 /app/keystore.properties
-/app/release.jks
+/app/*.jks
+/app/*.keystore

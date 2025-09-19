@@ -18,9 +18,18 @@ java -version
 echo "🔑 Checking keystore configuration..."
 if [ -f "app/keystore.properties" ]; then
     echo "✅ keystore.properties found"
+    # Check if it references a keystore file that exists
+    STORE_FILE=$(grep "storeFile=" app/keystore.properties | cut -d'=' -f2)
+    if [ -f "app/$STORE_FILE" ]; then
+        echo "✅ keystore file found: app/$STORE_FILE"
+    else
+        echo "⚠️  keystore.properties found but keystore file missing: app/$STORE_FILE"
+        echo "   This is expected for CI builds using GitHub Secrets"
+    fi
 else
-    echo "❌ keystore.properties missing"
-    exit 1
+    echo "ℹ️  keystore.properties missing (expected for fresh checkout)"
+    echo "   CI builds will create this from GitHub Secrets"
+    echo "   Local builds need manual keystore.properties setup"
 fi
 
 # Test changelog generation
@@ -72,8 +81,18 @@ fi
 echo ""
 echo "🎉 Build pipeline components validated successfully!"
 echo ""
-echo "To trigger the actual pipeline:"
-echo "1. Go to GitHub Actions tab"
-echo "2. Select 'Build and Release' workflow"  
-echo "3. Click 'Run workflow'"
-echo "4. Enter version tag (e.g., v1.5.1)"
+echo "To setup the automated pipeline:"
+echo "1. Configure GitHub Secrets in repository settings:"
+echo "   - KEYSTORE_PASSWORD: Your keystore password"
+echo "   - KEY_ALIAS: Your key alias"  
+echo "   - KEY_PASSWORD: Your key password"
+echo "   - RELEASE_KEYSTORE: Base64-encoded keystore file"
+echo "2. Go to GitHub Actions tab"
+echo "3. Select 'Build and Release' workflow"  
+echo "4. Click 'Run workflow'"
+echo "5. Enter version tag (e.g., v1.5.1)"
+echo ""
+echo "For local development:"
+echo "1. Create app/keystore.properties with your credentials"
+echo "2. Place your keystore file in app/ directory"
+echo "3. Run './gradlew assembleDebug' or './gradlew assembleRelease'"
