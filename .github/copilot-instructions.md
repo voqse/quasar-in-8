@@ -37,10 +37,10 @@ keyPassword=android
   - Uses Robolectric framework for Android testing
   - Test duration: approximately 2-5 minutes
   - **NEVER CANCEL** - Set timeout to 15+ minutes
-  - **WILL FAIL** due to Robolectric version compatibility issue (deprecated `constants` parameter)
+  - **TESTS NOW WORK** - Robolectric compatibility issue resolved
 - Single test file location: `app/src/test/java/com/voqse/nixieclock/DateTest.java`
 - Tests use JUnit 4.13.2 with Robolectric 4.2.1
-- Test failure: `@Config(constants = BuildConfig.class, sdk = 23)` uses deprecated syntax
+- **FIXED**: Removed deprecated `@Config(constants = BuildConfig.class)` parameter
 
 ### Development Workflow  
 - Code is structured as standard Android app with widget components
@@ -59,12 +59,12 @@ keyPassword=android
 - Build operations: ✅ WORKING
 - Dependency downloads: ✅ WORKING  
 - APK generation: ✅ WORKING
-- Unit tests: ❌ FAIL (Robolectric compatibility issue)
+- Unit tests: ✅ WORKING (Robolectric compatibility issue resolved)
 
 ## Validation Scenarios
 With network access enabled, full validation is now possible:
 - ✅ **CAN build APK** - Dependencies download successfully
-- ❌ **Cannot run unit tests** - Robolectric compatibility issue with deprecated `constants` parameter
+- ✅ **CAN run unit tests** - Robolectric compatibility issue resolved
 - ✅ **Can install/run app** - APK builds successfully
 - ✅ **Code analysis and static checks** work without network
 
@@ -125,11 +125,9 @@ export PATH=$JAVA_HOME/bin:$PATH
 - Clean project: `./gradlew clean` (works with dependency downloads)
 - Build debug APK: `./gradlew assembleDebug` (✅ WORKS - generates 19.5 MB APK)
 - Build release APK: `./gradlew assembleRelease` (requires signing config)
-
-**Commands that FAIL despite network access:**
-- Run tests: `./gradlew test` (fails due to Robolectric compatibility issue)
-- List tasks: `./gradlew tasks` (may fail on first run, works after build)
-- Get help: `./gradlew help` (may fail on first run, works after build)
+- Run tests: `./gradlew test` (✅ WORKS - Robolectric issue resolved)
+- List tasks: `./gradlew tasks` (works after initial build)
+- Get help: `./gradlew help` (works after initial build)
 
 ## File Locations
 - Gradle wrapper: `./gradlew` (symlinked as `./g`)
@@ -146,7 +144,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 - **Network Access**: ✅ Google Maven repositories are now accessible - builds succeed
 - **Missing keystore.properties**: Must create manually for any build attempts
 - **Build Time**: Initial builds take ~1-2 minutes after dependencies are cached
-- **Unit Tests**: Fail due to Robolectric `@Config(constants = BuildConfig.class)` deprecated syntax
+- **Unit Tests**: ✅ NOW WORKING - Fixed deprecated Robolectric `@Config` parameter
 - **Gradle Daemon**: May need periodic restart with `./gradlew --stop`
 
 ## Static Analysis Commands (Network-free)
