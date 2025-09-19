@@ -15,7 +15,7 @@ import java.util.TimeZone;
  * @author Alexey Danilov (danikula@gmail.com).
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 23)
+@Config(sdk = 23)
 public class DateTest {
 
     @Test
