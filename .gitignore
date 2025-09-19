@@ -9,5 +9,8 @@
 .externalNativeBuild
 .idea
 /app/build
+
+# Keystore files and configuration (use GitHub Secrets instead)
 /app/keystore.properties
-/app/release.jks
+/app/*.jks
+/app/*.keystore
