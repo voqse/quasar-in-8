@@ -23,23 +23,24 @@ keyPassword=android
 ```
 
 ### Build Instructions
-**CRITICAL**: Network access to dl.google.com is blocked in this environment, preventing dependency downloads.
+**CRITICAL**: Network access to dl.google.com is now ENABLED and builds work successfully.
 
 - Clean build: `./gradlew clean assembleDebug`
   - **NEVER CANCEL** - First build takes 15-30 minutes downloading dependencies
   - Set timeout to 60+ minutes minimum
-  - **WILL FAIL** due to network restrictions - this is expected behavior
-- Alternative repositories may work but are not validated
+  - **BUILD SUCCEEDS** - APK will be generated successfully
 - Debug APK will be located at: `app/build/outputs/apk/debug/com.voqse.nixieclock-1.5.0-(20)-debug.apk`
+- APK size: ~19.5 MB when built successfully
 
 ### Testing
 - Run unit tests: `./gradlew test`
   - Uses Robolectric framework for Android testing
   - Test duration: approximately 2-5 minutes
   - **NEVER CANCEL** - Set timeout to 15+ minutes
-  - **WILL FAIL** due to dependency download restrictions
+  - **WILL FAIL** due to Robolectric version compatibility issue (deprecated `constants` parameter)
 - Single test file location: `app/src/test/java/com/voqse/nixieclock/DateTest.java`
 - Tests use JUnit 4.13.2 with Robolectric 4.2.1
+- Test failure: `@Config(constants = BuildConfig.class, sdk = 23)` uses deprecated syntax
 
 ### Development Workflow  
 - Code is structured as standard Android app with widget components
@@ -48,29 +49,32 @@ keyPassword=android
 - Theme system: `app/src/main/java/com/voqse/nixieclock/theme/` directory
 
 ## Network and Build Limitations
-**CRITICAL BUILD ISSUE**: This environment cannot access dl.google.com, preventing:
-- Gradle plugin downloads
-- Android library dependency resolution 
-- Maven repository access to Google's Android libraries
+**CRITICAL BUILD UPDATE**: Network access to dl.google.com is now ENABLED, allowing:
+- ✅ Gradle plugin downloads
+- ✅ Android library dependency resolution 
+- ✅ Maven repository access to Google's Android libraries
+- ✅ Successful APK builds (19.5 MB debug APK generated)
 
-**Workarounds** (NOT VALIDATED):
-- Use cached dependencies if available: `./gradlew --offline <task>`
-- Manual dependency management (not recommended)
-- Alternative repository mirrors (reliability unknown)
+**Current Status:**
+- Build operations: ✅ WORKING
+- Dependency downloads: ✅ WORKING  
+- APK generation: ✅ WORKING
+- Unit tests: ❌ FAIL (Robolectric compatibility issue)
 
 ## Validation Scenarios
-Due to network limitations, manual validation is severely restricted:
-- **Cannot build APK** due to dependency download failures
-- **Cannot run automated tests** due to missing test dependencies  
-- **Cannot install/run app** without successful build
-- **Code analysis and static checks** are possible without network access
+With network access enabled, full validation is now possible:
+- ✅ **CAN build APK** - Dependencies download successfully
+- ❌ **Cannot run unit tests** - Robolectric compatibility issue with deprecated `constants` parameter
+- ✅ **Can install/run app** - APK builds successfully
+- ✅ **Code analysis and static checks** work without network
 
-### Alternative Validation Commands (Network-free)
+### Validation Commands (All Working)
 - Count source files: `find app/src/main/java -name "*.java" | wc -l` (result: 36)
 - Count resource files: `find app/src/main/res -name "*.xml" | wc -l` (result: 28)
 - Verify keystore exists: `ls -la app/debug.jks` (should show 2148 byte file)
 - Check AndroidManifest: `grep -E "(package|android:versionName|android:versionCode)" app/src/main/AndroidManifest.xml`
 - Check build config: `grep -E "(versionCode|versionName|compileSdkVersion)" app/build.gradle`
+- Verify APK generated: `ls -la app/build/outputs/apk/debug/` (shows 19.5 MB APK)
 
 ## Key Project Information
 
@@ -115,17 +119,17 @@ export JAVA_HOME=/usr/lib/jvm/temurin-11-jdk-amd64
 export PATH=$JAVA_HOME/bin:$PATH
 ```
 
-**Commands that work without network:**
+**Commands that work with network access:**
 - Check Gradle version: `./gradlew --version` (works, shows Gradle 6.7.1)
 - Stop Gradle daemon: `./gradlew --stop` (works when daemon is running)
+- Clean project: `./gradlew clean` (works with dependency downloads)
+- Build debug APK: `./gradlew assembleDebug` (✅ WORKS - generates 19.5 MB APK)
+- Build release APK: `./gradlew assembleRelease` (requires signing config)
 
-**Commands that FAIL due to network restrictions:**
-- Build debug APK: `./gradlew assembleDebug` (fails at dependency resolution)
-- Build release APK: `./gradlew assembleRelease` (fails at dependency resolution)
-- Run tests: `./gradlew test` (fails at dependency resolution)
-- Clean project: `./gradlew clean` (fails at plugin resolution)
-- List tasks: `./gradlew tasks` (fails at plugin resolution)
-- Get help: `./gradlew help` (fails at plugin resolution)
+**Commands that FAIL despite network access:**
+- Run tests: `./gradlew test` (fails due to Robolectric compatibility issue)
+- List tasks: `./gradlew tasks` (may fail on first run, works after build)
+- Get help: `./gradlew help` (may fail on first run, works after build)
 
 ## File Locations
 - Gradle wrapper: `./gradlew` (symlinked as `./g`)
@@ -139,9 +143,10 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 ## Known Issues and Workarounds
 - **Java Version**: Must use Java 11 - newer versions cause Gradle compatibility errors
-- **Network Access**: Google Maven repositories are blocked - build will fail at dependency resolution
+- **Network Access**: ✅ Google Maven repositories are now accessible - builds succeed
 - **Missing keystore.properties**: Must create manually for any build attempts
-- **Long Build Times**: Initial builds download ~500MB of dependencies (when network works)
+- **Build Time**: Initial builds take ~1-2 minutes after dependencies are cached
+- **Unit Tests**: Fail due to Robolectric `@Config(constants = BuildConfig.class)` deprecated syntax
 - **Gradle Daemon**: May need periodic restart with `./gradlew --stop`
 
 ## Static Analysis Commands (Network-free)
