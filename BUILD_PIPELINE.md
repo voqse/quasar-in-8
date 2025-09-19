@@ -12,10 +12,11 @@ The build pipeline can be triggered manually from the GitHub Actions tab:
 4. Provide the required inputs:
    - **Version tag**: e.g., `v1.5.1` or `v2.0.0`
    - **Release name**: (optional) Custom name for the release
+   - **Include debug APK**: (optional) Generate debug APK with temporary keystore for testing
 
 ## Required GitHub Secrets
 
-Before using the pipeline, configure these secrets in your repository settings:
+Configure these secrets in your repository settings for release builds:
 
 - `KEYSTORE_PASSWORD`: Password for the release keystore
 - `KEY_ALIAS`: Alias of the signing key in the keystore  
@@ -34,28 +35,43 @@ base64 -w 0 your-keystore.jks
 When triggered, the workflow will:
 
 1. **Setup Environment**: Configure Java 11 and Android SDK
-2. **Setup Keystore**: Create keystore configuration from GitHub Secrets
+2. **Setup Release Keystore**: Create keystore configuration from GitHub Secrets
 3. **Generate Changelog**: Collect all commit messages since the last release
-4. **Build APKs**: Create both debug and release versions
-5. **Create Release**: Generate a GitHub release with:
+4. **Build Release APK**: Create optimized release version (~17.8 MB)
+5. **Optional Debug APK**: If requested, generate temporary debug keystore and build debug APK
+6. **Create Release**: Generate a GitHub release with:
    - Version tag you specified
    - Changelog with commit history
-   - Debug APK attachment (~19.5 MB)
-   - Release APK attachment (~17.8 MB, optimized)
+   - Release APK attachment (always included)
+   - Debug APK attachment (only if requested)
    - Build artifacts (retained for 30 days)
 
 ## APK Outputs
 
-- **Debug APK**: `nixieclock-{version}-debug.apk` - includes debugging symbols, suitable for testing
-- **Release APK**: `nixieclock-{version}-release.apk` - optimized and minified for distribution
+- **Release APK**: `nixieclock-{version}-release.apk` - optimized and minified, signed with your release keystore
+- **Debug APK**: `nixieclock-{version}-debug.apk` - (optional) includes debugging symbols, signed with temporary keystore
 
-## Security Approach
+## Optimized Approach
 
-The pipeline uses **GitHub Secrets** to securely store keystore credentials:
-- Keystore file is base64-encoded and stored as a secret
-- Credentials are injected during build time only
-- No sensitive information is stored in the repository
-- Both debug and release builds are supported securely
+**Release-First Strategy**: The pipeline focuses on release APK generation since that's what you need for distribution. Debug APKs are only generated when specifically requested for testing purposes.
+
+**Temporary Debug Keystores**: When debug APK is requested, the pipeline generates a temporary debug keystore valid for 1 day, eliminating the need to store debug credentials.
+
+**Minimal Secrets**: Only release keystore credentials need to be stored as GitHub Secrets, simplifying secret management.
+
+## Usage
+
+To create a new release:
+1. Configure 4 GitHub Secrets with your release keystore credentials (one-time setup)
+2. Go to Actions tab → "Build and Release" workflow
+3. Click "Run workflow" 
+4. Enter version tag (e.g., `v1.6.0`)
+5. Optionally check "Include debug APK" if you need it for testing
+6. Pipeline will build release APK (and debug APK if requested) and create release automatically
+
+**Typical Usage:**
+- **Production releases**: Leave "Include debug APK" unchecked (default)
+- **Testing releases**: Check "Include debug APK" to get both variants
 
 ## Requirements
 

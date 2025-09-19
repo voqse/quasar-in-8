@@ -1,10 +1,10 @@
 # GitHub Secrets Setup Guide
 
-This document explains how to configure GitHub Secrets for the automated build pipeline.
+This document explains how to configure GitHub Secrets for automated **release APK** builds. Debug APKs use temporary keystores generated during builds and don't require secrets.
 
 ## Required Secrets
 
-The build pipeline requires these four secrets to be configured in your GitHub repository:
+The build pipeline requires these four secrets for release APK generation:
 
 ### 1. KEYSTORE_PASSWORD
 - **Description**: Password for your release keystore file
@@ -59,16 +59,18 @@ keytool -genkey -v -keystore nixie-release.jks -keyalg RSA -keysize 2048 -validi
 ## Verification
 
 After setting up secrets, the build pipeline will:
-- ✅ Create keystore.properties from secrets
+- ✅ Create keystore.properties from secrets for release builds
 - ✅ Decode and create release keystore file
-- ✅ Build both debug and release APKs
-- ✅ Attach both APKs to GitHub releases
+- ✅ Build release APK (always)
+- ✅ Optionally build debug APK with temporary keystore (if requested)
+- ✅ Attach APKs to GitHub releases
 
 ## Security Benefits
 
 - 🔒 No keystore files in repository
-- 🔒 No passwords in code or configs
-- 🔒 Secrets only accessible during builds
+- 🔒 No passwords in code or configs  
+- 🔒 Secrets only used for release builds
+- 🔒 Debug builds use temporary keystores (no secrets needed)
 - 🔒 Full audit trail of secret usage
 - 🔒 Easy rotation of credentials if needed
 

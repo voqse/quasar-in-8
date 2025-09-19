@@ -12,6 +12,11 @@ on:
         required: false
         type: string
         default: ''
+      include_debug_apk:
+        description: 'Include debug APK for testing (generates temporary keystore)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -100,43 +105,87 @@ jobs:
         
         cat changelog.md
     
-    - name: Build debug APK
+    - name: Generate temporary debug keystore for testing (optional)
+      if: inputs.include_debug_apk == 'true'
+      run: |
+        echo "Generating temporary debug keystore for testing purposes..."
+        
+        # Generate temporary debug keystore
+        keytool -genkey -v -keystore app/debug-temp.jks -keyalg RSA -keysize 2048 -validity 1 \
+          -alias debug-temp -storepass android -keypass android \
+          -dname "CN=Debug Build, OU=Testing, O=NixieClock, L=Debug, S=Test, C=US" \
+          -noprompt
+        
+        # Create temporary debug keystore.properties
+        cat > app/debug-keystore.properties << EOF
+        storeFile=debug-temp.jks
+        storePassword=android
+        keyAlias=debug-temp
+        keyPassword=android
+        EOF
+        
+        echo "✅ Temporary debug keystore created (valid for 1 day)"
+    
+    - name: Build debug APK (if requested)
+      if: inputs.include_debug_apk == 'true'
+      run: |
+        echo "Building debug APK with temporary keystore..."
+        # Copy debug properties to main properties temporarily
+        cp app/keystore.properties app/keystore-release-backup.properties
+        cp app/debug-keystore.properties app/keystore.properties
+        
+        # Use runner's Java 11 environment
+        export JAVA_HOME=${JAVA_HOME_11_X64:-$JAVA_HOME}
+        export PATH=$JAVA_HOME/bin:$PATH
+        ./gradlew assembleDebug
+        
+        # Restore release properties
+        mv app/keystore-release-backup.properties app/keystore.properties
+        
+        echo "✅ Debug APK built with temporary keystore"
       run: |
         # Use runner's Java 11 environment
         export JAVA_HOME=${JAVA_HOME_11_X64:-$JAVA_HOME}
         export PATH=$JAVA_HOME/bin:$PATH
         java -version
-        ./gradlew clean assembleDebug
-    
-    - name: Build release APK
-      run: |
-        # Use runner's Java 11 environment
-        export JAVA_HOME=${JAVA_HOME_11_X64:-$JAVA_HOME}
-        export PATH=$JAVA_HOME/bin:$PATH
-        ./gradlew assembleRelease
+        echo "Building release APK with secrets-based keystore..."
+        ./gradlew clean assembleRelease
     
     - name: Rename APK files
       run: |
-        # Find and rename APK files
-        DEBUG_APK=$(find app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+        # Find and rename release APK (always present)
         RELEASE_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-        
-        if [ -f "$DEBUG_APK" ]; then
-          cp "$DEBUG_APK" "nixieclock-${{ inputs.version_tag }}-debug.apk"
-          echo "✅ Debug APK renamed to: nixieclock-${{ inputs.version_tag }}-debug.apk"
-        else
-          echo "❌ Debug APK not found"
-        fi
         
         if [ -f "$RELEASE_APK" ]; then
           cp "$RELEASE_APK" "nixieclock-${{ inputs.version_tag }}-release.apk"
           echo "✅ Release APK renamed to: nixieclock-${{ inputs.version_tag }}-release.apk"
+          
+          # Display APK info
+          APK_SIZE=$(ls -lh "nixieclock-${{ inputs.version_tag }}-release.apk" | awk '{print $5}')
+          echo "📱 Release APK size: $APK_SIZE"
         else
           echo "❌ Release APK not found"
+          exit 1
         fi
         
-        echo "📱 Available APK files:"
-        ls -la *.apk 2>/dev/null || echo "No APK files found"
+        # Handle optional debug APK
+        if [ "${{ inputs.include_debug_apk }}" == "true" ]; then
+          DEBUG_APK=$(find app/build/outputs/apk/debug -name "*.apk" | head -n 1)
+          if [ -f "$DEBUG_APK" ]; then
+            cp "$DEBUG_APK" "nixieclock-${{ inputs.version_tag }}-debug.apk"
+            echo "✅ Debug APK renamed to: nixieclock-${{ inputs.version_tag }}-debug.apk"
+            
+            DEBUG_SIZE=$(ls -lh "nixieclock-${{ inputs.version_tag }}-debug.apk" | awk '{print $5}')
+            echo "📱 Debug APK size: $DEBUG_SIZE (temporary keystore)"
+          else
+            echo "⚠️  Debug APK requested but not found"
+          fi
+        else
+          echo "ℹ️  Debug APK not requested (release-only build)"
+        fi
+        
+        echo "📦 Final release artifacts:"
+        ls -la *.apk
     
     - name: Create Release
       uses: softprops/action-gh-release@v1
