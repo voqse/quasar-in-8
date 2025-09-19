@@ -9,5 +9,7 @@
 .externalNativeBuild
 .idea
 /app/build
+
+# Keystore configuration (contains sensitive information)
 /app/keystore.properties
 /app/release.jks
